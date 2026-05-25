@@ -1301,7 +1301,7 @@
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
       </svg>
     </button>
-    <button id="打印按钮" onclick="window.print()" type="button" data-i18n="nav.print">打印为 PDF</button>
+    <button id="打印按钮" type="button" data-i18n="nav.print">打印为 PDF</button>
   </nav>
 </header>
 
@@ -1584,6 +1584,7 @@
       "proof.imgFallback": "图片暂未上传",
       "about.expandAll": "全部展开",
       "about.collapseAll": "全部收起",
+      "print.fallback": "当前浏览器未弹出打印对话框，请打开浏览器右上角菜单 → 选择「打印」或「分享 → 打印」。",
     },
     en: {
       "nav.about": "About",
@@ -1624,6 +1625,7 @@
       "proof.imgFallback": "Image not uploaded yet",
       "about.expandAll": "Expand all",
       "about.collapseAll": "Collapse all",
+      "print.fallback": "Your browser didn't open the print dialog. Please use the browser menu → Print (or Share → Print).",
     },
   };
 
@@ -2148,6 +2150,30 @@
 
   /* 首次渲染 */
   渲染主页();
+
+  /* ===== 打印按钮：手机端 window.print() 常静默失败，给出兜底提示 ===== */
+  (function 打印按钮() {
+    const 按钮 = document.getElementById("打印按钮");
+    if (!按钮) return;
+    按钮.addEventListener("click", () => {
+      const t = 文案[当前语言];
+      let 已触发 = false;
+      const 监听 = () => { 已触发 = true; };
+      window.addEventListener("beforeprint", 监听, { once: true });
+      try {
+        window.print();
+      } catch (e) {
+        alert(t["print.fallback"]);
+        window.removeEventListener("beforeprint", 监听);
+        return;
+      }
+      /* 1 秒后还没触发 beforeprint，认为打印对话框未弹出（常见于手机浏览器） */
+      setTimeout(() => {
+        window.removeEventListener("beforeprint", 监听);
+        if (!已触发) alert(t["print.fallback"]);
+      }, 1000);
+    });
+  })();
 
   /* ===== 语言切换 ===== */
   document.querySelectorAll("#语言切换器 .语言按钮").forEach(按钮 => {

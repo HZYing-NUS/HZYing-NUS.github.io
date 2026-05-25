@@ -110,7 +110,7 @@ Cross-domain operator: high self-drive and a founder's mindset. Going from offli
   // 公众号文字：可选，会显示在公众号二维码下方
   公众号文字: {
     zh: "模方",
-    en: "模方",
+    en: "Mold Square",
   },
 
   // 教育背景
