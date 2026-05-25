@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -oE '\\\\.[a-zA-Z][a-zA-Z0-9_\\\\-]{3,40}\\\\s*\\\\{[^}]{1,300}' /tmp/tahsin.css)",
+      "Bash(echo \"started, pid=$!\")",
+      "Bash(curl -sI http://localhost:8765/index.html)",
+      "Bash(curl -s http://localhost:8765/index.html)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --hide-scrollbars --window-size=1280,2400 --screenshot=/tmp/site-light.png --virtual-time-budget=2500 http://localhost:8765/index.html)",
+      "Bash(mv /tmp/dark.html /Users/huangziying/Code/ziying-site/__darktest.html)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --hide-scrollbars --window-size=1280,1600 --screenshot=/tmp/site-light-full.png --virtual-time-budget=3000 http://localhost:8765/index.html)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --hide-scrollbars --window-size=1280,1600 --screenshot=/tmp/site-dark.png --virtual-time-budget=4000 \"http://localhost:8765/__darktest.html\")",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --hide-scrollbars --window-size=1280,1600 --force-prefers-color-scheme=dark --screenshot=/tmp/site-dark.png --virtual-time-budget=3000 http://localhost:8765/index.html)",
+      "Bash(pkill -f \"http.server 8765\")",
+      "Bash(git -C /Users/huangziying/Code/ziying-site init -b main)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git add *)"
+    ]
+  }
+}

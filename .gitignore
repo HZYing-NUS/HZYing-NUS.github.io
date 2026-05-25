@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统临时文件
+Thumbs.db
+ehthumbs.db
+
+# 草稿 / 私人内容（不会被推到 GitHub，自然也不会上线）
+草稿/
+私人/
+
+# Claude Code 本地配置
+.claude/settings.local.json
