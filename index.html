@@ -1121,13 +1121,48 @@
 
     @media (max-width: 600px) {
       body { font-size: 16px; }
-      .板块 { padding: calc(var(--导航高度) + 3rem) 20px 3rem; }
-      .板块大标题 { margin-bottom: 2rem; }
+      .板块 { padding: calc(var(--导航高度) + 2.5rem) 20px 2.75rem; }
+      .板块大标题 { font-size: 24px; margin-bottom: 1.75rem; }
+      .板块标识 { font-size: 12px; margin-bottom: 1rem; }
       #头像 { width: 100px; height: 100px; }
-      .条目, .博客条目 { padding: 1.5rem 0; }
-      .条目-标题, .博客-标题 { font-size: 20px; }
+
+      /* 条目 / 博客条目：贴边、收紧字号与行距 */
+      .条目, .博客条目 {
+        padding: 1.4rem 0;
+        margin: 0;
+        border-radius: 0;
+      }
+      .条目:first-child, .博客条目:first-child { margin-top: -1.4rem; }
+      .条目-头, .博客-头 { gap: 0.35rem 0.75rem; margin-bottom: 0.35rem; }
+      .条目-标题, .博客-标题 { font-size: 18px; }
+      .条目-时间, .博客-日期 { font-size: 12.5px; }
+      .条目-副标题 { font-size: 13.5px; margin-bottom: 0.5rem; }
+      .条目-描述, .博客-摘要 { font-size: 14.5px; line-height: 1.72; }
+      .条目-外链 { font-size: 14px; margin-top: 0.7rem; }
+
+      /* 证明按钮：缩小贴合 */
+      .条目-动作行 { gap: 0.5rem 0.85rem; margin-top: 0.7rem; }
+      .证明按钮 { font-size: 13px; padding: 5px 11px; }
+      .证明按钮 .证明图标 { width: 12px; height: 12px; }
+
+      /* 奖项 */
+      .奖项类别 { margin-bottom: 2.25rem; }
+      .奖项条目 { padding: 0.85rem 0; gap: 0.35rem; }
+      .奖项-标题 { font-size: 14.5px; }
+      .奖项-标签 { font-size: 10px; padding: 1px 7px; }
+      .奖项-等级 { font-size: 13px; }
+      .奖项-时间 { font-size: 12px; }
+      .奖项-证明 { font-size: 12px; padding: 3px 10px; }
+
+      /* 自我介绍：折叠头与正文统一节奏 */
+      #自我介绍 p { font-size: 15.5px; line-height: 1.85; margin-bottom: 1.1rem; }
+      #自我介绍 .自介-章节-头 { padding: 1.1rem 0; }
+      #自我介绍 .自介-章节-标题 { font-size: 16px; }
+      #自介-切换全部 { font-size: 12.5px; padding: 4px 10px; }
+
       #联系方式 .联系-行 { gap: 3rem; }
       #联系方式 .联系-二维码组 { gap: 2.5rem; }
+      #联系方式 .联系-邮箱-地址 { font-size: 18px; }
     }
 
     @media print {
