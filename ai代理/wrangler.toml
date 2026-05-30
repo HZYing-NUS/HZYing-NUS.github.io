@@ -1,0 +1,9 @@
+name = "ziying-ai-proxy"
+main = "worker.js"
+compatibility_date = "2026-05-01"
+
+# 密钥不写在这里！用命令注入：
+#   wrangler secret put DEEPSEEK_API_KEY
+#
+# 本地调试时，wrangler dev 默认监听 http://localhost:8787，
+# 与 index.html 里的「本地代理地址」一致。

@@ -1264,6 +1264,259 @@
 
       @page { margin: 14mm 14mm; }
     }
+
+    /* ============== 问问 AI ============== */
+    /* 右下角悬浮入口按钮（复用浮标按钮的视觉语言） */
+    .ai浮标 {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 95;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 48px;
+      padding: 0 18px 0 16px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      background: var(--色-面卡);
+      color: var(--色-墨次);
+      box-shadow: 0 1px 2px var(--色-阴影弱), 0 6px 16px var(--色-阴影中);
+      transition: transform 0.18s var(--过渡), color 0.18s var(--过渡), box-shadow 0.18s var(--过渡), background 0.3s var(--过渡), opacity 0.2s var(--过渡);
+    }
+    .ai浮标:hover {
+      transform: scale(1.05);
+      color: var(--色-蓝);
+      box-shadow: 0 1px 2px var(--色-阴影弱), 0 8px 20px var(--色-阴影蓝);
+    }
+    .ai浮标:active { transform: scale(0.97); }
+    .ai浮标 .图标 {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex-shrink: 0;
+    }
+    .ai浮标-文字 { font-size: 14px; font-weight: 500; white-space: nowrap; }
+    /* 弹窗打开时，隐藏入口按钮 */
+    .ai浮标.已隐藏 { opacity: 0; pointer-events: none; transform: scale(0.9); }
+
+    /* 对话框遮罩 + 容器（复刻灯箱手法） */
+    .ai对话框 {
+      position: fixed;
+      inset: 0;
+      z-index: 96;
+      display: none;
+      opacity: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: opacity 0.2s var(--过渡);
+    }
+    .ai对话框.开 { display: block; opacity: 1; }
+
+    /* 面板：桌面端右下角悬浮卡片 */
+    .ai对话框-面板 {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 380px;
+      max-width: calc(100vw - 32px);
+      height: 560px;
+      max-height: calc(100dvh - 48px);
+      display: flex;
+      flex-direction: column;
+      background: var(--色-面卡);
+      border: 1px solid var(--色-灰浅);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px var(--色-阴影中);
+      transform: translateY(16px) scale(0.98);
+      opacity: 0;
+      transition: transform 0.24s var(--过渡), opacity 0.24s var(--过渡);
+    }
+    .ai对话框.开 .ai对话框-面板 { transform: translateY(0) scale(1); opacity: 1; }
+
+    /* 标题栏 */
+    .ai对话框-头 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--色-灰浅);
+      flex-shrink: 0;
+    }
+    .ai对话框-标题 { font-size: 15px; font-weight: 600; color: var(--色-墨); margin: 0; }
+    .ai对话框-关 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: transparent;
+      color: var(--色-灰深);
+      transition: background 0.18s var(--过渡), color 0.18s var(--过渡);
+    }
+    .ai对话框-关:hover { background: var(--色-高亮淡); color: var(--色-墨); }
+    .ai对话框-关 svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; fill: none; }
+
+    /* 消息滚动区 */
+    .ai消息区 {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ai消息 { display: flex; max-width: 85%; }
+    .ai消息-用户 { align-self: flex-end; }
+    .ai消息-助手 { align-self: flex-start; }
+    .ai气泡 {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .ai消息-用户 .ai气泡 {
+      background: var(--色-蓝);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .ai消息-助手 .ai气泡 {
+      background: var(--色-蓝软淡);
+      color: var(--色-墨);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* 「正在思考」状态 + 打字动画 */
+    .ai状态 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px 8px;
+      color: var(--色-灰深);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .ai打字 { display: inline-flex; gap: 3px; }
+    .ai打字 i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--色-灰中);
+      animation: ai跳动 1.2s infinite ease-in-out;
+    }
+    .ai打字 i:nth-child(2) { animation-delay: 0.15s; }
+    .ai打字 i:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes ai跳动 {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* 错误条 */
+    .ai错误 {
+      margin: 0 16px 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: var(--色-蓝软);
+      color: var(--色-墨次);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    /* 输入区 */
+    .ai输入区 {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--色-灰浅);
+      flex-shrink: 0;
+    }
+    .ai输入框 {
+      flex: 1;
+      resize: none;
+      max-height: 96px;
+      padding: 9px 12px;
+      border: 1px solid var(--色-灰浅);
+      border-radius: 12px;
+      background: var(--色-纸);
+      color: var(--色-墨);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.4;
+      transition: border-color 0.18s var(--过渡);
+    }
+    .ai输入框:focus { outline: none; border-color: var(--色-蓝边强); }
+    .ai发送 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: var(--色-蓝);
+      color: #fff;
+      transition: background 0.18s var(--过渡), transform 0.18s var(--过渡), opacity 0.18s var(--过渡);
+    }
+    .ai发送:hover { background: var(--色-蓝深); }
+    .ai发送:active { transform: scale(0.94); }
+    .ai发送:disabled { opacity: 0.45; cursor: not-allowed; }
+    .ai发送 svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+    /* 屏幕阅读器专用（视觉隐藏） */
+    .ai视觉隐藏 {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* 移动端：入口缩小，弹窗转底部抽屉 */
+    @media (max-width: 600px) {
+      .ai浮标 { right: 16px; bottom: 16px; height: 44px; padding: 0 16px 0 14px; }
+      .ai浮标 .图标 { width: 18px; height: 18px; }
+      .ai浮标-文字 { font-size: 13px; }
+      .ai对话框-面板 {
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 85dvh;
+        max-height: 85dvh;
+        border-radius: 16px 16px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ai浮标,
+      .ai对话框,
+      .ai对话框-面板 { transition: none; }
+      .ai对话框-面板 { transform: none; }
+      .ai打字 i { animation: none; }
+    }
   </style>
 
   <script data-goatcounter="https://huangziying.goatcounter.com/count"
@@ -1585,6 +1838,17 @@
       "about.expandAll": "全部展开",
       "about.collapseAll": "全部收起",
       "print.fallback": "当前浏览器未弹出打印对话框，请打开浏览器右上角菜单 → 选择「打印」或「分享 → 打印」。",
+      "ai.launcher": "问问 AI",
+      "ai.open": "打开 AI 助手",
+      "ai.title": "问问关于黄梓颖",
+      "ai.close": "关闭",
+      "ai.welcome": "你好，我是黄梓颖。可以问我关于我的经历、教育、论文、项目或创业的事。",
+      "ai.placeholder": "问点关于我的事…",
+      "ai.inputLabel": "你的问题",
+      "ai.send": "发送",
+      "ai.thinking": "正在思考…",
+      "ai.error": "出了点问题，请稍后再试。",
+      "ai.errorNetwork": "网络连接失败，请检查后重试。",
     },
     en: {
       "nav.about": "About",
@@ -1626,6 +1890,17 @@
       "about.expandAll": "Expand all",
       "about.collapseAll": "Collapse all",
       "print.fallback": "Your browser didn't open the print dialog. Please use the browser menu → Print (or Share → Print).",
+      "ai.launcher": "Ask AI",
+      "ai.open": "Open AI assistant",
+      "ai.title": "Ask about Ziying",
+      "ai.close": "Close",
+      "ai.welcome": "Hi, I'm Ziying. Ask me about my experience, education, papers, projects, or founding journey.",
+      "ai.placeholder": "Ask something about me…",
+      "ai.inputLabel": "Your question",
+      "ai.send": "Send",
+      "ai.thinking": "Thinking…",
+      "ai.error": "Something went wrong. Please try again.",
+      "ai.errorNetwork": "Network error. Please check your connection and retry.",
     },
   };
 
@@ -1957,6 +2232,9 @@
       b.classList.toggle("激活", b.getAttribute("data-语言") === 当前语言);
       b.setAttribute("aria-pressed", b.getAttribute("data-语言") === 当前语言 ? "true" : "false");
     });
+
+    /* AI 组件静态文字跟随语言切换（textContent 类已被上面的 data-i18n 自动处理） */
+    if (window.刷新AI文案) window.刷新AI文案();
   }
 
   function 转义HTML(s) {
@@ -2151,7 +2429,279 @@
   /* 首次渲染 */
   渲染主页();
 
-  /* ===== 打印按钮：手机端 window.print() 常静默失败，给出兜底提示 ===== */
+  /* ===== 问问 AI ===== */
+  (function ai助手() {
+    const 挂载点 = document.getElementById("ai助手挂载点");
+    if (!挂载点) return;
+
+    /* 代理地址：本地开发自动连 wrangler dev，线上连已部署的 Worker。
+       【部署后必改】把下面的「线上代理地址」换成你的 xxx.workers.dev */
+    const 本地代理地址 = "http://localhost:8787";
+    const 线上代理地址 = "https://ziying-ai-proxy.huangziying622.workers.dev";
+    const 是本地 = ["localhost", "127.0.0.1"].includes(location.hostname);
+    const AI代理地址 = 是本地 ? 本地代理地址 : 线上代理地址;
+
+    const 状态 = { 消息: [], 发送中: false, 触发元素: null, 控制器: null };
+
+    /* 注入 DOM */
+    挂载点.innerHTML = `
+      <button id="ai浮标" class="ai浮标" type="button"
+              aria-haspopup="dialog" aria-controls="ai对话框" aria-expanded="false"
+              data-i18n-aria="ai.open">
+        <svg class="图标" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.7 8.7 0 0 1-3.8-.9L3 21l1.9-5.7a8.7 8.7 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"></path>
+        </svg>
+        <span class="ai浮标-文字" data-i18n="ai.launcher">问问 AI</span>
+      </button>
+
+      <div id="ai对话框" class="ai对话框" role="dialog" aria-modal="true" aria-labelledby="ai对话框-标题" hidden>
+        <div class="ai对话框-面板">
+          <header class="ai对话框-头">
+            <h2 id="ai对话框-标题" class="ai对话框-标题" data-i18n="ai.title">问问关于黄梓颖</h2>
+            <button id="ai对话框-关" class="ai对话框-关" type="button" data-i18n-aria="ai.close" aria-label="关闭">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+              </svg>
+            </button>
+          </header>
+
+          <div id="ai消息区" class="ai消息区" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"></div>
+
+          <div id="ai状态" class="ai状态" hidden>
+            <span class="ai打字" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="ai状态-文字" data-i18n="ai.thinking">正在思考…</span>
+          </div>
+          <div id="ai错误" class="ai错误" role="alert" hidden></div>
+          <div id="ai朗读" class="ai视觉隐藏" aria-live="polite"></div>
+
+          <form id="ai输入区" class="ai输入区">
+            <label for="ai输入框" class="ai视觉隐藏" data-i18n="ai.inputLabel">你的问题</label>
+            <textarea id="ai输入框" class="ai输入框" rows="1" enterkeyhint="send"
+                      data-i18n-ph="ai.placeholder" placeholder="问点关于我的事…"></textarea>
+            <button id="ai发送" class="ai发送" type="submit" data-i18n-aria="ai.send" aria-label="发送">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+
+    const 浮标 = document.getElementById("ai浮标");
+    const 对话框 = document.getElementById("ai对话框");
+    const 消息区 = document.getElementById("ai消息区");
+    const 状态条 = document.getElementById("ai状态");
+    const 错误条 = document.getElementById("ai错误");
+    const 朗读区 = document.getElementById("ai朗读");
+    const 输入框 = document.getElementById("ai输入框");
+    const 发送钮 = document.getElementById("ai发送");
+    const 表单 = document.getElementById("ai输入区");
+    const 关闭钮 = document.getElementById("ai对话框-关");
+    let 欢迎已显示 = false;
+
+    /* 让 data-i18n-aria / data-i18n-ph 跟随语言（textContent 由 渲染主页 处理） */
+    window.刷新AI文案 = function () {
+      const t = 文案[当前语言];
+      挂载点.querySelectorAll("[data-i18n-aria]").forEach(节 => {
+        const k = 节.getAttribute("data-i18n-aria");
+        if (t[k]) 节.setAttribute("aria-label", t[k]);
+      });
+      挂载点.querySelectorAll("[data-i18n-ph]").forEach(节 => {
+        const k = 节.getAttribute("data-i18n-ph");
+        if (t[k]) 节.setAttribute("placeholder", t[k]);
+      });
+      /* 欢迎语还没被用户对话覆盖时，跟随语言更新 */
+      if (!状态.消息.length) {
+        const 首 = 消息区.querySelector(".ai消息-助手 .ai气泡");
+        if (首) 首.textContent = t["ai.welcome"];
+      }
+    };
+
+    function 加气泡(角色, 文本) {
+      const 行 = document.createElement("div");
+      行.className = "ai消息 " + (角色 === "user" ? "ai消息-用户" : "ai消息-助手");
+      const 泡 = document.createElement("div");
+      泡.className = "ai气泡";
+      泡.textContent = 文本;          // textContent 防 XSS
+      行.appendChild(泡);
+      消息区.appendChild(行);
+      消息区.scrollTop = 消息区.scrollHeight;
+      return 泡;
+    }
+
+    function 显示欢迎() {
+      if (欢迎已显示) return;
+      加气泡("assistant", 文案[当前语言]["ai.welcome"]);
+      欢迎已显示 = true;
+    }
+
+    function 打开() {
+      状态.触发元素 = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      显示欢迎();
+      Array.from(document.body.children).forEach(节 => {
+        if (节 !== 对话框 && 节 !== 挂载点) 节.setAttribute("inert", "");
+      });
+      /* 挂载点里还有浮标按钮，单独 inert 浮标即可让焦点困在对话框 */
+      浮标.setAttribute("inert", "");
+      对话框.hidden = false;
+      void 对话框.offsetWidth;
+      对话框.classList.add("开");
+      浮标.classList.add("已隐藏");
+      浮标.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+      requestAnimationFrame(() => 输入框.focus());
+    }
+
+    function 关闭() {
+      对话框.classList.remove("开");
+      setTimeout(() => { 对话框.hidden = true; }, 200);
+      浮标.classList.remove("已隐藏");
+      浮标.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+      Array.from(document.body.children).forEach(节 => {
+        if (节 !== 对话框 && 节 !== 挂载点) 节.removeAttribute("inert");
+      });
+      浮标.removeAttribute("inert");
+      if (状态.触发元素 && document.contains(状态.触发元素)) 状态.触发元素.focus();
+      else 浮标.focus();
+      状态.触发元素 = null;
+    }
+
+    function 显示错误(文本) {
+      错误条.textContent = 文本;
+      错误条.hidden = false;
+    }
+    function 清错误() { 错误条.hidden = true; 错误条.textContent = ""; }
+
+    function 设发送中(值) {
+      状态.发送中 = 值;
+      状态条.hidden = !值;
+      发送钮.disabled = 值;
+      输入框.disabled = 值;
+      if (值) 消息区.scrollTop = 消息区.scrollHeight;
+    }
+
+    /* 解析 SSE 流，逐字上屏 */
+    async function 流式接收(响应, 上屏) {
+      const reader = 响应.body.getReader();
+      const 解码 = new TextDecoder();
+      let 余 = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        余 += 解码.decode(value, { stream: true });
+        const 行组 = 余.split("\n");
+        余 = 行组.pop();
+        for (const 行 of 行组) {
+          const 净 = 行.trim();
+          if (!净.startsWith("data:")) continue;
+          const 负载 = 净.slice(5).trim();
+          if (负载 === "[DONE]") return;
+          try {
+            const 片 = JSON.parse(负载);
+            const 增量 = 片.choices && 片.choices[0] && 片.choices[0].delta && 片.choices[0].delta.content;
+            if (增量) 上屏(增量);
+          } catch (e) { /* 跳过心跳/非 JSON 行 */ }
+        }
+      }
+    }
+
+    async function 发送(问题) {
+      清错误();
+      const t = 文案[当前语言];
+      状态.消息.push({ role: "user", content: 问题 });
+      加气泡("user", 问题);
+      设发送中(true);
+
+      const 控制器 = new AbortController();
+      状态.控制器 = 控制器;
+      const 超时 = setTimeout(() => 控制器.abort(), 30000);
+
+      let 泡 = null;
+      let 全文 = "";
+      try {
+        const 响应 = await fetch(AI代理地址, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: 状态.消息, 语言: 当前语言 }),
+          signal: 控制器.signal,
+        });
+        if (!响应.ok) throw new Error("HTTP " + 响应.status);
+
+        const 类型 = 响应.headers.get("Content-Type") || "";
+        const 上屏 = (增量) => {
+          if (!泡) { 设发送中(false); 泡 = 加气泡("assistant", ""); }
+          全文 += 增量;
+          泡.textContent = 全文;
+          消息区.scrollTop = 消息区.scrollHeight;
+        };
+
+        if (类型.includes("text/event-stream")) {
+          await 流式接收(响应, 上屏);
+        } else {
+          const 数据 = await 响应.json();
+          const 回答 = (数据.choices && 数据.choices[0] && 数据.choices[0].message && 数据.choices[0].message.content)
+            || 数据.回答 || "";
+          if (数据.错误) throw new Error(数据.错误);
+          上屏(回答);
+        }
+
+        if (!泡) { 设发送中(false); 泡 = 加气泡("assistant", 全文); }
+        if (全文) {
+          状态.消息.push({ role: "assistant", content: 全文 });
+          朗读区.textContent = 全文;   // 流式结束后一次性朗读，避免逐字打断
+        }
+      } catch (e) {
+        设发送中(false);
+        if (泡 && !全文) 泡.closest(".ai消息").remove();
+        const 网络类 = e.name === "AbortError" || e instanceof TypeError;
+        显示错误(网络类 ? t["ai.errorNetwork"] : t["ai.error"]);
+      } finally {
+        clearTimeout(超时);
+        状态.控制器 = null;
+        if (状态.发送中) 设发送中(false);
+        输入框.focus();
+      }
+    }
+
+    /* 自适应高度 */
+    function 调高() {
+      输入框.style.height = "auto";
+      输入框.style.height = Math.min(输入框.scrollHeight, 96) + "px";
+    }
+
+    /* 事件绑定 */
+    浮标.addEventListener("click", 打开);
+    关闭钮.addEventListener("click", 关闭);
+    对话框.addEventListener("click", e => { if (e.target === 对话框) 关闭(); });
+    document.addEventListener("keydown", e => {
+      if (对话框.hidden) return;
+      if (e.key === "Escape" && !e.isComposing) 关闭();
+    });
+    输入框.addEventListener("input", 调高);
+    输入框.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        表单.requestSubmit();
+      }
+    });
+    表单.addEventListener("submit", e => {
+      e.preventDefault();
+      if (状态.发送中) return;
+      const 问题 = 输入框.value.trim();
+      if (!问题) return;
+      输入框.value = "";
+      调高();
+      发送(问题);
+    });
+
+    刷新AI文案();
+  })();
+
+
   (function 打印按钮() {
     const 按钮 = document.getElementById("打印按钮");
     if (!按钮) return;
