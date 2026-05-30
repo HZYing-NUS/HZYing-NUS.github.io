@@ -19,7 +19,7 @@ const 允许来源 = [
 ];
 
 const DEEPSEEK接口 = "https://api.deepseek.com/v1/chat/completions";
-const 模型 = "deepseek-v4-flash";   // 便宜快；旧名 deepseek-chat 2026/7/24 退役
+const 模型 = "deepseek-v4-pro";     // 更强；比 flash 贵、稍慢
 
 // 限流：单 IP 在「窗口」毫秒内最多「上限」次请求，超了返回 429。
 // 注：Worker 实例内存不全局共享，纯内存限流只挡突发；要更稳见 部署说明.md 的 KV 方案。
