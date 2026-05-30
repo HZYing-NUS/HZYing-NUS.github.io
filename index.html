@@ -1435,6 +1435,30 @@
       flex-shrink: 0;
     }
 
+    /* 预设问题气泡（点击直接发送，发出首条消息后整体隐藏） */
+    .ai预设 {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 16px 12px;
+      flex-shrink: 0;
+    }
+    .ai预设[hidden] { display: none; }
+    .ai预设-钮 {
+      padding: 7px 13px;
+      border: 1px solid var(--色-蓝边强);
+      border-radius: 999px;
+      cursor: pointer;
+      background: var(--色-蓝软淡);
+      color: var(--色-蓝深);
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.3;
+      transition: background 0.18s var(--过渡), transform 0.18s var(--过渡);
+    }
+    .ai预设-钮:hover { background: var(--色-蓝软); }
+    .ai预设-钮:active { transform: scale(0.96); }
+
     /* 输入区 */
     .ai输入区 {
       display: flex;
@@ -1851,6 +1875,7 @@
       "ai.thinking": "正在思考…",
       "ai.error": "出了点问题，请稍后再试。",
       "ai.errorNetwork": "网络连接失败，请检查后重试。",
+      "ai.presets": ["你是谁？", "你有哪些经历？", "怎么联系到你？"],
     },
     en: {
       "nav.about": "About",
@@ -1903,6 +1928,7 @@
       "ai.thinking": "Thinking…",
       "ai.error": "Something went wrong. Please try again.",
       "ai.errorNetwork": "Network error. Please check your connection and retry.",
+      "ai.presets": ["Who are you?", "What have you done?", "How can I reach you?"],
     },
   };
 
@@ -2470,6 +2496,8 @@
 
           <div id="ai消息区" class="ai消息区" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"></div>
 
+          <div id="ai预设" class="ai预设" hidden></div>
+
           <div id="ai状态" class="ai状态" hidden>
             <span class="ai打字" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="ai状态-文字" data-i18n="ai.thinking">正在思考…</span>
@@ -2502,6 +2530,7 @@
     const 发送钮 = document.getElementById("ai发送");
     const 表单 = document.getElementById("ai输入区");
     const 关闭钮 = document.getElementById("ai对话框-关");
+    const 预设区 = document.getElementById("ai预设");
     let 欢迎已显示 = false;
 
     /* 让 data-i18n-aria / data-i18n-ph 跟随语言（textContent 由 渲染主页 处理） */
@@ -2519,8 +2548,29 @@
       if (!状态.消息.length) {
         const 首 = 消息区.querySelector(".ai消息-助手 .ai气泡");
         if (首) 首.textContent = t["ai.welcome"];
+        渲染预设();
       }
     };
+
+    /* 预设问题：仅在还没发过消息时显示，点击直接发送 */
+    function 渲染预设() {
+      if (状态.消息.length) { 预设区.hidden = true; return; }
+      const 列表 = 文案[当前语言]["ai.presets"] || [];
+      预设区.textContent = "";
+      列表.forEach(问题 => {
+        const 钮 = document.createElement("button");
+        钮.type = "button";
+        钮.className = "ai预设-钮";
+        钮.textContent = 问题;
+        钮.addEventListener("click", () => {
+          if (状态.发送中) return;
+          预设区.hidden = true;
+          发送(问题);
+        });
+        预设区.appendChild(钮);
+      });
+      预设区.hidden = 列表.length === 0;
+    }
 
     function 加气泡(角色, 文本) {
       const 行 = document.createElement("div");
@@ -2537,6 +2587,7 @@
     function 显示欢迎() {
       if (欢迎已显示) return;
       加气泡("assistant", 文案[当前语言]["ai.welcome"]);
+      渲染预设();
       欢迎已显示 = true;
     }
 
@@ -2613,6 +2664,7 @@
 
     async function 发送(问题) {
       清错误();
+      预设区.hidden = true;
       const t = 文案[当前语言];
       状态.消息.push({ role: "user", content: 问题 });
       加气泡("user", 问题);
