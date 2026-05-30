@@ -1399,6 +1399,7 @@
     }
 
     /* 「正在思考」状态 + 打字动画 */
+    .ai状态[hidden], .ai错误[hidden] { display: none; }
     .ai状态 {
       display: flex;
       align-items: center;
@@ -1720,9 +1721,10 @@
     </div>
   </section>
 
-  <div id="ai助手挂载点"></div>
-
 </main>
+
+<!-- AI 助手挂载点：必须是 body 直接子元素，否则打开时背景锁定会误锁整个 main（含对话框自身） -->
+<div id="ai助手挂载点"></div>
 
 <!-- 灯箱：用于放大查看证明图片 -->
 <div id="灯箱" role="dialog" aria-modal="true" aria-labelledby="灯箱-标题" hidden>
