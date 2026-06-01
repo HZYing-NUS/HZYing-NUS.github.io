@@ -27,8 +27,8 @@ window.内容 = {
     en: "Ziying Huang",
   },
   一句话标签: {
-    zh: "AI 开发者 · 出海创业者 · 杭州",
-    en: "AI Developer · Going-Global Founder · Hangzhou",
+    zh: "出海产品创造者 · 用系统思维做产品 · 杭州/南京",
+    en: "Going-Global Product Creator · Building Products with Systems Thinking · Hangzhou/Nanjing",
   },
 
   // 自我介绍：反引号支持多行；段落之间空一行就会自然分段

@@ -33,7 +33,7 @@ const 历史最大轮数 = 12;             // 只保留最近 N 条消息，控�
 const 个人资料 = `
 【基本信息】
 姓名：黄梓颖（英文名 Ziying Huang）
-定位：AI 开发者 · 出海创业者 · 现居杭州
+定位：出海产品创造者 · 用系统思维做产品 · 杭州/南京
 联系方式：邮箱 huangziying622@gmail.com；GitHub https://github.com/HZYing-NUS；微信 TheodoreGniy；公众号「模方 / Mold Square」
 
 【自我介绍】
