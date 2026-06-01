@@ -12,6 +12,22 @@
 
 window.博客索引 = [
   {
+    文件名: "2026-ai-聊天机器人到智能体",
+    语言: "zh",
+    标题: "为什么同样是 AI，有的只会聊天，有的能替你干活？",
+    日期: "2026-05-31",
+    摘要: "用日历、会议纪要和邮件的例子，讲清聊天机器人、工作流和 Agent 的区别：关键不在工具多少，而是谁决定下一步。",
+    外链: "",
+  },
+  {
+    文件名: "2026-ai-chatbot-to-agent",
+    语言: "en",
+    标题: "Why Can Some AI Only Chat, While Others Can Actually Do Work for You?",
+    日期: "2026-05-31",
+    摘要: "Using calendars, meeting notes, and email as examples, this piece explains the difference between chatbots, workflows, and Agents: the key is not how many tools exist, but who decides the next step.",
+    外链: "",
+  },
+  {
     文件名: "2026-claude-code-三层秩序",
     语言: "zh",
     标题: "Claude Code 三层秩序：.claude、CLAUDE.md 与 skills",
