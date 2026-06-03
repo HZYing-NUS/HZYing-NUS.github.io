@@ -12,6 +12,22 @@
 
 window.博客索引 = [
   {
+    文件名: "2026-ai-奇怪小念头产品机会",
+    语言: "zh",
+    标题: "AI 时代，最值钱的不是大想法，是这些奇怪小念头",
+    日期: "2026-06-03",
+    摘要: "AI 降低了小产品的试错成本，让电子供奉台、内耗翻译器、互动小说这类奇怪小念头，有机会从玩笑长成产品。",
+    外链: "",
+  },
+  {
+    文件名: "2026-ai-small-weird-ideas-product-opportunities",
+    语言: "en",
+    标题: "In the AI Era, the Most Valuable Things Are Not Big Ideas, but Weird Little Thoughts",
+    日期: "2026-06-03",
+    摘要: "AI lowers the cost of testing small products, giving strange little ideas like digital rituals, overthinking translators, and interactive stories a chance to become real products.",
+    外链: "",
+  },
+  {
     文件名: "2026-ai-编程效率三件套",
     语言: "zh",
     标题: "一个做产品的人，我给 Claude Code 配了专家团、项目经理和纪律委员",
