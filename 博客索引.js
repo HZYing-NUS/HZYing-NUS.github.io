@@ -12,6 +12,22 @@
 
 window.博客索引 = [
   {
+    文件名: "2026-ai-编程效率三件套",
+    语言: "zh",
+    标题: "一个做产品的人，我给 Claude Code 配了专家团、项目经理和纪律委员",
+    日期: "2026-06-02",
+    摘要: "AI 是乘数，不是加数。gstack、GSD 和 Superpowers 组成专家团、项目经理和纪律委员，让 AI 编程从兴奋感走向秩序感。",
+    外链: "",
+  },
+  {
+    文件名: "2026-ai-programming-productivity-stack",
+    语言: "en",
+    标题: "As a Product Builder, I Gave Claude Code an Expert Panel, a Project Manager, and a Discipline Officer",
+    日期: "2026-06-02",
+    摘要: "AI is a multiplier, not an addend. gstack, GSD, and Superpowers work as an expert team, a project manager, and a discipline officer for AI programming.",
+    外链: "",
+  },
+  {
     文件名: "2026-ai-聊天机器人到智能体",
     语言: "zh",
     标题: "为什么同样是 AI，有的只会聊天，有的能替你干活？",
