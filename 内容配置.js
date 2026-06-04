@@ -30,6 +30,10 @@ window.内容 = {
     zh: "出海产品创造者 · 用系统思维做产品 · 杭州/南京",
     en: "Going-Global Product Creator · Building Products with Systems Thinking · Hangzhou/Nanjing",
   },
+  身份说明: {
+    zh: "我是黄梓颖，一个用 AI 编程做海外 Web 产品的系统科学创业者。",
+    en: "I’m Ziying Huang, a systems science founder building global web products with AI-assisted coding.",
+  },
 
   // 自我介绍：反引号支持多行；段落之间空一行就会自然分段
   自我介绍: {

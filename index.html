@@ -355,6 +355,16 @@
       margin: 0 0 3rem;
       letter-spacing: -0.01em;
     }
+    #身份说明 {
+      max-width: 620px;
+      margin: -2.2rem auto 3rem;
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 400;
+      line-height: 1.75;
+      color: var(--色-墨次);
+      letter-spacing: 0.01em;
+      text-wrap: pretty;
+    }
     #向下指示 {
       display: inline-flex;
       align-items: center;
@@ -1211,6 +1221,7 @@
       #头像 { width: 76px; height: 76px; margin: 0 0 0.5rem; box-shadow: none; }
       #名字 { font-size: 22pt; margin-bottom: 4px; }
       #一句话标签 { font-size: 11pt; margin-bottom: 0; }
+      #身份说明 { font-size: 10pt; margin: 4px auto 0; max-width: none; color: #000; }
 
       #自我介绍 p { font-size: 11pt; color: #000; margin-bottom: 0.5rem; font-family: inherit; }
 
@@ -1592,6 +1603,7 @@
       <img id="头像" alt="头像" src="">
       <h1 id="名字"></h1>
       <p id="一句话标签"></p>
+      <p id="身份说明"></p>
       <button id="向下指示" type="button" data-跳转="#自我介绍-区" aria-label="向下">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
@@ -2013,9 +2025,10 @@
       头像节点.style.display = "none";
     }
 
-    /* 名字 + 一句话标签 */
+    /* 名字 + 一句话标签 + 身份说明 */
     document.getElementById("名字").textContent = 名字文本;
     document.getElementById("一句话标签").textContent = 取本地化(内容.一句话标签, 当前语言);
+    document.getElementById("身份说明").textContent = 取本地化(内容.身份说明, 当前语言);
 
     /* 自我介绍：emoji 开头的段落识别为章节标题，每节内容默认折叠（首节展开） */
     const 自介容器 = document.getElementById("自我介绍");
