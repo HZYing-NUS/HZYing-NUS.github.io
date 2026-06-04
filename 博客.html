@@ -11,13 +11,15 @@
   <script>
     /* 主题初始化：必须先于样式生效，避免页面切换时闪白 */
     (function () {
-      try {
-        var 存 = localStorage.getItem("站点主题");
-        var 系统 = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        var 主题 = 存 === "light" || 存 === "dark" ? 存 : (系统 ? "dark" : "light");
-        document.documentElement.setAttribute("data-主题", 主题);
-      } catch (e) {
-        document.documentElement.setAttribute("data-主题", "light");
+      var 查询 = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+      function 应用系统主题() {
+        document.documentElement.setAttribute("data-主题", 查询 && 查询.matches ? "dark" : "light");
+      }
+      应用系统主题();
+      try { localStorage.removeItem("站点主题"); } catch (e) {}
+      if (查询) {
+        if (查询.addEventListener) 查询.addEventListener("change", 应用系统主题);
+        else if (查询.addListener) 查询.addListener(应用系统主题);
       }
     })();
   </script>
