@@ -12,6 +12,22 @@
 
 window.博客索引 = [
   {
+    文件名: "2026-openai-不会倒闭但神话已死",
+    语言: "zh",
+    标题: "OpenAI 今年不会倒闭，但神话已经死了",
+    日期: "2026-06-04",
+    摘要: "OpenAI 年内倒闭的判断太激进。真正要看的不是亏损和高管八卦，而是用户、企业、开发者、资本和默认入口是否同时断裂。",
+    外链: "",
+  },
+  {
+    文件名: "2026-openai-wont-collapse-but-the-myth-is-dead",
+    语言: "en",
+    标题: "OpenAI Will Not Collapse This Year, but the Myth Is Dead",
+    日期: "2026-06-04",
+    摘要: "The claim that OpenAI will collapse this year is too aggressive. The real question is whether users, enterprises, developers, capital, and the default entry point are all breaking at once.",
+    外链: "",
+  },
+  {
     文件名: "2026-ai-奇怪小念头产品机会",
     语言: "zh",
     标题: "AI 时代，最值钱的不是大想法，是这些奇怪小念头",
