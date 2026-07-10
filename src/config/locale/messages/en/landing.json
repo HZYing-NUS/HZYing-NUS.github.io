@@ -1,0 +1,166 @@
+{
+  "header": {
+    "id": "header",
+    "brand": {
+      "title": "Ziying AI SaaS Resources",
+      "logo": {
+        "src": "/logo.png",
+        "alt": "Ziying AI SaaS Resources",
+        "width": 100,
+        "height": 100
+      },
+      "url": "/"
+    },
+    "nav": {
+      "items": [
+        {
+          "title": "Resources",
+          "url": "/resources",
+          "icon": "Box"
+        },
+        {
+          "title": "Collections",
+          "url": "/collections",
+          "icon": "Layers"
+        },
+        {
+          "title": "Articles",
+          "url": "/blog",
+          "icon": "Newspaper"
+        },
+        {
+          "title": "Submit",
+          "url": "/submit",
+          "icon": "Send"
+        },
+        {
+          "title": "About",
+          "url": "/about",
+          "icon": "User"
+        },
+        {
+          "title": "AI Assistant",
+          "url": "/chat",
+          "icon": "RiMessage2Line"
+        }
+      ]
+    },
+    "buttons": [],
+    "user_nav": {
+      "show_name": true,
+      "show_credits": false,
+      "show_sign_out": true,
+      "items": [
+        {
+          "title": "Profile",
+          "url": "/settings/profile",
+          "icon": "User"
+        },
+        {
+          "title": "Submit",
+          "url": "/submit",
+          "icon": "Send"
+        },
+        {
+          "title": "Activity",
+          "url": "/activity",
+          "icon": "Activity"
+        }
+      ]
+    },
+    "show_sign": true,
+    "show_theme": true,
+    "show_locale": true,
+    "topbanner": {
+      "text": "The AI Web SaaS resource platform is being migrated from the legacy personal site."
+    }
+  },
+  "footer": {
+    "id": "footer",
+    "brand": {
+      "title": "Ziying AI SaaS Resources",
+      "description": "A one-stop resource platform for AI Web SaaS founders, covering building, design, development, models, deployment, SEO, and growth.",
+      "logo": {
+        "src": "/logo.png",
+        "alt": "Ziying AI SaaS Resources",
+        "width": 1024,
+        "height": 1024
+      },
+      "url": "/"
+    },
+    "nav": {
+      "items": [
+        {
+          "title": "Platform",
+          "children": [
+            {
+              "title": "Resources",
+              "url": "/resources",
+              "target": "_self"
+            },
+            {
+              "title": "Collections",
+              "url": "/collections",
+              "target": "_self"
+            },
+            {
+              "title": "Articles",
+              "url": "/blog",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "Participate",
+          "children": [
+            {
+              "title": "Submit",
+              "url": "/submit",
+              "target": "_self"
+            },
+            {
+              "title": "AI Assistant",
+              "url": "/chat",
+              "target": "_self"
+            },
+            {
+              "title": "About Ziying",
+              "url": "/about",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    },
+    "social": {
+      "items": [
+        {
+          "title": "Github",
+          "icon": "Github",
+          "url": "https://github.com/HZYing-NUS",
+          "target": "_blank"
+        },
+        {
+          "title": "Email",
+          "icon": "Mail",
+          "url": "mailto:me@huangziying.com",
+          "target": "_self"
+        }
+      ]
+    },
+    "agreement": {
+      "items": [
+        {
+          "title": "Privacy Policy",
+          "url": "/privacy-policy"
+        },
+        {
+          "title": "Terms of Service",
+          "url": "/terms-of-service"
+        }
+      ]
+    },
+    "show_theme": true,
+    "show_locale": true
+  }
+}

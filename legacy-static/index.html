@@ -1,0 +1,3056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>黄梓颖</title>
+  <meta name="description" content="黄梓颖的个人主页 —— 介绍、作品、经历、博客、联系方式">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230071e3'/><text x='50' y='72' font-size='66' font-weight='600' fill='%23fff' text-anchor='middle' font-family='-apple-system,PingFang SC,Microsoft YaHei,sans-serif'>梓</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230071e3'/><text x='50' y='72' font-size='66' font-weight='600' fill='%23fff' text-anchor='middle' font-family='-apple-system,PingFang SC,Microsoft YaHei,sans-serif'>梓</text></svg>">
+
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="黄梓颖 · Ziying Huang">
+  <meta property="og:description" content="出海产品创造者 · 用系统思维做产品 · 杭州/南京。介绍、作品、经历、博客、联系方式。">
+  <meta property="og:image" content="图片/头像.jpeg">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="黄梓颖 · Ziying Huang">
+  <meta name="twitter:description" content="出海产品创造者 · 用系统思维做产品 · 杭州/南京。">
+  <meta name="twitter:image" content="图片/头像.jpeg">
+  <script>
+    /* 主题初始化：必须先于样式生效，避免页面切换时闪白 */
+    (function () {
+      var 查询 = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+      function 应用系统主题() {
+        document.documentElement.setAttribute("data-主题", 查询 && 查询.matches ? "dark" : "light");
+      }
+      应用系统主题();
+      try { localStorage.removeItem("站点主题"); } catch (e) {}
+      if (查询) {
+        if (查询.addEventListener) 查询.addEventListener("change", 应用系统主题);
+        else if (查询.addListener) 查询.addListener(应用系统主题);
+      }
+    })();
+  </script>
+  <style>
+    /* ==========================================================
+       极简 · 一屏一屏 · 苹果官网产品页风
+       纯白底 / 苹果蓝点缀 / 顶部导航锚点跳转 / 中英双语 / 轻量淡入
+       ========================================================== */
+
+    :root {
+      --色-墨:        #1d1d1f;
+      --色-墨次:      #424245;
+      --色-灰深:      #6e6e73;
+      --色-灰中:      #86868b;
+      --色-灰浅:      #d2d2d7;
+      --色-灰极浅:    #f5f5f7;
+      --色-纸:        #ffffff;
+      --色-纸柔:      #fbfbfd;
+      --色-蓝:        #0071e3;
+      --色-蓝深:      #0077ed;
+
+      --色-导航底:    rgba(255, 255, 255, 0.72);
+      --色-导航底色:  rgba(0, 0, 0, 0.08);
+      --色-面卡:      #ffffff;
+      --色-阴影弱:    rgba(0, 0, 0, 0.05);
+      --色-阴影中:    rgba(0, 0, 0, 0.08);
+      --色-阴影蓝:    rgba(0, 119, 227, 0.18);
+      --色-高亮淡:    rgba(0, 0, 0, 0.04);
+      --色-蓝软:      rgba(0, 113, 227, 0.08);
+      --色-蓝标:      rgba(0, 113, 227, 0.1);
+      --色-蓝边:      rgba(0, 113, 227, 0.18);
+      --色-蓝边强:    rgba(0, 113, 227, 0.4);
+      --色-蓝软淡:    rgba(0, 113, 227, 0.06);
+
+      --字体-中文:
+        -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+        "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+
+      --过渡: cubic-bezier(0.28, 0.18, 0.26, 1.01);
+
+      --导航高度: 52px;
+    }
+
+    :root[data-主题="dark"] {
+      --色-墨:        #f5f5f7;
+      --色-墨次:      #c8c8cd;
+      --色-灰深:      #98989d;
+      --色-灰中:      #86868b;
+      --色-灰浅:      #3a3a3c;
+      --色-灰极浅:    #2a2a2c;
+      --色-纸:        #000000;
+      --色-纸柔:      #0e0e10;
+      --色-蓝:        #0a84ff;
+      --色-蓝深:      #409cff;
+
+      --色-导航底:    rgba(0, 0, 0, 0.72);
+      --色-导航底色:  rgba(255, 255, 255, 0.1);
+      --色-面卡:      #1d1d1f;
+      --色-阴影弱:    rgba(0, 0, 0, 0.4);
+      --色-阴影中:    rgba(0, 0, 0, 0.6);
+      --色-阴影蓝:    rgba(10, 132, 255, 0.3);
+      --色-高亮淡:    rgba(255, 255, 255, 0.06);
+      --色-蓝软:      rgba(10, 132, 255, 0.14);
+      --色-蓝标:      rgba(10, 132, 255, 0.18);
+      --色-蓝边:      rgba(10, 132, 255, 0.32);
+      --色-蓝边强:    rgba(10, 132, 255, 0.55);
+      --色-蓝软淡:    rgba(10, 132, 255, 0.1);
+    }
+
+    html { color-scheme: light; }
+    html[data-主题="dark"] { color-scheme: dark; }
+    html, body { transition: background-color 0.3s var(--过渡), color 0.3s var(--过渡); }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--导航高度);
+    }
+
+    body {
+      font-family: var(--字体-中文);
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--色-墨);
+      background: var(--色-纸);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: -0.003em;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+
+    a {
+      color: var(--色-蓝);
+      text-decoration: none;
+      transition: color 0.18s var(--过渡);
+    }
+    a:hover { color: var(--色-蓝深); }
+
+    /* ============== 顶部导航 ============== */
+    #顶部导航 {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: var(--导航高度);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      background: var(--色-导航底);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s var(--过渡), background-color 0.3s var(--过渡);
+      font-size: 13px;
+    }
+    #顶部导航.已滚动 { border-bottom-color: var(--色-导航底色); }
+
+    #导航名字 {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--色-墨);
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+    }
+    #导航名字:hover { color: var(--色-蓝); }
+
+    #导航链接组 {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    #导航链接组 .导航锚点 {
+      color: var(--色-墨次);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 400;
+      transition: all 0.18s var(--过渡);
+    }
+    #导航链接组 .导航锚点:hover {
+      color: var(--色-墨);
+      background: var(--色-高亮淡);
+    }
+    #导航链接组 .导航锚点.活跃 { color: var(--色-蓝); }
+
+    /* 语言切换器 */
+    #语言切换器 {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      background: var(--色-灰极浅);
+      border-radius: 980px;
+      padding: 2px;
+    }
+    #语言切换器 .语言按钮 {
+      font: inherit;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--色-灰深);
+      background: transparent;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 980px;
+      cursor: pointer;
+      transition: all 0.2s var(--过渡);
+      letter-spacing: 0.02em;
+    }
+    #语言切换器 .语言按钮:hover { color: var(--色-墨); }
+    #语言切换器 .语言按钮.激活 {
+      background: var(--色-纸);
+      color: var(--色-墨);
+      box-shadow: 0 1px 2px var(--色-阴影弱);
+    }
+
+    #打印按钮 {
+      font: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--色-纸);
+      background: var(--色-墨);
+      border: none;
+      border-radius: 980px;
+      padding: 7px 14px;
+      margin-left: 8px;
+      cursor: pointer;
+      transition: background 0.18s var(--过渡), opacity 0.18s var(--过渡);
+    }
+    #打印按钮:hover { opacity: 0.85; }
+
+    /* 主题切换按钮（日 / 月） */
+    #主题切换 {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      margin-left: 8px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--色-墨次);
+      cursor: pointer;
+      transition: color 0.18s var(--过渡), background 0.18s var(--过渡), transform 0.4s var(--过渡);
+    }
+    #主题切换:hover {
+      color: var(--色-墨);
+      background: var(--色-高亮淡);
+    }
+    #主题切换 svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    #主题切换 .图标-月 { display: none; }
+    :root[data-主题="dark"] #主题切换 .图标-日 { display: none; }
+    :root[data-主题="dark"] #主题切换 .图标-月 { display: block; }
+
+    /* 移动端：隐藏锚点链接，只留名字 + 语言 + 打印 */
+    @media (max-width: 720px) {
+      #导航链接组 .导航锚点 { display: none; }
+      #打印按钮 { padding: 6px 12px; }
+      #语言切换器 .语言按钮 { padding: 4px 8px; font-size: 11px; }
+    }
+
+    /* ============== 板块（节奏式排版，非强制满屏） ============== */
+    main { width: 100%; }
+
+    .板块 {
+      padding: 7rem 24px 7rem;
+      scroll-margin-top: var(--导航高度);
+    }
+    .板块-内容 {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .板块.柔背景 { background: var(--色-纸柔); }
+
+    /* 板块标识：图标 + 文字标签，作为每个板块的视觉锚点 */
+    .板块标识 {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--色-蓝);
+      margin: 0 0 1.25rem;
+    }
+    .板块标识 .板块标识-图标 {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex-shrink: 0;
+    }
+    .板块大标题 {
+      font-size: clamp(26px, 3.6vw, 36px);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--色-墨);
+      margin: 0 0 3rem;
+    }
+
+    @media (max-width: 600px) {
+      .板块 { padding: 5rem 20px 5rem; }
+    }
+
+    /* ============== Hero（顶部，保持一屏） ============== */
+    #顶部 {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: calc(var(--导航高度) + 4rem) 24px 4rem;
+    }
+    #头像 {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 2.25rem;
+      background: var(--色-灰极浅);
+      box-shadow: 0 1px 2px var(--色-阴影弱);
+    }
+    #名字 {
+      font-size: clamp(44px, 7vw, 72px);
+      font-weight: 600;
+      line-height: 1.04;
+      letter-spacing: -0.028em;
+      color: var(--色-墨);
+      margin: 0 0 0.85rem;
+    }
+    #一句话标签 {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 400;
+      color: var(--色-灰深);
+      margin: 0 0 3rem;
+      letter-spacing: -0.01em;
+    }
+    #身份说明 {
+      max-width: 620px;
+      margin: -2.2rem auto 3rem;
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 400;
+      line-height: 1.75;
+      color: var(--色-墨次);
+      letter-spacing: 0.01em;
+      text-wrap: pretty;
+    }
+    #向下指示 {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: var(--色-灰深);
+      animation: 上下浮 2.2s ease-in-out infinite;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    #向下指示:hover { color: var(--色-蓝); }
+    @keyframes 上下浮 {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #向下指示 { animation: none; }
+    }
+
+    /* ============== 自我介绍 ============== */
+    #自我介绍 p {
+      font-family:
+        "Songti SC", "STSong", "Source Han Serif SC", "Source Han Serif CN",
+        "Noto Serif SC", "Noto Serif CJK SC", SimSun, "宋体",
+        Georgia, "Times New Roman", serif;
+      font-size: clamp(17px, 1.7vw, 19px);
+      font-weight: 400;
+      line-height: 1.95;
+      color: var(--色-墨次);
+      margin: 0 0 1.4rem;
+      letter-spacing: 0.015em;
+      text-wrap: pretty;
+    }
+    #自我介绍 p:last-child { margin-bottom: 0; }
+
+    /* 自我介绍：全部展开 / 收起 控制行 */
+    #自介-控制行 {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 0.5rem;
+    }
+    #自介-切换全部 {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: inherit;
+      font-family: var(--字体-中文);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--色-灰深);
+      background: transparent;
+      border: 1px solid var(--色-灰浅);
+      border-radius: 980px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: all 0.18s var(--过渡);
+    }
+    #自介-切换全部:hover {
+      color: var(--色-蓝);
+      border-color: var(--色-蓝边强);
+      background: var(--色-蓝软淡);
+    }
+    #自介-切换全部 svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      transition: transform 0.3s var(--过渡);
+    }
+    #自介-切换全部.全开 svg { transform: rotate(180deg); }
+
+    /* 自我介绍：章节折叠面板 */
+    #自我介绍 .自介-章节 { border-bottom: 1px solid var(--色-灰浅); }
+    #自我介绍 .自介-章节:last-child { border-bottom: none; }
+    #自我介绍 .自介-章节:first-child { border-top: 1px solid var(--色-灰浅); }
+    #自我介绍 .自介-章节-头 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      width: 100%;
+      padding: 1.35rem 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      color: var(--色-墨);
+      font-family: var(--字体-中文);
+      transition: color 0.18s var(--过渡);
+    }
+    #自我介绍 .自介-章节-头:hover { color: var(--色-蓝); }
+    #自我介绍 .自介-章节-头:focus-visible {
+      outline: 2px solid var(--色-蓝);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+    #自我介绍 .自介-章节-标题 {
+      font-size: clamp(17px, 1.8vw, 19px);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+    }
+    #自我介绍 .自介-章节-箭头 {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      color: var(--色-灰中);
+      transition: transform 0.3s var(--过渡), color 0.18s var(--过渡);
+    }
+    #自我介绍 .自介-章节-头:hover .自介-章节-箭头 { color: var(--色-蓝); }
+    #自我介绍 .自介-章节.展开 .自介-章节-箭头 { transform: rotate(180deg); }
+    #自我介绍 .自介-章节-体 {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.4s var(--过渡);
+    }
+    #自我介绍 .自介-章节.展开 .自介-章节-体 { grid-template-rows: 1fr; }
+    #自我介绍 .自介-章节-内 {
+      overflow: hidden;
+      min-height: 0;
+    }
+    #自我介绍 .自介-章节-内 p:first-child { margin-top: 0; }
+    #自我介绍 .自介-章节-内 p:last-child { margin-bottom: 1.5rem; }
+    @media (prefers-reduced-motion: reduce) {
+      #自我介绍 .自介-章节-体,
+      #自我介绍 .自介-章节-箭头 { transition: none; }
+    }
+
+    /* ============== 条目（作品 / 经历）：hover 时轻度卡片化 ============== */
+    .条目 {
+      padding: 2rem 1.25rem;
+      margin: 0 -1.25rem;
+      border-bottom: 1px solid var(--色-灰浅);
+      border-radius: 12px;
+      transition: background 0.2s var(--过渡);
+    }
+    .条目:hover {
+      background: var(--色-高亮淡);
+    }
+    .条目:first-child { margin-top: -2rem; }
+    .条目:last-child { border-bottom: none; }
+    .条目-头 {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .条目-标题 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--色-墨);
+      margin: 0;
+    }
+    .条目-时间 {
+      color: var(--色-灰深);
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+    .条目-副标题 {
+      color: var(--色-灰深);
+      font-size: 15px;
+      margin: 0 0 0.6rem;
+    }
+    .条目-描述 {
+      color: var(--色-墨次);
+      font-size: 16px;
+      line-height: 1.65;
+      margin: 0;
+    }
+    .条目-外链 {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 0.85rem;
+      font-size: 15px;
+      color: var(--色-蓝);
+      transition: gap 0.18s var(--过渡);
+    }
+    .条目-外链:hover { gap: 8px; color: var(--色-蓝深); }
+    .条目-外链::after {
+      content: "›";
+      font-size: 18px;
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+
+    /* ============== 证明 / 证书按钮 ============== */
+    .条目-动作行 {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.25rem;
+      margin-top: 0.85rem;
+      align-items: center;
+    }
+    .条目-动作行:empty { display: none; }
+    .证明按钮 {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--色-墨次);
+      background: var(--色-灰极浅);
+      border: 1px solid transparent;
+      border-radius: 980px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.18s var(--过渡);
+    }
+    .证明按钮:hover {
+      color: var(--色-蓝);
+      background: var(--色-蓝软);
+      border-color: var(--色-蓝边);
+    }
+    .证明按钮 .证明图标 {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    /* ============== 奖项列表 ============== */
+    .奖项类别 {
+      margin-bottom: 3rem;
+    }
+    .奖项类别:last-child { margin-bottom: 0; }
+    .奖项类别-标题 {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--色-灰深);
+      margin: 0 0 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--色-灰浅);
+    }
+    .奖项条目 {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem 1.5rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--色-灰浅);
+    }
+    .奖项条目:last-child { border-bottom: none; }
+    .奖项-主体 { flex: 1 1 320px; min-width: 0; }
+    .奖项-标题 {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--色-墨);
+      margin: 0 0 0.2rem;
+      letter-spacing: -0.01em;
+    }
+    .奖项-标签 {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--色-蓝);
+      background: var(--色-蓝标);
+      padding: 2px 9px;
+      border-radius: 980px;
+      margin-left: 8px;
+      vertical-align: 2px;
+      white-space: nowrap;
+    }
+    .奖项-等级 {
+      color: var(--色-蓝);
+      font-size: 14px;
+      margin: 0;
+    }
+    .奖项-标题-链接 {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.18s var(--过渡);
+    }
+    .奖项-标题-链接:hover { color: var(--色-蓝); }
+    .奖项-右 {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex-shrink: 0;
+    }
+    .奖项-时间 {
+      color: var(--色-灰深);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+    .奖项-证明 {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font: inherit;
+      font-size: 13px;
+      color: var(--色-墨次);
+      background: transparent;
+      border: 1px solid var(--色-灰浅);
+      border-radius: 980px;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: all 0.18s var(--过渡);
+    }
+    .奖项-证明:hover {
+      color: var(--色-蓝);
+      border-color: var(--色-蓝边强);
+      background: var(--色-蓝软淡);
+    }
+    .奖项-证明 .证明图标 {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    @media (max-width: 600px) {
+      .奖项条目 { flex-direction: column; }
+      .奖项-主体 { flex: 0 0 auto; width: 100%; }
+      .奖项-右 { width: 100%; justify-content: space-between; }
+    }
+
+    /* ============== 灯箱（证明图片放大） ============== */
+    #灯箱 {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.86);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: stretch;
+      opacity: 0;
+      transition: opacity 0.2s var(--过渡);
+    }
+    #灯箱.开 { display: flex; opacity: 1; }
+    #灯箱-头 {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 14px;
+    }
+    #灯箱-标题 {
+      font-weight: 500;
+      max-width: 70%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #灯箱-计数 {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+      font-variant-numeric: tabular-nums;
+      margin-left: 12px;
+    }
+    #灯箱-关 {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s var(--过渡);
+    }
+    #灯箱-关:hover { background: rgba(255, 255, 255, 0.22); }
+    #灯箱-关 svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; }
+
+    #灯箱-体 {
+      flex: 1 1 auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 60px 24px;
+      min-height: 0;
+    }
+    #灯箱-图框 {
+      max-width: 100%;
+      max-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #灯箱-图 {
+      max-width: 100%;
+      max-height: 80vh;
+      max-height: 80dvh;
+      object-fit: contain;
+      border-radius: 6px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      background: #1d1d1f;
+    }
+    #灯箱-占位 {
+      max-width: 420px;
+      padding: 3rem 2rem;
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    #灯箱-占位 .占位-路径 {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.45);
+      word-break: break-all;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .灯箱-翻页 {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s var(--过渡), opacity 0.18s var(--过渡);
+    }
+    .灯箱-翻页:hover { background: rgba(255, 255, 255, 0.26); }
+    .灯箱-翻页[disabled] { opacity: 0.3; cursor: not-allowed; }
+    .灯箱-翻页 svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    #灯箱-上一张 { left: 14px; }
+    #灯箱-下一张 { right: 14px; }
+
+    @media (max-width: 600px) {
+      #灯箱-体 { padding: 0 12px 16px; }
+      .灯箱-翻页 { width: 38px; height: 38px; }
+      #灯箱-上一张 { left: 6px; }
+      #灯箱-下一张 { right: 6px; }
+      #灯箱-图 { max-height: 76vh; max-height: 76dvh; }
+    }
+
+    /* ============== 博客列表：和条目同节奏的 hover 卡片化 ============== */
+    .博客条目 {
+      display: block;
+      padding: 2rem 1.25rem;
+      margin: 0 -1.25rem;
+      border-bottom: 1px solid var(--色-灰浅);
+      border-radius: 12px;
+      color: inherit;
+      transition: background 0.2s var(--过渡);
+    }
+    .博客条目:first-child { margin-top: -2rem; }
+    .博客条目:last-child { border-bottom: none; }
+    .博客条目:hover { background: var(--色-高亮淡); }
+    .博客条目:hover .博客-标题 { color: var(--色-蓝); }
+    .博客-头 {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.45rem;
+    }
+    .博客-标题 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--色-墨);
+      margin: 0;
+      transition: color 0.18s var(--过渡);
+    }
+    .博客-日期 {
+      color: var(--色-灰深);
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+    .博客-摘要 {
+      color: var(--色-墨次);
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .博客-摘要 code {
+      background: var(--色-灰极浅);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      color: var(--色-墨);
+    }
+    .博客-外链标记 {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--色-蓝);
+      margin-left: 0.5rem;
+      vertical-align: middle;
+      letter-spacing: 0.04em;
+    }
+
+    /* ============== 联系方式 ============== */
+    /* 上下分层：邮箱单独一行在上，两个二维码并排在下 */
+    #联系方式 .联系-行 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4rem;
+    }
+    #联系方式 .联系-邮箱 { text-align: center; }
+    #联系方式 .联系-GitHub { text-align: center; }
+    #联系方式 .联系-链接组 {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem 4rem;
+    }
+    #联系方式 .联系-二维码组 {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2.5rem 4rem;
+    }
+    #联系方式 .联系-微信 { text-align: center; }
+    #联系方式 .联系-公众号 { text-align: center; }
+    #联系方式 .联系-标识 {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--色-蓝);
+      margin: 0 0 0.6rem;
+    }
+    #联系方式 .联系-标识 svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    #联系方式 .联系-邮箱-地址 {
+      font-size: 21px;
+      font-weight: 400;
+      letter-spacing: -0.012em;
+      color: var(--色-蓝);
+    }
+    #微信二维码 {
+      max-width: 140px;
+      margin: 0 auto 0.6rem;
+      background: #fff;
+      padding: 6px;
+      border: 1px solid var(--色-灰浅);
+      border-radius: 12px;
+    }
+    #微信号 {
+      color: var(--色-灰深);
+      font-size: 13px;
+    }
+    #公众号二维码 {
+      max-width: 140px;
+      margin: 0 auto 0.6rem;
+      background: #fff;
+      padding: 6px;
+      border: 1px solid var(--色-灰浅);
+      border-radius: 12px;
+    }
+    #公众号名 {
+      color: var(--色-灰深);
+      font-size: 13px;
+    }
+
+    footer {
+      padding: 1.5rem 24px 2rem;
+      text-align: center;
+      color: var(--色-灰中);
+      font-size: 12px;
+      border-top: 1px solid var(--色-灰浅);
+    }
+
+    /* ============== 滚动浮动导航（右侧三个圆按钮） ============== */
+    #滚动浮标 {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s var(--过渡), transform 0.25s var(--过渡);
+    }
+    #滚动浮标.可见 {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #滚动浮标.已隐藏 {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(40px, -50%);
+    }
+
+    /* ============== 浮标按钮（替换硬编码白底为变量） ============== */
+    .浮标按钮 {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: var(--色-面卡);
+      box-shadow:
+        0 1px 2px var(--色-阴影弱),
+        0 6px 16px var(--色-阴影中);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--色-墨次);
+      transition: transform 0.18s var(--过渡), color 0.18s var(--过渡), box-shadow 0.18s var(--过渡), background 0.3s var(--过渡);
+    }
+    .浮标按钮:hover {
+      transform: scale(1.06);
+      color: var(--色-蓝);
+      box-shadow:
+        0 1px 2px var(--色-阴影弱),
+        0 8px 20px var(--色-阴影蓝);
+    }
+    .浮标按钮:active { transform: scale(0.96); }
+
+    /* 进度环 SVG */
+    .浮标按钮 .进度环 {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg); /* 让 0 度从顶部开始 */
+      pointer-events: none;
+    }
+    .浮标按钮 .进度环 .轨 {
+      fill: none;
+      stroke: var(--色-灰浅);
+      stroke-width: 2;
+      opacity: 0.6;
+    }
+    .浮标按钮 .进度环 .进度 {
+      fill: none;
+      stroke: var(--色-蓝);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.15s linear;
+    }
+    .浮标按钮 .图标 {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 中间关闭按钮：更淡的样式 */
+    .浮标按钮.关闭 {
+      width: 40px;
+      height: 40px;
+      background: var(--色-蓝软淡);
+      box-shadow: none;
+      color: var(--色-灰中);
+    }
+    .浮标按钮.关闭:hover {
+      background: var(--色-蓝软);
+      color: var(--色-墨);
+      transform: scale(1.05);
+      box-shadow: none;
+    }
+    .浮标按钮.关闭 .图标 { width: 14px; height: 14px; }
+
+    /* 重新唤起按钮（隐藏时小圆点） */
+    #唤起浮标 {
+      position: fixed;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 90;
+      width: 6px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--色-灰浅);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s var(--过渡), background 0.18s var(--过渡), width 0.18s var(--过渡);
+    }
+    #唤起浮标.可见 {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #唤起浮标:hover {
+      background: var(--色-蓝);
+      width: 8px;
+    }
+
+    /* 移动端：缩小尺寸 + 贴近边缘 */
+    @media (max-width: 600px) {
+      #滚动浮标 { right: 14px; gap: 10px; }
+      .浮标按钮 { width: 42px; height: 42px; }
+      .浮标按钮.关闭 { width: 34px; height: 34px; }
+      .浮标按钮 .图标 { width: 16px; height: 16px; }
+      .浮标按钮.关闭 .图标 { width: 12px; height: 12px; }
+    }
+
+    .淡入 {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s var(--过渡), transform 0.7s var(--过渡);
+    }
+    .淡入.可见 {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .淡入 { opacity: 1; transform: none; transition: none; }
+    }
+
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .板块 { padding: calc(var(--导航高度) + 2.5rem) 20px 2.75rem; }
+      .板块大标题 { font-size: 24px; margin-bottom: 1.75rem; }
+      .板块标识 { font-size: 12px; margin-bottom: 1rem; }
+      #头像 { width: 100px; height: 100px; }
+
+      /* 条目 / 博客条目：贴边、收紧字号与行距 */
+      .条目, .博客条目 {
+        padding: 1.4rem 0;
+        margin: 0;
+        border-radius: 0;
+      }
+      .条目:first-child, .博客条目:first-child { margin-top: -1.4rem; }
+      .条目-头, .博客-头 { gap: 0.35rem 0.75rem; margin-bottom: 0.35rem; }
+      .条目-标题, .博客-标题 { font-size: 18px; }
+      .条目-时间, .博客-日期 { font-size: 12.5px; }
+      .条目-副标题 { font-size: 13.5px; margin-bottom: 0.5rem; }
+      .条目-描述, .博客-摘要 { font-size: 14.5px; line-height: 1.72; }
+      .条目-外链 { font-size: 14px; margin-top: 0.7rem; }
+
+      /* 证明按钮：缩小贴合 */
+      .条目-动作行 { gap: 0.5rem 0.85rem; margin-top: 0.7rem; }
+      .证明按钮 { font-size: 13px; padding: 5px 11px; }
+      .证明按钮 .证明图标 { width: 12px; height: 12px; }
+
+      /* 奖项 */
+      .奖项类别 { margin-bottom: 2.25rem; }
+      .奖项条目 { padding: 0.85rem 0; gap: 0.35rem; }
+      .奖项-标题 { font-size: 14.5px; }
+      .奖项-标签 { font-size: 10px; padding: 1px 7px; }
+      .奖项-等级 { font-size: 13px; }
+      .奖项-时间 { font-size: 12px; }
+      .奖项-证明 { font-size: 12px; padding: 3px 10px; }
+
+      /* 自我介绍：折叠头与正文统一节奏 */
+      #自我介绍 p { font-size: 15.5px; line-height: 1.85; margin-bottom: 1.1rem; }
+      #自我介绍 .自介-章节-头 { padding: 1.1rem 0; }
+      #自我介绍 .自介-章节-标题 { font-size: 16px; }
+      #自介-切换全部 { font-size: 12.5px; padding: 4px 10px; }
+
+      #联系方式 .联系-行 { gap: 3rem; }
+      #联系方式 .联系-二维码组 { gap: 2.5rem; }
+      #联系方式 .联系-邮箱-地址 { font-size: 18px; }
+    }
+
+    @media print {
+      :root, :root[data-主题="dark"] {
+        --色-纸: #fff;
+        --色-纸柔: #fff;
+        --色-墨: #000;
+        --色-墨次: #1d1d1f;
+        --色-灰深: #555;
+        --色-灰浅: #d2d2d7;
+        --色-灰极浅: #f5f5f7;
+        --色-面卡: #fff;
+      }
+      html, body {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 11pt;
+        line-height: 1.55;
+      }
+
+      .淡入 { opacity: 1 !important; transform: none !important; }
+
+      #顶部导航, #打印按钮, #ai助手挂载点, #向下指示, #语言切换器, #主题切换, #滚动浮标, #唤起浮标, #灯箱, .证明按钮, .奖项-证明, #自介-控制行, .条目-外链, .条目-动作行 { display: none !important; }
+
+      main { padding: 0; }
+      .板块 {
+        min-height: auto !important;
+        padding: 0.6rem 0 !important;
+        display: block !important;
+        background: #fff !important;
+      }
+      .板块-内容 { max-width: 100%; }
+
+      .条目, .博客条目, .奖项条目, .奖项类别-标题 {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .板块大标题, .板块标识, .奖项类别-标题 {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+
+      #顶部 { text-align: left; }
+      #头像 { width: 76px; height: 76px; margin: 0 0 0.5rem; box-shadow: none; }
+      #名字 { font-size: 22pt; margin-bottom: 4px; }
+      #一句话标签 { font-size: 11pt; margin-bottom: 0; }
+      #身份说明 { font-size: 10pt; margin: 4px auto 0; max-width: none; color: #000; }
+
+      #自我介绍 p { font-size: 11pt; color: #000; margin-bottom: 0.5rem; font-family: inherit; }
+
+      /* 打印时强制展开所有自介章节，并把折叠样式扁平化 */
+      #自我介绍 .自介-章节 { border: none !important; }
+      #自我介绍 .自介-章节-头 { padding: 0.3rem 0 !important; cursor: default !important; }
+      #自我介绍 .自介-章节-标题 { font-size: 12pt; font-weight: 600; }
+      #自我介绍 .自介-章节-箭头 { display: none !important; }
+      #自我介绍 .自介-章节-体 { display: block !important; grid-template-rows: none !important; }
+      #自我介绍 .自介-章节-内 { overflow: visible !important; }
+      #自我介绍 .自介-章节-内 p:last-child { margin-bottom: 0.4rem !important; }
+
+      .板块大标题 { font-size: 14pt; margin-bottom: 0.8rem; }
+      .板块标识 { margin-bottom: 0.5rem; }
+
+      .条目 { padding: 0.7rem 0; margin: 0; background: transparent !important; }
+      .博客条目 { padding: 0.7rem 0; margin: 0; background: transparent !important; }
+      .条目:first-child, .博客条目:first-child { margin-top: 0 !important; }
+      .条目-标题, .博客-标题 { font-size: 12pt; color: #000; }
+      .条目-时间, .博客-日期 { font-size: 9pt; color: #555; }
+      .条目-副标题 { font-size: 10pt; }
+      .条目-描述, .博客-摘要 { font-size: 10.5pt; color: #1d1d1f; }
+
+      a[href^="http"]::after {
+        content: "（" attr(href) "）";
+        font-size: 0.85em;
+        color: #555;
+        word-break: break-all;
+      }
+      /* 文本本身就是 URL 的链接，避免重复打印 */
+      #GitHub链接::after { content: none !important; }
+      a, .条目-外链 { color: #000 !important; gap: 0 !important; }
+      .条目-外链::after, .博客-外链标记 { display: none; }
+
+      .奖项-标签 {
+        color: #555 !important;
+        background: transparent !important;
+        border: 1px solid #999;
+        padding: 1px 6px;
+        font-size: 8.5pt;
+        font-weight: 500;
+        margin-left: 6px;
+        vertical-align: 1px;
+      }
+
+      #联系方式 .联系-邮箱-地址 { color: #000 !important; font-size: 11pt; }
+      #微信二维码 { max-width: 96px; padding: 4px; }
+      #微信号 { font-size: 9pt; }
+      #公众号二维码 { max-width: 96px; padding: 4px; }
+      #公众号名 { font-size: 9pt; }
+
+      footer { display: none; }
+
+      @page { margin: 14mm 14mm; }
+    }
+
+    /* ============== 问问 AI ============== */
+    /* 右下角悬浮入口按钮（复用浮标按钮的视觉语言） */
+    .ai浮标 {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 95;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 48px;
+      padding: 0 18px 0 16px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      background: var(--色-面卡);
+      color: var(--色-墨次);
+      box-shadow: 0 1px 2px var(--色-阴影弱), 0 6px 16px var(--色-阴影中);
+      transition: transform 0.18s var(--过渡), color 0.18s var(--过渡), box-shadow 0.18s var(--过渡), background 0.3s var(--过渡), opacity 0.2s var(--过渡);
+    }
+    .ai浮标:hover {
+      transform: scale(1.05);
+      color: var(--色-蓝);
+      box-shadow: 0 1px 2px var(--色-阴影弱), 0 8px 20px var(--色-阴影蓝);
+    }
+    .ai浮标:active { transform: scale(0.97); }
+    .ai浮标 .图标 {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex-shrink: 0;
+    }
+    .ai浮标-文字 { font-size: 14px; font-weight: 500; white-space: nowrap; }
+    /* 弹窗打开时，隐藏入口按钮 */
+    .ai浮标.已隐藏 { opacity: 0; pointer-events: none; transform: scale(0.9); }
+
+    /* 对话框遮罩 + 容器（复刻灯箱手法） */
+    .ai对话框 {
+      position: fixed;
+      inset: 0;
+      z-index: 96;
+      display: none;
+      opacity: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: opacity 0.2s var(--过渡);
+    }
+    .ai对话框.开 { display: block; opacity: 1; }
+
+    /* 面板：桌面端右下角悬浮卡片 */
+    .ai对话框-面板 {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 380px;
+      max-width: calc(100vw - 32px);
+      height: 560px;
+      max-height: calc(100dvh - 48px);
+      display: flex;
+      flex-direction: column;
+      background: var(--色-面卡);
+      border: 1px solid var(--色-灰浅);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px var(--色-阴影中);
+      transform: translateY(16px) scale(0.98);
+      opacity: 0;
+      transition: transform 0.24s var(--过渡), opacity 0.24s var(--过渡);
+    }
+    .ai对话框.开 .ai对话框-面板 { transform: translateY(0) scale(1); opacity: 1; }
+
+    /* 标题栏 */
+    .ai对话框-头 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--色-灰浅);
+      flex-shrink: 0;
+    }
+    .ai对话框-标题 { font-size: 15px; font-weight: 600; color: var(--色-墨); margin: 0; }
+    .ai对话框-关 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: transparent;
+      color: var(--色-灰深);
+      transition: background 0.18s var(--过渡), color 0.18s var(--过渡);
+    }
+    .ai对话框-关:hover { background: var(--色-高亮淡); color: var(--色-墨); }
+    .ai对话框-关 svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; fill: none; }
+
+    /* 消息滚动区 */
+    .ai消息区 {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ai消息 { display: flex; max-width: 85%; }
+    .ai消息-用户 { align-self: flex-end; }
+    .ai消息-助手 { align-self: flex-start; }
+    .ai气泡 {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .ai消息-用户 .ai气泡 {
+      background: var(--色-蓝);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .ai消息-助手 .ai气泡 {
+      background: var(--色-蓝软淡);
+      color: var(--色-墨);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* 「正在思考」状态 + 打字动画 */
+    .ai状态[hidden], .ai错误[hidden] { display: none; }
+    .ai状态 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px 8px;
+      color: var(--色-灰深);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .ai打字 { display: inline-flex; gap: 3px; }
+    .ai打字 i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--色-灰中);
+      animation: ai跳动 1.2s infinite ease-in-out;
+    }
+    .ai打字 i:nth-child(2) { animation-delay: 0.15s; }
+    .ai打字 i:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes ai跳动 {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* 错误条 */
+    .ai错误 {
+      margin: 0 16px 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: var(--色-蓝软);
+      color: var(--色-墨次);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    /* 预设问题气泡（点击直接发送，发出首条消息后整体隐藏） */
+    .ai预设 {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 16px 12px;
+      flex-shrink: 0;
+    }
+    .ai预设[hidden] { display: none; }
+    .ai预设-钮 {
+      padding: 7px 13px;
+      border: 1px solid var(--色-蓝边强);
+      border-radius: 999px;
+      cursor: pointer;
+      background: var(--色-蓝软淡);
+      color: var(--色-蓝深);
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.3;
+      transition: background 0.18s var(--过渡), transform 0.18s var(--过渡);
+    }
+    .ai预设-钮:hover { background: var(--色-蓝软); }
+    .ai预设-钮:active { transform: scale(0.96); }
+
+    /* 输入区 */
+    .ai输入区 {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--色-灰浅);
+      flex-shrink: 0;
+    }
+    .ai输入框 {
+      flex: 1;
+      resize: none;
+      max-height: 96px;
+      padding: 9px 12px;
+      border: 1px solid var(--色-灰浅);
+      border-radius: 12px;
+      background: var(--色-纸);
+      color: var(--色-墨);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.4;
+      transition: border-color 0.18s var(--过渡);
+    }
+    .ai输入框:focus { outline: none; border-color: var(--色-蓝边强); }
+    .ai发送 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: var(--色-蓝);
+      color: #fff;
+      transition: background 0.18s var(--过渡), transform 0.18s var(--过渡), opacity 0.18s var(--过渡);
+    }
+    .ai发送:hover { background: var(--色-蓝深); }
+    .ai发送:active { transform: scale(0.94); }
+    .ai发送:disabled { opacity: 0.45; cursor: not-allowed; }
+    .ai发送 svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+    /* 屏幕阅读器专用（视觉隐藏） */
+    .ai视觉隐藏 {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* 移动端：入口缩小，弹窗转底部抽屉 */
+    @media (max-width: 600px) {
+      .ai浮标 { right: 16px; bottom: 16px; height: 44px; padding: 0 16px 0 14px; }
+      .ai浮标 .图标 { width: 18px; height: 18px; }
+      .ai浮标-文字 { font-size: 13px; }
+      .ai对话框-面板 {
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 85dvh;
+        max-height: 85dvh;
+        border-radius: 16px 16px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ai浮标,
+      .ai对话框,
+      .ai对话框-面板 { transition: none; }
+      .ai对话框-面板 { transform: none; }
+      .ai打字 i { animation: none; }
+    }
+  </style>
+
+  <script data-goatcounter="https://huangziying.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+
+<header id="顶部导航">
+  <button id="导航名字" type="button" data-跳转="#顶部"></button>
+  <nav id="导航链接组" aria-label="主导航">
+    <a class="导航锚点" data-i18n="nav.about" href="#自我介绍-区">关于</a>
+    <a class="导航锚点" data-i18n="nav.education" href="#教育-区">教育</a>
+    <a class="导航锚点" data-i18n="nav.doings" href="#经历-区">经历</a>
+    <a class="导航锚点" data-i18n="nav.papers" href="#论文-区">论文</a>
+    <a class="导航锚点" data-i18n="nav.awards" href="#奖项-区">奖项</a>
+    <a class="导航锚点" data-i18n="nav.writing" href="#博客-区">博客</a>
+    <a class="导航锚点" data-i18n="nav.contact" href="#联系方式">联系</a>
+    <div id="语言切换器" role="group" aria-label="语言切换">
+      <button class="语言按钮" type="button" data-语言="zh">中</button>
+      <button class="语言按钮" type="button" data-语言="en">EN</button>
+    </div>
+    <button id="主题切换" type="button" aria-label="切换主题">
+      <svg class="图标-日" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"></circle>
+        <line x1="12" y1="2" x2="12" y2="5"></line>
+        <line x1="12" y1="19" x2="12" y2="22"></line>
+        <line x1="2" y1="12" x2="5" y2="12"></line>
+        <line x1="19" y1="12" x2="22" y2="12"></line>
+        <line x1="4.93" y1="4.93" x2="7.05" y2="7.05"></line>
+        <line x1="16.95" y1="16.95" x2="19.07" y2="19.07"></line>
+        <line x1="4.93" y1="19.07" x2="7.05" y2="16.95"></line>
+        <line x1="16.95" y1="7.05" x2="19.07" y2="4.93"></line>
+      </svg>
+      <svg class="图标-月" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+    <button id="打印按钮" type="button" data-i18n="nav.print">打印为 PDF</button>
+  </nav>
+</header>
+
+<main>
+
+  <section id="顶部" class="板块 淡入">
+    <div class="板块-内容">
+      <img id="头像" alt="头像" src="">
+      <h1 id="名字"></h1>
+      <p id="一句话标签"></p>
+      <p id="身份说明"></p>
+      <button id="向下指示" type="button" data-跳转="#自我介绍-区" aria-label="向下">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+    </div>
+  </section>
+
+  <section id="自我介绍-区" class="板块 柔背景 淡入">
+    <div class="板块-内容">
+      <p class="板块标识">
+        <svg class="板块标识-图标" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21v-1a8 8 0 0 1 16 0v1"></path>
+        </svg>
+        <span data-i18n="section.about">关于</span>
+      </p>
+      <h2 class="板块大标题" data-i18n="section.aboutTitle">你好</h2>
+      <div id="自我介绍"></div>
+    </div>
+  </section>
+
+  <section id="教育-区" class="板块 淡入">
+    <div class="板块-内容">
+      <p class="板块标识">
+        <svg class="板块标识-图标" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 10L12 4 2 10l10 6 10-6z"></path>
+          <path d="M6 12v5c3 2 9 2 12 0v-5"></path>
+        </svg>
+        <span data-i18n="section.education">教育</span>
+      </p>
+      <h2 class="板块大标题" data-i18n="section.educationTitle">读过的书</h2>
+      <div id="教育列表"></div>
+    </div>
+  </section>
+
+  <section id="经历-区" class="板块 柔背景 淡入">
+    <div class="板块-内容">
+      <p class="板块标识">
+        <svg class="板块标识-图标" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <polyline points="12 7 12 12 15 14"></polyline>
+        </svg>
+        <span data-i18n="section.doings">经历</span>
+      </p>
+      <h2 class="板块大标题" data-i18n="section.doingsTitle">做过的事</h2>
+      <div id="经历列表"></div>
+    </div>
+  </section>
+
+  <section id="论文-区" class="板块 淡入">
+    <div class="板块-内容">
+      <p class="板块标识">
+        <svg class="板块标识-图标" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="9" y1="13" x2="15" y2="13"></line>
+          <line x1="9" y1="17" x2="15" y2="17"></line>
+        </svg>
+        <span data-i18n="section.papers">论文</span>
+      </p>
+      <h2 class="板块大标题" data-i18n="section.papersTitle">写过的论文</h2>
+      <div id="论文列表"></div>
+    </div>
+  </section>
+
+  <section id="奖项-区" class="板块 柔背景 淡入">
+    <div class="板块-内容">
+      <p class="板块标识">
+        <svg class="板块标识-图标" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="9" r="6"></circle>
+          <polyline points="8.5 13.5 6.5 21 12 18 17.5 21 15.5 13.5"></polyline>
+        </svg>
+        <span data-i18n="section.awards">奖项</span>
+      </p>
+      <h2 class="板块大标题" data-i18n="section.awardsTitle">拿到的奖</h2>
+      <div id="奖项列表"></div>
+    </div>
+  </section>
+
+  <section id="博客-区" class="板块 淡入">
+    <div class="板块-内容">
+      <p class="板块标识">
+        <svg class="板块标识-图标" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <path d="M16 13l-5 5-3-3"></path>
+        </svg>
+        <span data-i18n="section.writing">博客</span>
+      </p>
+      <h2 class="板块大标题" data-i18n="section.writingTitle">写下的字</h2>
+      <div id="博客列表"></div>
+    </div>
+  </section>
+
+  <section id="联系方式" class="板块 柔背景 淡入">
+    <div class="板块-内容">
+      <p class="板块标识">
+        <svg class="板块标识-图标" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22 6 12 13 2 6"></polyline>
+        </svg>
+        <span data-i18n="section.contact">联系</span>
+      </p>
+      <h2 class="板块大标题" data-i18n="section.contactTitle">保持联系</h2>
+      <div class="联系-行">
+        <div class="联系-链接组">
+          <div class="联系-邮箱">
+            <p class="联系-标识">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22 6 12 13 2 6"></polyline>
+              </svg>
+              <span data-i18n="contact.email">邮箱</span>
+            </p>
+            <a id="邮箱链接" class="联系-邮箱-地址" href=""></a>
+          </div>
+          <div class="联系-GitHub">
+            <p class="联系-标识">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.16c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.17.91-.25 1.89-.38 2.86-.38.97 0 1.95.13 2.86.38 2.18-1.48 3.14-1.17 3.14-1.17.62 1.58.23 2.75.11 3.04.73.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"></path>
+              </svg>
+              <span>GitHub</span>
+            </p>
+            <a id="GitHub链接" class="联系-邮箱-地址" href="" target="_blank" rel="noopener noreferrer"></a>
+          </div>
+        </div>
+        <div class="联系-二维码组">
+          <div class="联系-微信">
+            <p class="联系-标识">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+              <span data-i18n="contact.wechat">微信</span>
+            </p>
+            <img id="微信二维码" alt="微信二维码" src="">
+            <div id="微信号"></div>
+          </div>
+          <div class="联系-公众号">
+            <p class="联系-标识">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 5h18v14H3z"></path>
+                <path d="M3 9h18"></path>
+                <circle cx="8" cy="14" r="1.2"></circle>
+                <circle cx="12" cy="14" r="1.2"></circle>
+                <circle cx="16" cy="14" r="1.2"></circle>
+              </svg>
+              <span data-i18n="contact.wechatPublic">公众号</span>
+            </p>
+            <img id="公众号二维码" alt="公众号二维码" src="">
+            <div id="公众号名"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- AI 助手挂载点：必须是 body 直接子元素，否则打开时背景锁定会误锁整个 main（含对话框自身） -->
+<div id="ai助手挂载点"></div>
+
+<!-- 灯箱：用于放大查看证明图片 -->
+<div id="灯箱" role="dialog" aria-modal="true" aria-labelledby="灯箱-标题" hidden>
+  <div id="灯箱-头">
+    <div>
+      <span id="灯箱-标题"></span>
+      <span id="灯箱-计数"></span>
+    </div>
+    <button id="灯箱-关" type="button" aria-label="关闭">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <div id="灯箱-体">
+    <button class="灯箱-翻页" id="灯箱-上一张" type="button" aria-label="上一张">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <div id="灯箱-图框">
+      <img id="灯箱-图" alt="">
+      <div id="灯箱-占位" hidden></div>
+    </div>
+    <button class="灯箱-翻页" id="灯箱-下一张" type="button" aria-label="下一张">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+</div>
+
+<!-- 右侧滚动浮标：上箭头进度环 + X 关闭 + 下箭头剩余环 -->
+<aside id="滚动浮标" aria-label="页面导航">
+  <button class="浮标按钮" id="浮标-上" type="button" aria-label="回到顶部">
+    <svg class="进度环" viewBox="0 0 48 48" aria-hidden="true">
+      <circle class="轨" cx="24" cy="24" r="22"></circle>
+      <circle class="进度" cx="24" cy="24" r="22"></circle>
+    </svg>
+    <svg class="图标" viewBox="0 0 24 24" aria-hidden="true">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="6 11 12 5 18 11"></polyline>
+    </svg>
+  </button>
+
+  <button class="浮标按钮 关闭" id="浮标-关" type="button" aria-label="隐藏导航">
+    <svg class="图标" viewBox="0 0 24 24" aria-hidden="true">
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+    </svg>
+  </button>
+
+  <button class="浮标按钮" id="浮标-下" type="button" aria-label="跳到底部">
+    <svg class="进度环" viewBox="0 0 48 48" aria-hidden="true">
+      <circle class="轨" cx="24" cy="24" r="22"></circle>
+      <circle class="进度" cx="24" cy="24" r="22"></circle>
+    </svg>
+    <svg class="图标" viewBox="0 0 24 24" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <polyline points="6 13 12 19 18 13"></polyline>
+    </svg>
+  </button>
+</aside>
+
+<button id="唤起浮标" type="button" aria-label="显示导航"></button>
+
+<footer>
+  <p>© <span id="年份"></span> <span id="页脚名字"></span></p>
+</footer>
+
+<script src="内容配置.js"></script>
+<script src="博客索引.js"></script>
+<script>
+  /* ===========================================================
+     i18n 文案映射（界面文字，非用户内容）
+     用户内容（名字 / 介绍 / 作品 / 经历）走 内容配置.js 的双语字段
+     =========================================================== */
+  const 文案 = {
+    zh: {
+      "nav.about": "关于",
+      "nav.education": "教育",
+      "nav.doings": "经历",
+      "nav.papers": "论文",
+      "nav.awards": "奖项",
+      "nav.writing": "博客",
+      "nav.contact": "联系",
+      "nav.print": "打印为 PDF",
+      "section.about": "关于",
+      "section.aboutTitle": "你好",
+      "section.education": "教育",
+      "section.educationTitle": "读过的书",
+      "section.doings": "经历",
+      "section.doingsTitle": "做过的事",
+      "section.papers": "论文",
+      "section.papersTitle": "写过的论文",
+      "section.awards": "奖项",
+      "section.awardsTitle": "拿到的奖",
+      "section.writing": "博客",
+      "section.writingTitle": "写下的字",
+      "section.contact": "联系",
+      "section.contactTitle": "保持联系",
+      "contact.email": "邮箱",
+      "contact.wechat": "微信",
+      "contact.wechatPublic": "公众号",
+      "blog.empty": "暂无博客文章。",
+      "list.empty": "暂无内容。",
+      "blog.viewLink": "查看",
+      "blog.externalTag": "外链 ↗",
+      "proof.viewOne": "查看证书",
+      "proof.viewMany": "查看证书（{n}）",
+      "proof.close": "关闭",
+      "proof.prev": "上一张",
+      "proof.next": "下一张",
+      "proof.counter": "第 {i} / {n} 张",
+      "proof.imgFallback": "图片暂未上传",
+      "about.expandAll": "全部展开",
+      "about.collapseAll": "全部收起",
+      "print.fallback": "当前浏览器未弹出打印对话框，请打开浏览器右上角菜单 → 选择「打印」或「分享 → 打印」。",
+      "ai.launcher": "问问 AI",
+      "ai.open": "打开 AI 助手",
+      "ai.title": "问问关于黄梓颖",
+      "ai.close": "关闭",
+      "ai.welcome": "你好，我是黄梓颖。可以问我关于我的经历、教育、论文、项目或创业的事。",
+      "ai.placeholder": "问点关于我的事…",
+      "ai.inputLabel": "你的问题",
+      "ai.send": "发送",
+      "ai.thinking": "正在思考…",
+      "ai.error": "出了点问题，请稍后再试。",
+      "ai.errorNetwork": "网络连接失败，请检查后重试。",
+      "ai.presets": ["你是谁？", "你有哪些经历？", "怎么联系到你？"],
+    },
+    en: {
+      "nav.about": "About",
+      "nav.education": "Education",
+      "nav.doings": "Experience",
+      "nav.papers": "Papers",
+      "nav.awards": "Awards",
+      "nav.writing": "Blog",
+      "nav.contact": "Contact",
+      "nav.print": "Print as PDF",
+      "section.about": "ABOUT",
+      "section.aboutTitle": "Hello",
+      "section.education": "EDUCATION",
+      "section.educationTitle": "What I studied",
+      "section.doings": "EXPERIENCE",
+      "section.doingsTitle": "What I've done",
+      "section.papers": "PAPERS",
+      "section.papersTitle": "Papers I've written",
+      "section.awards": "AWARDS",
+      "section.awardsTitle": "Recognition",
+      "section.writing": "BLOG",
+      "section.writingTitle": "Words written down",
+      "section.contact": "CONTACT",
+      "section.contactTitle": "Stay in touch",
+      "contact.email": "Email",
+      "contact.wechat": "WeChat",
+      "contact.wechatPublic": "Official Account",
+      "blog.empty": "No posts yet.",
+      "list.empty": "Nothing here yet.",
+      "blog.viewLink": "View",
+      "blog.externalTag": "External ↗",
+      "proof.viewOne": "View certificate",
+      "proof.viewMany": "View certificates ({n})",
+      "proof.close": "Close",
+      "proof.prev": "Previous",
+      "proof.next": "Next",
+      "proof.counter": "{i} / {n}",
+      "proof.imgFallback": "Image not uploaded yet",
+      "about.expandAll": "Expand all",
+      "about.collapseAll": "Collapse all",
+      "print.fallback": "Your browser didn't open the print dialog. Please use the browser menu → Print (or Share → Print).",
+      "ai.launcher": "Ask AI",
+      "ai.open": "Open AI assistant",
+      "ai.title": "Ask about Ziying",
+      "ai.close": "Close",
+      "ai.welcome": "Hi, I'm Ziying. Ask me about my experience, education, papers, projects, or founding journey.",
+      "ai.placeholder": "Ask something about me…",
+      "ai.inputLabel": "Your question",
+      "ai.send": "Send",
+      "ai.thinking": "Thinking…",
+      "ai.error": "Something went wrong. Please try again.",
+      "ai.errorNetwork": "Network error. Please check your connection and retry.",
+      "ai.presets": ["Who are you?", "What have you done?", "How can I reach you?"],
+    },
+  };
+
+  /* 取双语字段的当前语言值；fallback 顺序：当前语言 → 中文 → 英文 → 字符串本身 */
+  function 取本地化(值, 当前语言) {
+    if (值 == null) return "";
+    if (typeof 值 === "string") return 值;
+    if (typeof 值 === "object") {
+      return 值[当前语言] || 值.zh || 值.en || "";
+    }
+    return String(值);
+  }
+
+  /* 从「2023.09 — 2024.06」「Sep 2023 — Jun 2024」这类时间串里抽出起点年月，转成可比较的数字 YYYYMM */
+  function 取时间起点(文本) {
+    if (!文本) return 0;
+    const 串 = String(文本).split(/[—\-~至]/)[0].trim();
+    /* 形如 2023.09 / 2023-09 / 2023/09 / 2023.9 / 2023年9月 */
+    const m1 = 串.match(/(\d{4})\D{0,2}(\d{1,2})/);
+    if (m1) return parseInt(m1[1], 10) * 100 + parseInt(m1[2], 10);
+    /* 形如 Sep 2023 / September 2023 */
+    const 月名 = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+    const m2 = 串.match(/([A-Za-z]{3,})\.?\s+(\d{4})/);
+    if (m2) {
+      const 月 = 月名[m2[1].slice(0, 3).toLowerCase()];
+      if (月) return parseInt(m2[2], 10) * 100 + 月;
+    }
+    /* 只有年份 */
+    const m3 = 串.match(/(\d{4})/);
+    if (m3) return parseInt(m3[1], 10) * 100;
+    return 0;
+  }
+
+  /* ===========================================================
+     语言状态管理：默认中文；记忆用户上次选择
+     =========================================================== */
+  function 读取语言() {
+    try {
+      const 存 = localStorage.getItem("站点语言");
+      if (存 === "zh" || 存 === "en") return 存;
+    } catch (e) {}
+    return "zh";
+  }
+  function 写入语言(语言) {
+    try { localStorage.setItem("站点语言", 语言); } catch (e) {}
+  }
+
+  let 当前语言 = 读取语言();
+
+  /* ===========================================================
+     渲染主页（每次切换语言都重新跑一遍）
+     =========================================================== */
+  function 渲染主页() {
+    const 内容 = window.内容 || {};
+    const 博客索引 = (window.博客索引 || []).slice();
+    const t = 文案[当前语言];
+
+    /* HTML lang 属性 */
+    document.documentElement.lang = 当前语言 === "zh" ? "zh-CN" : "en";
+
+    /* 界面文字（data-i18n） */
+    document.querySelectorAll("[data-i18n]").forEach(节 => {
+      const 键 = 节.getAttribute("data-i18n");
+      if (t[键] != null) 节.textContent = t[键];
+    });
+
+    /* 顶部导航名字 + 页脚 */
+    const 名字文本 = 取本地化(内容.名字, 当前语言);
+    document.getElementById("导航名字").textContent = 名字文本;
+    document.getElementById("页脚名字").textContent = 名字文本;
+    document.title = 名字文本 || (当前语言 === "zh" ? "黄梓颖" : "Ziying Huang");
+
+    /* 头像 */
+    const 头像节点 = document.getElementById("头像");
+    if (内容.头像图片) {
+      头像节点.src = 内容.头像图片;
+      头像节点.alt = 名字文本 + (当前语言 === "zh" ? " 头像" : " avatar");
+      头像节点.style.display = "";
+    } else {
+      头像节点.style.display = "none";
+    }
+
+    /* 名字 + 一句话标签 + 身份说明 */
+    document.getElementById("名字").textContent = 名字文本;
+    document.getElementById("一句话标签").textContent = 取本地化(内容.一句话标签, 当前语言);
+    document.getElementById("身份说明").textContent = 取本地化(内容.身份说明, 当前语言);
+
+    /* 自我介绍：emoji 开头的段落识别为章节标题，每节内容默认折叠（首节展开） */
+    const 自介容器 = document.getElementById("自我介绍");
+    自介容器.innerHTML = "";
+    const 自介文本 = 取本地化(内容.自我介绍, 当前语言);
+    const 段落 = 自介文本.trim().split(/\n\s*\n/).map(s => s.trim().replace(/\n+/g, " ")).filter(Boolean);
+
+    /* 匹配段首 emoji（含变体选择符与零宽连接符），用作章节标题判定 */
+    const emoji开头 = /^(?:\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)+/u;
+    const 章节列表 = [];
+    let 当前章节 = null;
+    段落.forEach(段 => {
+      if (emoji开头.test(段)) {
+        当前章节 = { 标题: 段, 段落: [] };
+        章节列表.push(当前章节);
+      } else {
+        if (!当前章节) {
+          当前章节 = { 标题: "", 段落: [] };
+          章节列表.push(当前章节);
+        }
+        当前章节.段落.push(段);
+      }
+    });
+
+    /* 控制行：全部展开 / 全部收起（仅当存在 ≥2 个有标题的章节时显示） */
+    const 有标题章节数 = 章节列表.filter(z => z.标题).length;
+    let 切换全部按钮 = null;
+    let 切换全部文 = null;
+    if (有标题章节数 >= 2) {
+      const 控制行 = document.createElement("div");
+      控制行.id = "自介-控制行";
+      切换全部按钮 = document.createElement("button");
+      切换全部按钮.type = "button";
+      切换全部按钮.id = "自介-切换全部";
+      切换全部按钮.innerHTML = '<span></span><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+      切换全部文 = 切换全部按钮.querySelector("span");
+      控制行.appendChild(切换全部按钮);
+      自介容器.appendChild(控制行);
+    }
+
+    const 章节节点列表 = [];
+    章节列表.forEach((章, i) => {
+      /* 没有标题的散段（极少见），直接按普通段落渲染 */
+      if (!章.标题) {
+        章.段落.forEach(段 => {
+          const p = document.createElement("p");
+          p.textContent = 段;
+          自介容器.appendChild(p);
+        });
+        return;
+      }
+      const 节 = document.createElement("div");
+      节.className = "自介-章节" + (i === 0 ? " 展开" : "");
+      const 头 = document.createElement("button");
+      头.type = "button";
+      头.className = "自介-章节-头";
+      头.setAttribute("aria-expanded", i === 0 ? "true" : "false");
+      const 标 = document.createElement("span");
+      标.className = "自介-章节-标题";
+      标.textContent = 章.标题;
+      头.appendChild(标);
+      头.insertAdjacentHTML("beforeend", '<svg class="自介-章节-箭头" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+      头.addEventListener("click", () => {
+        const 开 = 节.classList.toggle("展开");
+        头.setAttribute("aria-expanded", 开 ? "true" : "false");
+        同步切换全部();
+      });
+      节.appendChild(头);
+
+      const 体 = document.createElement("div");
+      体.className = "自介-章节-体";
+      const 内 = document.createElement("div");
+      内.className = "自介-章节-内";
+      章.段落.forEach(段 => {
+        const p = document.createElement("p");
+        p.textContent = 段;
+        内.appendChild(p);
+      });
+      体.appendChild(内);
+      节.appendChild(体);
+      自介容器.appendChild(节);
+      章节节点列表.push({ 节, 头 });
+    });
+
+    function 同步切换全部() {
+      if (!切换全部按钮) return;
+      const 全开 = 章节节点列表.length > 0 && 章节节点列表.every(x => x.节.classList.contains("展开"));
+      切换全部按钮.classList.toggle("全开", 全开);
+      切换全部文.textContent = 全开 ? t["about.collapseAll"] : t["about.expandAll"];
+      切换全部按钮.setAttribute("aria-expanded", 全开 ? "true" : "false");
+    }
+    if (切换全部按钮) {
+      切换全部按钮.addEventListener("click", () => {
+        const 全开 = 章节节点列表.every(x => x.节.classList.contains("展开"));
+        const 目标 = !全开;
+        章节节点列表.forEach(x => {
+          x.节.classList.toggle("展开", 目标);
+          x.头.setAttribute("aria-expanded", 目标 ? "true" : "false");
+        });
+        同步切换全部();
+      });
+      同步切换全部();
+    }
+
+    /* 教育 */
+    渲染条目列表("教育列表", 内容.教育列表 || [], item => ({
+      标题: 取本地化(item.学校, 当前语言),
+      副标题: 取本地化(item.学位, 当前语言),
+      时间: 取本地化(item.时间, 当前语言),
+      描述: 取本地化(item.描述, 当前语言),
+      链接: item.链接,
+      证明图片: item.证明图片 || [],
+      证明组标题: 取本地化(item.学校, 当前语言),
+    }), t["list.empty"], t["blog.viewLink"]);
+
+    /* 经历（合并 作品 + 经历，按起始时间由远及近升序排列） */
+    const 作品项 = (内容.作品列表 || []).map(item => ({
+      标题: 取本地化(item.标题, 当前语言),
+      副标题: 取本地化(item.角色, 当前语言),
+      时间: 取本地化(item.时间, 当前语言),
+      时间原始: 取本地化(item.时间, "zh") || 取本地化(item.时间, "en"),
+      描述: 取本地化(item.描述, 当前语言),
+      链接: item.链接,
+      证明图片: item.证明图片 || [],
+      证明组标题: 取本地化(item.标题, 当前语言),
+    }));
+    const 经历项 = (内容.经历列表 || []).map(item => ({
+      标题: 取本地化(item.公司, 当前语言),
+      副标题: 取本地化(item.职位, 当前语言),
+      时间: 取本地化(item.时间, 当前语言),
+      时间原始: 取本地化(item.时间, "zh") || 取本地化(item.时间, "en"),
+      描述: 取本地化(item.描述, 当前语言),
+      链接: item.链接,
+      证明图片: item.证明图片 || [],
+      证明组标题: 取本地化(item.公司, 当前语言),
+    }));
+    const 合并经历 = 作品项.concat(经历项).sort((a, b) => 取时间起点(b.时间原始) - 取时间起点(a.时间原始));
+    渲染条目列表("经历列表", 合并经历, item => item, t["list.empty"], t["blog.viewLink"]);
+
+    /* 论文 */
+    渲染条目列表("论文列表", 内容.论文列表 || [], item => ({
+      标题: 取本地化(item.标题, 当前语言),
+      副标题: ["<em>" + 转义HTML(取本地化(item.期刊, 当前语言)) + "</em>", 加粗基金(取本地化(item.作者, 当前语言))].filter(s => s && s !== "<em></em>").join(" · "),
+      副标题HTML: true,
+      时间: 取本地化(item.时间, 当前语言),
+      描述: 取本地化(item.描述, 当前语言),
+      链接: item.链接,
+      证明图片: item.证明图片 || [],
+      证明组标题: 取本地化(item.标题, 当前语言),
+    }), t["list.empty"], t["blog.viewLink"]);
+
+    /* 奖项 */
+    渲染奖项列表(内容.奖项列表 || [], t);
+
+    /* 博客（按语言筛选） */
+    const 博客容器 = document.getElementById("博客列表");
+    博客容器.innerHTML = "";
+    const 筛选后 = 博客索引.filter(博 => (博.语言 || "zh") === 当前语言);
+
+    if (筛选后.length === 0) {
+      const 空 = document.createElement("p");
+      空.style.color = "var(--色-灰深)";
+      空.textContent = t["blog.empty"];
+      博客容器.appendChild(空);
+    }
+    筛选后.forEach(博 => {
+      const a = document.createElement("a");
+      a.className = "博客条目";
+      const 是外链 = !!(博.外链 && 博.外链.trim());
+      a.href = 是外链
+        ? 博.外链
+        : "博客.html?文件=" + encodeURIComponent(博.文件名 || "") + "&lang=" + 当前语言;
+      if (是外链) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+
+      const 头 = document.createElement("div");
+      头.className = "博客-头";
+      const 标 = document.createElement("h3");
+      标.className = "博客-标题";
+      标.textContent = 博.标题 || "";
+      if (是外链) {
+        const 标记 = document.createElement("span");
+        标记.className = "博客-外链标记";
+        标记.textContent = t["blog.externalTag"];
+        标.appendChild(标记);
+      }
+      const 日 = document.createElement("span");
+      日.className = "博客-日期";
+      日.textContent = 博.日期 || "";
+      头.appendChild(标);
+      头.appendChild(日);
+
+      const 摘 = document.createElement("p");
+      摘.className = "博客-摘要";
+      摘.innerHTML = 渲染行内代码(博.摘要 || "");
+
+      a.appendChild(头);
+      a.appendChild(摘);
+      博客容器.appendChild(a);
+    });
+
+    /* 联系方式 */
+    if (内容.邮箱) {
+      const 邮链 = document.getElementById("邮箱链接");
+      邮链.href = "mailto:" + 内容.邮箱;
+      邮链.textContent = 内容.邮箱;
+    }
+    const GitHub块 = document.querySelector(".联系-GitHub");
+    if (内容.GitHub && 内容.GitHub.trim()) {
+      const gh = document.getElementById("GitHub链接");
+      gh.href = 内容.GitHub;
+      gh.textContent = 内容.GitHub.replace(/^https?:\/\//, "");
+      if (GitHub块) GitHub块.style.display = "";
+    } else if (GitHub块) {
+      GitHub块.style.display = "none";
+    }
+    if (内容.微信二维码图片) {
+      const qr = document.getElementById("微信二维码");
+      qr.src = 内容.微信二维码图片;
+      qr.alt = t["contact.wechat"] + (当前语言 === "zh" ? " 二维码" : " QR code");
+      qr.style.display = "";
+    } else {
+      document.getElementById("微信二维码").style.display = "none";
+    }
+    document.getElementById("微信号").textContent = 取本地化(内容.微信号文字, 当前语言);
+
+    if (内容.公众号二维码图片) {
+      const gzh = document.getElementById("公众号二维码");
+      gzh.src = 内容.公众号二维码图片;
+      gzh.alt = t["contact.wechatPublic"] + (当前语言 === "zh" ? " 二维码" : " QR code");
+      gzh.style.display = "";
+    } else {
+      document.getElementById("公众号二维码").style.display = "none";
+    }
+    document.getElementById("公众号名").textContent = 取本地化(内容.公众号文字, 当前语言);
+
+    /* 年份 */
+    document.getElementById("年份").textContent = new Date().getFullYear();
+
+    /* 语言按钮激活态 */
+    document.querySelectorAll("#语言切换器 .语言按钮").forEach(b => {
+      b.classList.toggle("激活", b.getAttribute("data-语言") === 当前语言);
+      b.setAttribute("aria-pressed", b.getAttribute("data-语言") === 当前语言 ? "true" : "false");
+    });
+
+    /* AI 组件静态文字跟随语言切换（textContent 类已被上面的 data-i18n 自动处理） */
+    if (window.刷新AI文案) window.刷新AI文案();
+  }
+
+  function 转义HTML(s) {
+    return (s || "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  }
+
+  /* 把字符串里的 `xxx` 转成 <code>xxx</code>；其余字符先转义，避免 XSS */
+  function 渲染行内代码(s) {
+    return 转义HTML(s).replace(/`([^`]+)`/g, (_, 内) => "<code>" + 内 + "</code>");
+  }
+
+  function 加粗基金(文本) {
+    const 转 = 转义HTML(文本);
+    return 转.replace(/(国家自然科学基金支持|Supported by NSFC)/g, "<strong>$1</strong>");
+  }
+
+  function 渲染条目列表(容器ID, 列表, 字段映射, 空文案, 查看文案) {
+    const 容器 = document.getElementById(容器ID);
+    容器.innerHTML = "";
+    if (!列表 || 列表.length === 0) {
+      const 空 = document.createElement("p");
+      空.style.color = "var(--色-灰深)";
+      空.textContent = 空文案;
+      容器.appendChild(空);
+      return;
+    }
+    列表.forEach(原始 => {
+      const 项 = 字段映射(原始);
+      const div = document.createElement("div");
+      div.className = "条目";
+
+      const 头 = document.createElement("div");
+      头.className = "条目-头";
+      const h = document.createElement("h3");
+      h.className = "条目-标题";
+      h.textContent = 项.标题 || "";
+      头.appendChild(h);
+      if (项.时间) {
+        const 时 = document.createElement("span");
+        时.className = "条目-时间";
+        时.textContent = 项.时间;
+        头.appendChild(时);
+      }
+      div.appendChild(头);
+
+      if (项.副标题) {
+        const 副 = document.createElement("p");
+        副.className = "条目-副标题";
+        if (项.副标题HTML) 副.innerHTML = 项.副标题; else 副.textContent = 项.副标题;
+        div.appendChild(副);
+      }
+
+      if (项.描述) {
+        const 描 = document.createElement("p");
+        描.className = "条目-描述";
+        描.textContent = 项.描述;
+        div.appendChild(描);
+      }
+
+      const 动作行 = document.createElement("div");
+      动作行.className = "条目-动作行";
+
+      if (项.链接 && 项.链接.trim()) {
+        const a = document.createElement("a");
+        a.className = "条目-外链";
+        a.href = 项.链接;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = 查看文案;
+        动作行.appendChild(a);
+      }
+
+      if (项.证明图片 && 项.证明图片.length > 0) {
+        动作行.appendChild(造证明按钮(项.证明图片, 项.证明组标题 || 项.标题 || ""));
+      }
+
+      if (动作行.childNodes.length > 0) div.appendChild(动作行);
+
+      容器.appendChild(div);
+    });
+  }
+
+  /* ===========================================================
+     渲染奖项列表（按 类别 分组，按出现顺序保持顺序）
+     =========================================================== */
+  function 渲染奖项列表(列表, t) {
+    const 容器 = document.getElementById("奖项列表");
+    容器.innerHTML = "";
+    if (!列表 || 列表.length === 0) {
+      const 空 = document.createElement("p");
+      空.style.color = "var(--色-灰深)";
+      空.textContent = t["list.empty"];
+      容器.appendChild(空);
+      return;
+    }
+    /* 按类别分组，保留首次出现顺序 */
+    const 顺序 = [];
+    const 分组 = {};
+    列表.forEach(项 => {
+      const 类 = 取本地化(项.类别, 当前语言) || (当前语言 === "zh" ? "其他" : "Other");
+      if (!分组[类]) { 分组[类] = []; 顺序.push(类); }
+      分组[类].push(项);
+    });
+
+    顺序.forEach(类名 => {
+      const 组 = document.createElement("div");
+      组.className = "奖项类别";
+      const 标 = document.createElement("p");
+      标.className = "奖项类别-标题";
+      标.textContent = 类名;
+      组.appendChild(标);
+
+      分组[类名].forEach(项 => {
+        const 条 = document.createElement("div");
+        条.className = "奖项条目";
+
+        const 主 = document.createElement("div");
+        主.className = "奖项-主体";
+        const 题 = document.createElement("p");
+        题.className = "奖项-标题";
+        const 标题文本 = 取本地化(项.标题, 当前语言);
+        if (项.链接 && 项.链接.trim()) {
+          const 链 = document.createElement("a");
+          链.href = 项.链接;
+          链.target = "_blank";
+          链.rel = "noopener noreferrer";
+          链.className = "奖项-标题-链接";
+          链.textContent = 标题文本;
+          题.appendChild(链);
+        } else {
+          题.textContent = 标题文本;
+        }
+        const 标签文本 = 取本地化(项.标签, 当前语言);
+        if (标签文本) {
+          const 签 = document.createElement("span");
+          签.className = "奖项-标签";
+          签.textContent = 标签文本;
+          题.appendChild(签);
+        }
+        主.appendChild(题);
+        const 等 = 取本地化(项.等级, 当前语言);
+        if (等) {
+          const 级 = document.createElement("p");
+          级.className = "奖项-等级";
+          级.textContent = 等;
+          主.appendChild(级);
+        }
+        条.appendChild(主);
+
+        const 右 = document.createElement("div");
+        右.className = "奖项-右";
+        const 时 = 取本地化(项.时间, 当前语言);
+        if (时) {
+          const t1 = document.createElement("span");
+          t1.className = "奖项-时间";
+          t1.textContent = 时;
+          右.appendChild(t1);
+        }
+        if (项.证明图片 && 项.证明图片.length > 0) {
+          右.appendChild(造证明按钮(项.证明图片, 取本地化(项.标题, 当前语言), "奖项-证明"));
+        }
+        条.appendChild(右);
+
+        组.appendChild(条);
+      });
+
+      容器.appendChild(组);
+    });
+  }
+
+  /* ===========================================================
+     造证明按钮：点击调起灯箱
+     =========================================================== */
+  function 造证明按钮(图片列表, 组标题, 额外类名) {
+    const 按钮 = document.createElement("button");
+    按钮.type = "button";
+    按钮.className = (额外类名 ? 额外类名 : "证明按钮");
+    const t = 文案[当前语言];
+    const 文 = 图片列表.length > 1
+      ? t["proof.viewMany"].replace("{n}", 图片列表.length)
+      : t["proof.viewOne"];
+    按钮.innerHTML = '<svg class="证明图标" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg><span></span>';
+    按钮.querySelector("span").textContent = 文;
+    按钮.addEventListener("click", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      打开灯箱(图片列表, 0, 组标题);
+    });
+    return 按钮;
+  }
+
+  /* 首次渲染 */
+  渲染主页();
+
+  /* ===== 问问 AI ===== */
+  (function ai助手() {
+    const 挂载点 = document.getElementById("ai助手挂载点");
+    if (!挂载点) return;
+
+    /* 代理地址：本地开发自动连 wrangler dev，线上连已部署的 Worker。
+       【部署后必改】把下面的「线上代理地址」换成你的 xxx.workers.dev */
+    const 本地代理地址 = "http://localhost:8787";
+    const 线上代理地址 = "https://ziying-ai-proxy.huangziying622.workers.dev";
+    const 是本地 = ["localhost", "127.0.0.1"].includes(location.hostname);
+    const AI代理地址 = 是本地 ? 本地代理地址 : 线上代理地址;
+
+    const 状态 = { 消息: [], 发送中: false, 触发元素: null, 控制器: null };
+
+    /* 注入 DOM */
+    挂载点.innerHTML = `
+      <button id="ai浮标" class="ai浮标" type="button"
+              aria-haspopup="dialog" aria-controls="ai对话框" aria-expanded="false"
+              data-i18n-aria="ai.open">
+        <svg class="图标" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.7 8.7 0 0 1-3.8-.9L3 21l1.9-5.7a8.7 8.7 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"></path>
+        </svg>
+        <span class="ai浮标-文字" data-i18n="ai.launcher">问问 AI</span>
+      </button>
+
+      <div id="ai对话框" class="ai对话框" role="dialog" aria-modal="true" aria-labelledby="ai对话框-标题" hidden>
+        <div class="ai对话框-面板">
+          <header class="ai对话框-头">
+            <h2 id="ai对话框-标题" class="ai对话框-标题" data-i18n="ai.title">问问关于黄梓颖</h2>
+            <button id="ai对话框-关" class="ai对话框-关" type="button" data-i18n-aria="ai.close" aria-label="关闭">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+              </svg>
+            </button>
+          </header>
+
+          <div id="ai消息区" class="ai消息区" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"></div>
+
+          <div id="ai预设" class="ai预设" hidden></div>
+
+          <div id="ai状态" class="ai状态" hidden>
+            <span class="ai打字" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="ai状态-文字" data-i18n="ai.thinking">正在思考…</span>
+          </div>
+          <div id="ai错误" class="ai错误" role="alert" hidden></div>
+          <div id="ai朗读" class="ai视觉隐藏" aria-live="polite"></div>
+
+          <form id="ai输入区" class="ai输入区">
+            <label for="ai输入框" class="ai视觉隐藏" data-i18n="ai.inputLabel">你的问题</label>
+            <textarea id="ai输入框" class="ai输入框" rows="1" enterkeyhint="send"
+                      data-i18n-ph="ai.placeholder" placeholder="问点关于我的事…"></textarea>
+            <button id="ai发送" class="ai发送" type="submit" data-i18n-aria="ai.send" aria-label="发送">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+
+    const 浮标 = document.getElementById("ai浮标");
+    const 对话框 = document.getElementById("ai对话框");
+    const 消息区 = document.getElementById("ai消息区");
+    const 状态条 = document.getElementById("ai状态");
+    const 错误条 = document.getElementById("ai错误");
+    const 朗读区 = document.getElementById("ai朗读");
+    const 输入框 = document.getElementById("ai输入框");
+    const 发送钮 = document.getElementById("ai发送");
+    const 表单 = document.getElementById("ai输入区");
+    const 关闭钮 = document.getElementById("ai对话框-关");
+    const 预设区 = document.getElementById("ai预设");
+    let 欢迎已显示 = false;
+
+    /* 让 data-i18n-aria / data-i18n-ph 跟随语言（textContent 由 渲染主页 处理） */
+    window.刷新AI文案 = function () {
+      const t = 文案[当前语言];
+      挂载点.querySelectorAll("[data-i18n-aria]").forEach(节 => {
+        const k = 节.getAttribute("data-i18n-aria");
+        if (t[k]) 节.setAttribute("aria-label", t[k]);
+      });
+      挂载点.querySelectorAll("[data-i18n-ph]").forEach(节 => {
+        const k = 节.getAttribute("data-i18n-ph");
+        if (t[k]) 节.setAttribute("placeholder", t[k]);
+      });
+      /* 欢迎语还没被用户对话覆盖时，跟随语言更新 */
+      if (!状态.消息.length) {
+        const 首 = 消息区.querySelector(".ai消息-助手 .ai气泡");
+        if (首) 首.textContent = t["ai.welcome"];
+        渲染预设();
+      }
+    };
+
+    /* 预设问题：仅在还没发过消息时显示，点击直接发送 */
+    function 渲染预设() {
+      if (状态.消息.length) { 预设区.hidden = true; return; }
+      const 列表 = 文案[当前语言]["ai.presets"] || [];
+      预设区.textContent = "";
+      列表.forEach(问题 => {
+        const 钮 = document.createElement("button");
+        钮.type = "button";
+        钮.className = "ai预设-钮";
+        钮.textContent = 问题;
+        钮.addEventListener("click", () => {
+          if (状态.发送中) return;
+          预设区.hidden = true;
+          发送(问题);
+        });
+        预设区.appendChild(钮);
+      });
+      预设区.hidden = 列表.length === 0;
+    }
+
+    function 加气泡(角色, 文本) {
+      const 行 = document.createElement("div");
+      行.className = "ai消息 " + (角色 === "user" ? "ai消息-用户" : "ai消息-助手");
+      const 泡 = document.createElement("div");
+      泡.className = "ai气泡";
+      泡.textContent = 文本;          // textContent 防 XSS
+      行.appendChild(泡);
+      消息区.appendChild(行);
+      消息区.scrollTop = 消息区.scrollHeight;
+      return 泡;
+    }
+
+    function 显示欢迎() {
+      if (欢迎已显示) return;
+      加气泡("assistant", 文案[当前语言]["ai.welcome"]);
+      渲染预设();
+      欢迎已显示 = true;
+    }
+
+    function 打开() {
+      状态.触发元素 = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      显示欢迎();
+      Array.from(document.body.children).forEach(节 => {
+        if (节 !== 对话框 && 节 !== 挂载点) 节.setAttribute("inert", "");
+      });
+      /* 挂载点里还有浮标按钮，单独 inert 浮标即可让焦点困在对话框 */
+      浮标.setAttribute("inert", "");
+      对话框.hidden = false;
+      void 对话框.offsetWidth;
+      对话框.classList.add("开");
+      浮标.classList.add("已隐藏");
+      浮标.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+      requestAnimationFrame(() => 输入框.focus());
+    }
+
+    function 关闭() {
+      对话框.classList.remove("开");
+      setTimeout(() => { 对话框.hidden = true; }, 200);
+      浮标.classList.remove("已隐藏");
+      浮标.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+      Array.from(document.body.children).forEach(节 => {
+        if (节 !== 对话框 && 节 !== 挂载点) 节.removeAttribute("inert");
+      });
+      浮标.removeAttribute("inert");
+      if (状态.触发元素 && document.contains(状态.触发元素)) 状态.触发元素.focus();
+      else 浮标.focus();
+      状态.触发元素 = null;
+    }
+
+    function 显示错误(文本) {
+      错误条.textContent = 文本;
+      错误条.hidden = false;
+    }
+    function 清错误() { 错误条.hidden = true; 错误条.textContent = ""; }
+
+    function 设发送中(值) {
+      状态.发送中 = 值;
+      状态条.hidden = !值;
+      发送钮.disabled = 值;
+      输入框.disabled = 值;
+      if (值) 消息区.scrollTop = 消息区.scrollHeight;
+    }
+
+    /* 解析 SSE 流，逐字上屏 */
+    async function 流式接收(响应, 上屏) {
+      const reader = 响应.body.getReader();
+      const 解码 = new TextDecoder();
+      let 余 = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        余 += 解码.decode(value, { stream: true });
+        const 行组 = 余.split("\n");
+        余 = 行组.pop();
+        for (const 行 of 行组) {
+          const 净 = 行.trim();
+          if (!净.startsWith("data:")) continue;
+          const 负载 = 净.slice(5).trim();
+          if (负载 === "[DONE]") return;
+          try {
+            const 片 = JSON.parse(负载);
+            const 增量 = 片.choices && 片.choices[0] && 片.choices[0].delta && 片.choices[0].delta.content;
+            if (增量) 上屏(增量);
+          } catch (e) { /* 跳过心跳/非 JSON 行 */ }
+        }
+      }
+    }
+
+    async function 发送(问题) {
+      清错误();
+      预设区.hidden = true;
+      const t = 文案[当前语言];
+      状态.消息.push({ role: "user", content: 问题 });
+      加气泡("user", 问题);
+      设发送中(true);
+
+      const 控制器 = new AbortController();
+      状态.控制器 = 控制器;
+      const 超时 = setTimeout(() => 控制器.abort(), 30000);
+
+      let 泡 = null;
+      let 全文 = "";
+      try {
+        const 响应 = await fetch(AI代理地址, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: 状态.消息, 语言: 当前语言 }),
+          signal: 控制器.signal,
+        });
+        if (!响应.ok) throw new Error("HTTP " + 响应.status);
+
+        const 类型 = 响应.headers.get("Content-Type") || "";
+        const 上屏 = (增量) => {
+          if (!泡) { 设发送中(false); 泡 = 加气泡("assistant", ""); }
+          全文 += 增量;
+          泡.textContent = 全文;
+          消息区.scrollTop = 消息区.scrollHeight;
+        };
+
+        if (类型.includes("text/event-stream")) {
+          await 流式接收(响应, 上屏);
+        } else {
+          const 数据 = await 响应.json();
+          const 回答 = (数据.choices && 数据.choices[0] && 数据.choices[0].message && 数据.choices[0].message.content)
+            || 数据.回答 || "";
+          if (数据.错误) throw new Error(数据.错误);
+          上屏(回答);
+        }
+
+        if (!泡) { 设发送中(false); 泡 = 加气泡("assistant", 全文); }
+        if (全文) {
+          状态.消息.push({ role: "assistant", content: 全文 });
+          朗读区.textContent = 全文;   // 流式结束后一次性朗读，避免逐字打断
+        }
+      } catch (e) {
+        设发送中(false);
+        if (泡 && !全文) 泡.closest(".ai消息").remove();
+        const 网络类 = e.name === "AbortError" || e instanceof TypeError;
+        显示错误(网络类 ? t["ai.errorNetwork"] : t["ai.error"]);
+      } finally {
+        clearTimeout(超时);
+        状态.控制器 = null;
+        if (状态.发送中) 设发送中(false);
+        输入框.focus();
+      }
+    }
+
+    /* 自适应高度 */
+    function 调高() {
+      输入框.style.height = "auto";
+      输入框.style.height = Math.min(输入框.scrollHeight, 96) + "px";
+    }
+
+    /* 事件绑定 */
+    浮标.addEventListener("click", 打开);
+    关闭钮.addEventListener("click", 关闭);
+    对话框.addEventListener("click", e => { if (e.target === 对话框) 关闭(); });
+    document.addEventListener("keydown", e => {
+      if (对话框.hidden) return;
+      if (e.key === "Escape" && !e.isComposing) 关闭();
+    });
+    输入框.addEventListener("input", 调高);
+    输入框.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        表单.requestSubmit();
+      }
+    });
+    表单.addEventListener("submit", e => {
+      e.preventDefault();
+      if (状态.发送中) return;
+      const 问题 = 输入框.value.trim();
+      if (!问题) return;
+      输入框.value = "";
+      调高();
+      发送(问题);
+    });
+
+    刷新AI文案();
+  })();
+
+
+  (function 打印按钮() {
+    const 按钮 = document.getElementById("打印按钮");
+    if (!按钮) return;
+    按钮.addEventListener("click", () => {
+      const t = 文案[当前语言];
+      let 已触发 = false;
+      const 监听 = () => { 已触发 = true; };
+      window.addEventListener("beforeprint", 监听, { once: true });
+      try {
+        window.print();
+      } catch (e) {
+        alert(t["print.fallback"]);
+        window.removeEventListener("beforeprint", 监听);
+        return;
+      }
+      /* 1 秒后还没触发 beforeprint，认为打印对话框未弹出（常见于手机浏览器） */
+      setTimeout(() => {
+        window.removeEventListener("beforeprint", 监听);
+        if (!已触发) alert(t["print.fallback"]);
+      }, 1000);
+    });
+  })();
+
+  /* ===== 语言切换 ===== */
+  document.querySelectorAll("#语言切换器 .语言按钮").forEach(按钮 => {
+    按钮.addEventListener("click", () => {
+      const 新语言 = 按钮.getAttribute("data-语言");
+      if (新语言 === 当前语言) return;
+      当前语言 = 新语言;
+      写入语言(新语言);
+      渲染主页();
+    });
+  });
+
+  /* ===== 灯箱（证明图片放大查看） ===== */
+  const 灯箱状态 = { 图片: [], 索引: 0, 标题: "", 触发元素: null };
+  function 打开灯箱(图片列表, 索引, 标题) {
+    灯箱状态.图片 = 图片列表.slice();
+    灯箱状态.索引 = 索引 || 0;
+    灯箱状态.标题 = 标题 || "";
+    灯箱状态.触发元素 = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const 灯 = document.getElementById("灯箱");
+    /* 把灯箱以外的 body 子节点设为 inert，避免键盘焦点逃出灯箱 */
+    Array.from(document.body.children).forEach(节 => {
+      if (节 !== 灯) 节.setAttribute("inert", "");
+    });
+    灯.hidden = false;
+    /* 强制 reflow 让 transition 生效 */
+    void 灯.offsetWidth;
+    灯.classList.add("开");
+    document.body.style.overflow = "hidden";
+    渲染灯箱();
+    /* 把焦点送到关闭按钮，符合对话框规范 */
+    requestAnimationFrame(() => document.getElementById("灯箱-关").focus());
+  }
+  function 关闭灯箱() {
+    const 灯 = document.getElementById("灯箱");
+    灯.classList.remove("开");
+    setTimeout(() => { 灯.hidden = true; }, 200);
+    document.body.style.overflow = "";
+    Array.from(document.body.children).forEach(节 => {
+      if (节 !== 灯) 节.removeAttribute("inert");
+    });
+    if (灯箱状态.触发元素 && document.contains(灯箱状态.触发元素)) {
+      灯箱状态.触发元素.focus();
+    }
+    灯箱状态.触发元素 = null;
+  }
+  function 渲染灯箱() {
+    const t = 文案[当前语言];
+    const { 图片, 索引, 标题 } = 灯箱状态;
+    const 共 = 图片.length;
+    const 当前 = 图片[索引] || "";
+    document.getElementById("灯箱-标题").textContent = 标题;
+    const 计 = document.getElementById("灯箱-计数");
+    计.textContent = 共 > 1 ? " · " + t["proof.counter"].replace("{i}", 索引 + 1).replace("{n}", 共) : "";
+
+    const 图 = document.getElementById("灯箱-图");
+    const 占位 = document.getElementById("灯箱-占位");
+    图.onerror = () => {
+      图.style.display = "none";
+      占位.hidden = false;
+      占位.innerHTML = "";
+      const p = document.createElement("p");
+      p.textContent = t["proof.imgFallback"];
+      占位.appendChild(p);
+      const 路 = document.createElement("span");
+      路.className = "占位-路径";
+      路.textContent = 当前;
+      占位.appendChild(路);
+    };
+    图.onload = () => { 图.style.display = ""; 占位.hidden = true; };
+    /* 重置后再赋值，确保 onerror 能在缺图时触发 */
+    图.style.display = "";
+    占位.hidden = true;
+    图.src = 当前;
+    图.alt = 标题 + " — " + (索引 + 1);
+
+    document.getElementById("灯箱-上一张").disabled = 索引 <= 0;
+    document.getElementById("灯箱-下一张").disabled = 索引 >= 共 - 1;
+    /* 单张时隐藏左右按钮 */
+    document.getElementById("灯箱-上一张").style.display = 共 > 1 ? "" : "none";
+    document.getElementById("灯箱-下一张").style.display = 共 > 1 ? "" : "none";
+
+    /* aria-label 跟随当前语言 */
+    document.getElementById("灯箱-关").setAttribute("aria-label", t["proof.close"]);
+    document.getElementById("灯箱-上一张").setAttribute("aria-label", t["proof.prev"]);
+    document.getElementById("灯箱-下一张").setAttribute("aria-label", t["proof.next"]);
+  }
+  function 灯箱翻页(步进) {
+    const 新索引 = 灯箱状态.索引 + 步进;
+    if (新索引 < 0 || 新索引 >= 灯箱状态.图片.length) return;
+    灯箱状态.索引 = 新索引;
+    渲染灯箱();
+  }
+  document.getElementById("灯箱-关").addEventListener("click", 关闭灯箱);
+  document.getElementById("灯箱-上一张").addEventListener("click", () => 灯箱翻页(-1));
+  document.getElementById("灯箱-下一张").addEventListener("click", () => 灯箱翻页(1));
+  document.getElementById("灯箱").addEventListener("click", e => {
+    /* 点击空白区域（非图片、非按钮）关闭 */
+    if (e.target.id === "灯箱" || e.target.id === "灯箱-体" || e.target.id === "灯箱-图框") {
+      关闭灯箱();
+    }
+  });
+  document.addEventListener("keydown", e => {
+    const 灯 = document.getElementById("灯箱");
+    if (灯.hidden) return;
+    if (e.key === "Escape") 关闭灯箱();
+    else if (e.key === "ArrowLeft") 灯箱翻页(-1);
+    else if (e.key === "ArrowRight") 灯箱翻页(1);
+  });
+
+  /* ===== 滚动淡入 ===== */
+  (function 绑定淡入动效() {
+    const 节点列表 = document.querySelectorAll(".淡入");
+    if (!("IntersectionObserver" in window)) {
+      节点列表.forEach(n => n.classList.add("可见"));
+      return;
+    }
+    const 顶部 = document.getElementById("顶部");
+    if (顶部) requestAnimationFrame(() => 顶部.classList.add("可见"));
+
+    const 观察器 = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add("可见");
+          观察器.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
+    节点列表.forEach(n => {
+      if (n.id !== "顶部") 观察器.observe(n);
+    });
+  })();
+
+  /* ===== 顶部导航：底边 + 锚点跳转 + 当前板块高亮 ===== */
+  (function 顶部导航() {
+    const 头 = document.getElementById("顶部导航");
+    function 检查滚动() {
+      if (window.scrollY > 8) 头.classList.add("已滚动");
+      else 头.classList.remove("已滚动");
+    }
+    检查滚动();
+    window.addEventListener("scroll", 检查滚动, { passive: true });
+
+    document.querySelectorAll('[data-跳转]').forEach(节 => {
+      节.addEventListener("click", () => {
+        const 目标 = document.querySelector(节.getAttribute("data-跳转"));
+        if (目标) 目标.scrollIntoView({ behavior: "smooth" });
+      });
+    });
+
+    const 锚点列表 = document.querySelectorAll("#导航链接组 .导航锚点");
+    const 板块映射 = {};
+    锚点列表.forEach(a => {
+      const id = a.getAttribute("href").slice(1);
+      const 节 = document.getElementById(id);
+      if (节) 板块映射[id] = a;
+    });
+    const 高亮观察器 = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        const id = e.target.id;
+        const 锚 = 板块映射[id];
+        if (!锚) return;
+        if (e.isIntersecting) {
+          锚点列表.forEach(a => a.classList.remove("活跃"));
+          锚.classList.add("活跃");
+        }
+      });
+    }, { rootMargin: "-50% 0px -50% 0px", threshold: 0 });
+    Object.keys(板块映射).forEach(id => {
+      高亮观察器.observe(document.getElementById(id));
+    });
+  })();
+
+  /* ===== 主题切换（日 / 月） ===== */
+  (function 主题切换() {
+    const 按钮 = document.getElementById("主题切换");
+    if (!按钮) return;
+    function 当前主题() {
+      return document.documentElement.getAttribute("data-主题") === "dark" ? "dark" : "light";
+    }
+    function 应用主题(主题) {
+      document.documentElement.setAttribute("data-主题", 主题);
+    }
+    按钮.addEventListener("click", () => {
+      应用主题(当前主题() === "dark" ? "light" : "dark");
+    });
+  })();
+
+  /* ===== 右侧滚动浮标：进度环 + 跳顶 / 跳底 + X 隐藏 ===== */
+  (function 滚动浮标() {
+    const 浮标 = document.getElementById("滚动浮标");
+    const 唤起 = document.getElementById("唤起浮标");
+    const 上按钮 = document.getElementById("浮标-上");
+    const 下按钮 = document.getElementById("浮标-下");
+    const 关按钮 = document.getElementById("浮标-关");
+    const 上环 = 上按钮.querySelector(".进度环 .进度");
+    const 下环 = 下按钮.querySelector(".进度环 .进度");
+
+    /* 圆周长 = 2 * π * r = 2 * π * 22 ≈ 138.23 */
+    const 周长 = 2 * Math.PI * 22;
+    上环.setAttribute("stroke-dasharray", 周长);
+    下环.setAttribute("stroke-dasharray", 周长);
+
+    let 已隐藏 = false;
+    try { 已隐藏 = localStorage.getItem("站点浮标隐藏") === "1"; } catch (e) {}
+
+    function 更新可见() {
+      const 滚动 = window.scrollY || 0;
+      const 应显示 = 滚动 > 200 && !已隐藏;
+      浮标.classList.toggle("可见", 应显示);
+      浮标.classList.toggle("已隐藏", 已隐藏 && 滚动 > 200);
+      唤起.classList.toggle("可见", 已隐藏 && 滚动 > 200);
+    }
+
+    function 更新进度() {
+      const 文档高 = document.documentElement.scrollHeight - window.innerHeight;
+      const 比例 = 文档高 > 0 ? Math.min(1, Math.max(0, window.scrollY / 文档高)) : 0;
+      /* 上箭头：已读进度（从 0 涨到完整圆） */
+      上环.setAttribute("stroke-dashoffset", 周长 * (1 - 比例));
+      /* 下箭头：剩余进度（从完整圆减到 0） */
+      下环.setAttribute("stroke-dashoffset", 周长 * 比例);
+    }
+
+    function 帧() {
+      更新可见();
+      更新进度();
+    }
+
+    let 调度 = null;
+    window.addEventListener("scroll", () => {
+      if (调度) return;
+      调度 = requestAnimationFrame(() => {
+        调度 = null;
+        帧();
+      });
+    }, { passive: true });
+    window.addEventListener("resize", 帧);
+    帧();
+
+    上按钮.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    下按钮.addEventListener("click", () => {
+      const 高 = document.documentElement.scrollHeight;
+      window.scrollTo({ top: 高, behavior: "smooth" });
+    });
+    关按钮.addEventListener("click", () => {
+      已隐藏 = true;
+      try { localStorage.setItem("站点浮标隐藏", "1"); } catch (e) {}
+      帧();
+    });
+    唤起.addEventListener("click", () => {
+      已隐藏 = false;
+      try { localStorage.removeItem("站点浮标隐藏"); } catch (e) {}
+      帧();
+    });
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+{
+  "page": {
+    "show_sections": [
+      "hero",
+      "logos",
+      "introduce",
+      "benefits",
+      "usage",
+      "features",
+      "stats",
+      "testimonials",
+      "faq",
+      "cta"
+    ],
+    "sections": {
+      "hero": {
+        "id": "hero",
+        "title": "AI Web SaaS 一站式出海资源平台",
+        "highlight_text": "一站式",
+        "description": "把需求发现、产品设计、前端实现、AI 模型、部署上线、SEO 和增长工具按创业流程整理成可搜索、可投稿、可引用的资源库。",
+        "announcement": {
+          "badge": "迁移中",
+          "title": "从梓颖个人站升级为资源平台",
+          "url": "/about"
+        },
+        "tip": "先迁移旧站内容，再逐步开放投稿和 AI 资源助手。",
+        "buttons": [
+          {
+            "title": "浏览资源库",
+            "icon": "Box",
+            "url": "/resources",
+            "target": "_self",
+            "variant": "default"
+          },
+          {
+            "title": "阅读文章",
+            "icon": "BookOpenText",
+            "url": "/blog",
+            "target": "_self",
+            "variant": "outline"
+          }
+        ],
+        "show_avatars": true,
+        "avatars_tip": "持续收纳 AI Web SaaS 建站与出海资源",
+        "show_award": false,
+        "image": {
+          "src": "/imgs/features/admin.png",
+          "alt": "hero",
+          "width": 1200,
+          "height": 800
+        },
+        "image_invert": {
+          "src": "/imgs/features/admin-dark.png",
+          "alt": "hero",
+          "width": 1200,
+          "height": 800
+        },
+        "background_image": {
+          "src": "/imgs/bg/tree.jpg",
+          "alt": "hero"
+        }
+      },
+      "logos": {
+        "title": "平台围绕这些建站环节组织资源",
+        "items": [
+          {
+            "title": "需求发现",
+            "image": {
+              "src": "/imgs/logos/nextjs.svg",
+              "alt": "Demand"
+            }
+          },
+          {
+            "title": "产品设计",
+            "image": {
+              "src": "/imgs/logos/react.svg",
+              "alt": "Design"
+            }
+          },
+          {
+            "title": "前端开发",
+            "image": {
+              "src": "/imgs/logos/tailwindcss.svg",
+              "alt": "Frontend"
+            }
+          },
+          {
+            "title": "AI 模型",
+            "image": {
+              "src": "/imgs/logos/shadcn.svg",
+              "alt": "AI Models"
+            }
+          },
+          {
+            "title": "部署增长",
+            "image": {
+              "src": "/imgs/logos/vercel.svg",
+              "alt": "Launch"
+            }
+          }
+        ]
+      },
+      "introduce": {
+        "block": "features-list",
+        "id": "introduce",
+        "title": "这个平台解决什么问题？",
+        "label": "平台定位",
+        "description": "它不是替代第三方工具，而是把工具、模板、组件、MCP、Skill、模型榜单和服务商放回 AI Web SaaS 创业流程中。",
+        "image": {
+          "src": "/imgs/features/landing-page.png",
+          "alt": "introduce"
+        },
+        "items": [
+          {
+            "title": "资源按流程组织",
+            "description": "从灵感发现到上线增长，避免收藏夹和聊天记录里的资源散落。",
+            "icon": "RiCompass3Line",
+            "image": {
+              "src": "/imgs/features/1.png",
+              "alt": "introduce"
+            }
+          },
+          {
+            "title": "专题可以直接复用",
+            "description": "用合集串起 Landing Page、Claude Code、SEO、模型选择等具体任务。",
+            "icon": "RiStackLine",
+            "image": {
+              "src": "/imgs/features/2.png",
+              "alt": "introduce"
+            }
+          },
+          {
+            "title": "文章沉淀实战经验",
+            "description": "迁移旧博客，并继续沉淀产品、开发、AI 编程和出海复盘。",
+            "icon": "RiArticleLine",
+            "image": {
+              "src": "/imgs/features/3.png",
+              "alt": "introduce"
+            }
+          },
+          {
+            "title": "AI 回答带来源",
+            "description": "资源助手只基于站内可引用内容回答，找不到来源就明确说明。",
+            "icon": "RiRobot2Line",
+            "image": {
+              "src": "/imgs/features/4.png",
+              "alt": "introduce"
+            }
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "benefits": {
+        "block": "features-accordion",
+        "id": "benefits",
+        "title": "为什么从个人站升级为资源平台",
+        "label": "迁移目标",
+        "description": "旧站擅长展示梓颖是谁，新站要进一步承载长期资源收纳、内容管理和站内检索。",
+        "items": [
+          {
+            "title": "从展示到可管理",
+            "description": "资源、文章、专题、投稿进入数据库和后台，不再每次改文件部署。",
+            "icon": "RiDatabase2Line",
+            "image": {
+              "src": "/imgs/features/user-billing.png",
+              "alt": "benefits"
+            }
+          },
+          {
+            "title": "从链接到场景",
+            "description": "每个资源都有推荐理由、使用阶段、标签、价格类型和适用场景。",
+            "icon": "RiMap2Line",
+            "image": {
+              "src": "/imgs/features/admin-settings.png",
+              "alt": "benefits"
+            }
+          },
+          {
+            "title": "从聊天到可信问答",
+            "description": "AI 助手从资源库、文章和关于我检索来源，不再维护手写资料库。",
+            "icon": "RiVerifiedBadgeLine",
+            "image": {
+              "src": "/imgs/features/landing-page.png",
+              "alt": "benefits"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "block": "features-step",
+        "id": "usage",
+        "title": "按 AI Web SaaS 创业流程使用",
+        "description": "先从任务目标出发，再找到资源、文章和专题。",
+        "image": {
+          "src": "/imgs/features/1.png",
+          "alt": "usage"
+        },
+        "image_position": "left",
+        "text_align": "center",
+        "items": [
+          {
+            "title": "发现需求",
+            "description": "查看需求发现网站、竞品、榜单和用户反馈渠道。",
+            "image": {
+              "src": "/imgs/features/5.png",
+              "alt": "usage"
+            }
+          },
+          {
+            "title": "设计与开发",
+            "description": "收纳 Landing Page、UI 模板、组件库、Starter、Skill 和 MCP。",
+            "image": {
+              "src": "/imgs/features/6.png",
+              "alt": "usage"
+            }
+          },
+          {
+            "title": "模型与基础设施",
+            "description": "比较模型、数据库、登录、支付、部署、域名、邮箱和分析服务。",
+            "image": {
+              "src": "/imgs/features/7.png",
+              "alt": "usage"
+            }
+          },
+          {
+            "title": "SEO 与增长",
+            "description": "整理关键词研究、目录站、数据分析、内容分发和增长工具。",
+            "image": {
+              "src": "/imgs/features/8.png",
+              "alt": "usage"
+            }
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "features": {
+        "id": "features",
+        "title": "V1 核心能力",
+        "description": "先做资源平台闭环，再逐步增强社区和高级 RAG。",
+        "items": [
+          {
+            "title": "资源库",
+            "description": "网站、工具、插件、Skill、MCP、Starter、UI 模板、模型榜单和服务商。",
+            "icon": "RiBox3Line"
+          },
+          {
+            "title": "专题 / 合集",
+            "description": "围绕任务目标组合资源和文章，形成可直接使用的清单。",
+            "icon": "RiFoldersLine"
+          },
+          {
+            "title": "独立文章",
+            "description": "迁移旧博客，并支持后续原创教程、复盘和经验总结。",
+            "icon": "RiArticleLine"
+          },
+          {
+            "title": "投稿建议",
+            "description": "登录用户提交资源推荐、纠错、补充信息、文章建议和专题建议。",
+            "icon": "RiSendPlaneLine"
+          },
+          {
+            "title": "后台管理",
+            "description": "管理员管理资源、文章、专题、标签、分类、发布状态和 AI 引用开关。",
+            "icon": "RiDashboardLine"
+          },
+          {
+            "title": "AI 资源助手",
+            "description": "基于站内来源回答建站、设计、开发、上线、SEO、增长和模型选择问题。",
+            "icon": "RiRobot2Line"
+          }
+        ]
+      },
+      "stats": {
+        "id": "stats",
+        "title": "当前迁移范围",
+        "description": "先完整承接旧站，再扩展资源平台。",
+        "items": [
+          {
+            "title": "10",
+            "description": "篇旧博客"
+          },
+          {
+            "title": "4",
+            "description": "类核心内容"
+          },
+          {
+            "title": "双语",
+            "description": "中文 / English"
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "testimonials": {
+        "id": "testimonials",
+        "title": "后续会收纳的资源方向",
+        "description": "这些不是用户评价，而是平台 V1 的资源收纳重点。",
+        "items": [
+          {
+            "title": "需求发现与竞品研究",
+            "description": "收录 Product Hunt、目录站、MRR 观察、关键词工具和用户反馈渠道。",
+            "name": "需求发现与竞品研究",
+            "role": "资源方向",
+            "image": {
+              "src": "/imgs/avatars/1.png",
+              "alt": "需求发现与竞品研究"
+            }
+          },
+          {
+            "title": "Claude Code 与 AI 编程",
+            "description": "整理 Skill、MCP、Agent、Starter、提示词和开发工作流。",
+            "name": "Claude Code 与 AI 编程",
+            "role": "资源方向",
+            "image": {
+              "src": "/imgs/avatars/1.png",
+              "alt": "Claude Code 与 AI 编程"
+            }
+          },
+          {
+            "title": "部署、SEO 与增长",
+            "description": "沉淀 Vercel、Neon、域名邮箱、分析、SEO、内容分发和增长工具。",
+            "name": "部署、SEO 与增长",
+            "role": "资源方向",
+            "image": {
+              "src": "/imgs/avatars/1.png",
+              "alt": "部署、SEO 与增长"
+            }
+          }
+        ]
+      },
+      "faq": {
+        "id": "faq",
+        "title": "关于这个资源平台的常见问题",
+        "description": "V1 先做内容平台闭环，不做付费订阅和完整社区。",
+        "items": [
+          {
+            "title": "这个站和原个人站是什么关系？",
+            "description": "新站会完整迁移旧个人站的关于我、文章、图片和 AI 入口，同时把核心定位升级为 AI Web SaaS 一站式出海资源平台。"
+          },
+          {
+            "title": "为什么基于 ShipAny？",
+            "description": "ShipAny 已有 Next.js、i18n、auth、数据库、后台和部署能力，可以避免重复造轮子，把精力放在资源库、专题、投稿和 AI 助手上。"
+          },
+          {
+            "title": "V1 会做支付和积分吗？",
+            "description": "不会。SPEC 明确 V1 隐藏 Pricing、支付、订阅、Credits 和积分系统，只保留资源平台需要的能力。"
+          },
+          {
+            "title": "AI 助手会怎么回答？",
+            "description": "AI 助手只基于站内允许引用的资源、专题、文章和关于我内容回答，并提供来源；没有来源时会明确说明。"
+          }
+        ]
+      },
+      "cta": {
+        "id": "cta",
+        "title": "开始浏览 AI Web SaaS 出海资源",
+        "description": "资源库、专题、文章和关于我会按 SPEC 分阶段迁移完成。",
+        "buttons": [
+          {
+            "title": "进入资源库",
+            "url": "/resources",
+            "target": "_blank",
+            "icon": "Zap"
+          },
+          {
+            "title": "关于梓颖",
+            "url": "/about",
+            "target": "_blank",
+            "variant": "outline",
+            "icon": "BookOpenText"
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "subscribe": {
+        "id": "subscribe",
+        "title": "订阅我们的邮件通知",
+        "description": "获取 ShipAny 最新资讯与产品动态。",
+        "submit": {
+          "input": {
+            "placeholder": "输入邮箱"
+          },
+          "button": {
+            "title": "订阅"
+          },
+          "action": "/api/subscribe"
+        },
+        "className": "bg-muted"
+      }
+    }
+  }
+}

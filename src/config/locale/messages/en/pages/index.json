@@ -1,0 +1,392 @@
+{
+  "page": {
+    "show_sections": [
+      "hero",
+      "logos",
+      "introduce",
+      "benefits",
+      "usage",
+      "features",
+      "stats",
+      "testimonials",
+      "faq",
+      "cta"
+    ],
+    "sections": {
+      "hero": {
+        "id": "hero",
+        "title": "One-stop AI Web SaaS resource platform",
+        "highlight_text": "One-stop",
+        "description": "A searchable, manageable resource map for idea discovery, product design, frontend work, AI models, deployment, SEO, and growth.",
+        "announcement": {
+          "badge": "Migrating",
+          "title": "Upgrading Ziying’s personal site into a resource platform",
+          "url": "/about"
+        },
+        "tip": "Legacy content migrates first; submissions and the source-grounded assistant follow.",
+        "buttons": [
+          {
+            "title": "Browse Resources",
+            "icon": "Box",
+            "url": "/resources",
+            "target": "_self",
+            "variant": "default"
+          },
+          {
+            "title": "Read Articles",
+            "icon": "BookOpenText",
+            "url": "/blog",
+            "target": "_self",
+            "variant": "outline"
+          }
+        ],
+        "show_avatars": true,
+        "avatars_tip": "Continuously collecting AI Web SaaS building and go-to-market resources",
+        "show_award": false,
+        "image": {
+          "src": "/imgs/features/admin.png",
+          "alt": "hero",
+          "width": 1200,
+          "height": 800
+        },
+        "image_invert": {
+          "src": "/imgs/features/admin-dark.png",
+          "alt": "hero",
+          "width": 1200,
+          "height": 800
+        },
+        "background_image": {
+          "src": "/imgs/bg/tree.jpg",
+          "alt": "hero"
+        }
+      },
+      "logos": {
+        "id": "logos",
+        "title": "Resources are organized around these building stages",
+        "items": [
+          {
+            "title": "Demand",
+            "image": {
+              "src": "/imgs/logos/nextjs.svg",
+              "alt": "Demand"
+            }
+          },
+          {
+            "title": "Design",
+            "image": {
+              "src": "/imgs/logos/react.svg",
+              "alt": "Design"
+            }
+          },
+          {
+            "title": "Frontend",
+            "image": {
+              "src": "/imgs/logos/tailwindcss.svg",
+              "alt": "Frontend"
+            }
+          },
+          {
+            "title": "AI Models",
+            "image": {
+              "src": "/imgs/logos/shadcn.svg",
+              "alt": "AI Models"
+            }
+          },
+          {
+            "title": "Launch",
+            "image": {
+              "src": "/imgs/logos/vercel.svg",
+              "alt": "Launch"
+            }
+          }
+        ]
+      },
+      "introduce": {
+        "block": "features-list",
+        "id": "introduce",
+        "title": "What problem does this platform solve?",
+        "label": "Positioning",
+        "description": "It does not replace third-party tools. It organizes tools, templates, components, MCPs, Skills, model rankings, and services around the AI Web SaaS building process.",
+        "image": {
+          "src": "/imgs/features/landing-page.png",
+          "alt": "introduce"
+        },
+        "items": [
+          {
+            "title": "Process-based resources",
+            "description": "From idea discovery to launch and growth, resources no longer stay scattered in bookmarks and chats.",
+            "icon": "RiCompass3Line",
+            "image": {
+              "src": "/imgs/features/1.png",
+              "alt": "introduce"
+            }
+          },
+          {
+            "title": "Reusable collections",
+            "description": "Collections connect resources for Landing Pages, Claude Code, SEO, model choice, and other tasks.",
+            "icon": "RiStackLine",
+            "image": {
+              "src": "/imgs/features/2.png",
+              "alt": "introduce"
+            }
+          },
+          {
+            "title": "Practical articles",
+            "description": "Legacy posts migrate in, with more product, development, AI coding, and go-to-market notes later.",
+            "icon": "RiArticleLine",
+            "image": {
+              "src": "/imgs/features/3.png",
+              "alt": "introduce"
+            }
+          },
+          {
+            "title": "Source-backed answers",
+            "description": "The assistant answers only from citeable site content and says so when no source is found.",
+            "icon": "RiRobot2Line",
+            "image": {
+              "src": "/imgs/features/4.png",
+              "alt": "introduce"
+            }
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "benefits": {
+        "block": "features-accordion",
+        "id": "benefits",
+        "title": "Why upgrade the personal site",
+        "label": "Migration goals",
+        "description": "The old site explains who Ziying is. The new site also supports long-term resource collection, content operations, and search.",
+        "items": [
+          {
+            "title": "From display to management",
+            "description": "Resources, articles, collections, and submissions move into the database and admin.",
+            "icon": "RiDatabase2Line",
+            "image": {
+              "src": "/imgs/features/user-billing.png",
+              "alt": "benefits"
+            }
+          },
+          {
+            "title": "From links to scenarios",
+            "description": "Each resource has rationale, stage, tags, pricing type, and usage scenarios.",
+            "icon": "RiMap2Line",
+            "image": {
+              "src": "/imgs/features/admin-settings.png",
+              "alt": "benefits"
+            }
+          },
+          {
+            "title": "From chat to trusted Q&A",
+            "description": "The assistant retrieves from resources, articles, and profile content instead of a hardcoded profile.",
+            "icon": "RiVerifiedBadgeLine",
+            "image": {
+              "src": "/imgs/features/landing-page.png",
+              "alt": "benefits"
+            }
+          }
+        ]
+      },
+      "usage": {
+        "block": "features-step",
+        "id": "usage",
+        "title": "Use it by AI Web SaaS workflow",
+        "description": "Start from the task, then find resources, articles, and collections.",
+        "image": {
+          "src": "/imgs/features/1.png",
+          "alt": "usage"
+        },
+        "image_position": "left",
+        "text_align": "center",
+        "items": [
+          {
+            "title": "Discover demand",
+            "description": "Browse demand discovery sites, competitors, rankings, and feedback channels.",
+            "image": {
+              "src": "/imgs/features/5.png",
+              "alt": "usage"
+            }
+          },
+          {
+            "title": "Design and build",
+            "description": "Collect Landing Pages, UI templates, component kits, Starters, Skills, and MCPs.",
+            "image": {
+              "src": "/imgs/features/6.png",
+              "alt": "usage"
+            }
+          },
+          {
+            "title": "Models and infrastructure",
+            "description": "Compare models, databases, auth, payments, deployment, domains, email, and analytics.",
+            "image": {
+              "src": "/imgs/features/7.png",
+              "alt": "usage"
+            }
+          },
+          {
+            "title": "SEO and growth",
+            "description": "Organize keyword research, directories, analytics, distribution, and growth tools.",
+            "image": {
+              "src": "/imgs/features/8.png",
+              "alt": "usage"
+            }
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "features": {
+        "id": "features",
+        "title": "V1 core capabilities",
+        "description": "Build the resource platform loop first, then improve community and advanced RAG later.",
+        "items": [
+          {
+            "title": "Resource library",
+            "description": "Websites, tools, plugins, Skills, MCPs, Starters, UI templates, model rankings, and services.",
+            "icon": "RiBox3Line"
+          },
+          {
+            "title": "Collections",
+            "description": "Task-based lists that combine resources and articles into reusable playbooks.",
+            "icon": "RiFoldersLine"
+          },
+          {
+            "title": "Articles",
+            "description": "Legacy blog migration plus future tutorials, retrospectives, and experience notes.",
+            "icon": "RiArticleLine"
+          },
+          {
+            "title": "Submissions",
+            "description": "Logged-in users can suggest resources, corrections, supplements, articles, and collections.",
+            "icon": "RiSendPlaneLine"
+          },
+          {
+            "title": "Admin dashboard",
+            "description": "Admins manage resources, posts, collections, tags, categories, status, and AI citation flags.",
+            "icon": "RiDashboardLine"
+          },
+          {
+            "title": "AI resource assistant",
+            "description": "Answers questions about building, design, development, launch, SEO, growth, and model choice from site sources.",
+            "icon": "RiRobot2Line"
+          }
+        ]
+      },
+      "stats": {
+        "id": "stats",
+        "title": "Current migration scope",
+        "description": "Preserve the old site first, then grow into the resource platform.",
+        "items": [
+          {
+            "title": "10",
+            "description": "legacy posts"
+          },
+          {
+            "title": "4",
+            "description": "core content types"
+          },
+          {
+            "title": "Bilingual",
+            "description": "中文 / English"
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "testimonials": {
+        "id": "testimonials",
+        "title": "Resource directions to collect next",
+        "description": "These are V1 collection priorities, not user testimonials.",
+        "items": [
+          {
+            "title": "Demand and competitor research",
+            "description": "Product Hunt, directories, MRR tracking, keyword tools, and feedback channels.",
+            "name": "Demand and competitor research",
+            "role": "Resource direction",
+            "image": {
+              "src": "/imgs/avatars/1.png",
+              "alt": "Demand and competitor research"
+            }
+          },
+          {
+            "title": "Claude Code and AI coding",
+            "description": "Skills, MCPs, Agents, Starters, prompts, and development workflows.",
+            "name": "Claude Code and AI coding",
+            "role": "Resource direction",
+            "image": {
+              "src": "/imgs/avatars/1.png",
+              "alt": "Claude Code and AI coding"
+            }
+          },
+          {
+            "title": "Deployment, SEO, and growth",
+            "description": "Vercel, Neon, domains, email, analytics, SEO, content distribution, and growth tools.",
+            "name": "Deployment, SEO, and growth",
+            "role": "Resource direction",
+            "image": {
+              "src": "/imgs/avatars/1.png",
+              "alt": "Deployment, SEO, and growth"
+            }
+          }
+        ]
+      },
+      "faq": {
+        "id": "faq",
+        "title": "Common questions about the platform",
+        "description": "V1 focuses on the content platform loop, not paid subscriptions or a full community.",
+        "items": [
+          {
+            "title": "How is this related to the old personal site?",
+            "description": "The new site preserves the old about page, posts, images, and AI entry while upgrading the core positioning into a one-stop AI Web SaaS resource platform."
+          },
+          {
+            "title": "Why build on ShipAny?",
+            "description": "ShipAny already provides Next.js, i18n, auth, database, admin, and deployment foundations, so the work can focus on resources, collections, submissions, and the AI assistant."
+          },
+          {
+            "title": "Will V1 include payments or credits?",
+            "description": "No. The SPEC says V1 hides Pricing, payments, subscriptions, Credits, and points, keeping only the capabilities needed by the resource platform."
+          },
+          {
+            "title": "How will the AI assistant answer?",
+            "description": "It answers from site resources, collections, articles, and profile content that allow citation, with source links. If no source is found, it says so."
+          }
+        ]
+      },
+      "cta": {
+        "id": "cta",
+        "title": "Start browsing AI Web SaaS resources",
+        "description": "Resources, collections, articles, and the about page will be migrated in phases following the SPEC.",
+        "buttons": [
+          {
+            "title": "Open Resources",
+            "url": "/resources",
+            "target": "_blank",
+            "icon": "Zap"
+          },
+          {
+            "title": "About Ziying",
+            "url": "/about",
+            "target": "_blank",
+            "variant": "outline",
+            "icon": "BookOpenText"
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "subscribe": {
+        "id": "subscribe",
+        "title": "Subscribe to our newsletter",
+        "description": "Get the latest news and updates from ShipAny.",
+        "submit": {
+          "input": {
+            "placeholder": "Enter your email"
+          },
+          "button": {
+            "title": "Subscribe"
+          },
+          "action": "/api/subscribe"
+        },
+        "className": "bg-muted"
+      }
+    }
+  }
+}

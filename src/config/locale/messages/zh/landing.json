@@ -1,0 +1,166 @@
+{
+  "header": {
+    "id": "header",
+    "brand": {
+      "title": "梓颖出海资源库",
+      "logo": {
+        "src": "/logo.png",
+        "alt": "梓颖出海资源库",
+        "width": 100,
+        "height": 100
+      },
+      "url": "/"
+    },
+    "nav": {
+      "items": [
+        {
+          "title": "资源库",
+          "url": "/resources",
+          "icon": "Box"
+        },
+        {
+          "title": "专题",
+          "url": "/collections",
+          "icon": "Layers"
+        },
+        {
+          "title": "文章",
+          "url": "/blog",
+          "icon": "Newspaper"
+        },
+        {
+          "title": "投稿建议",
+          "url": "/submit",
+          "icon": "Send"
+        },
+        {
+          "title": "关于我",
+          "url": "/about",
+          "icon": "User"
+        },
+        {
+          "title": "AI 助手",
+          "url": "/chat",
+          "icon": "RiMessage2Line"
+        }
+      ]
+    },
+    "buttons": [],
+    "user_nav": {
+      "show_name": true,
+      "show_credits": false,
+      "show_sign_out": true,
+      "items": [
+        {
+          "title": "个人资料",
+          "url": "/settings/profile",
+          "icon": "User"
+        },
+        {
+          "title": "投稿建议",
+          "url": "/submit",
+          "icon": "Send"
+        },
+        {
+          "title": "活动",
+          "url": "/activity",
+          "icon": "Activity"
+        }
+      ]
+    },
+    "show_sign": true,
+    "show_theme": true,
+    "show_locale": true,
+    "topbanner": {
+      "text": "AI Web SaaS 一站式出海资源平台正在从旧个人站迁移中。"
+    }
+  },
+  "footer": {
+    "id": "footer",
+    "brand": {
+      "title": "梓颖出海资源库",
+      "description": "面向 AI Web SaaS 创业者的一站式出海资源平台，系统整理建站、设计、开发、模型、部署、SEO 和增长资源。",
+      "logo": {
+        "src": "/logo.png",
+        "alt": "梓颖出海资源库",
+        "width": 100,
+        "height": 100
+      },
+      "url": "/"
+    },
+    "nav": {
+      "items": [
+        {
+          "title": "平台",
+          "children": [
+            {
+              "title": "资源库",
+              "url": "/resources",
+              "target": "_self"
+            },
+            {
+              "title": "专题",
+              "url": "/collections",
+              "target": "_self"
+            },
+            {
+              "title": "文章",
+              "url": "/blog",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "参与",
+          "children": [
+            {
+              "title": "投稿建议",
+              "url": "/submit",
+              "target": "_self"
+            },
+            {
+              "title": "AI 助手",
+              "url": "/chat",
+              "target": "_self"
+            },
+            {
+              "title": "关于梓颖",
+              "url": "/about",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    },
+    "social": {
+      "items": [
+        {
+          "title": "Github",
+          "icon": "Github",
+          "url": "https://github.com/HZYing-NUS",
+          "target": "_blank"
+        },
+        {
+          "title": "邮箱",
+          "icon": "Mail",
+          "url": "mailto:me@huangziying.com",
+          "target": "_self"
+        }
+      ]
+    },
+    "agreement": {
+      "items": [
+        {
+          "title": "隐私政策",
+          "url": "/privacy-policy"
+        },
+        {
+          "title": "服务条款",
+          "url": "/terms-of-service"
+        }
+      ]
+    },
+    "show_theme": true,
+    "show_locale": true
+  }
+}
