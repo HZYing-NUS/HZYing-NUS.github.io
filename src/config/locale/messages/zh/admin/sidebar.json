@@ -1,10 +1,10 @@
 {
   "header": {
     "brand": {
-      "title": "梓颖出海资源库",
+      "title": "WebTools",
       "logo": {
         "src": "/logo.png",
-        "alt": "梓颖出海资源库"
+        "alt": "WebTools"
       },
       "url": "/admin"
     },
