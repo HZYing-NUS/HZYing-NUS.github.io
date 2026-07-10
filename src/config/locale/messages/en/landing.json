@@ -2,10 +2,10 @@
   "header": {
     "id": "header",
     "brand": {
-      "title": "Ziying AI SaaS Resources",
+      "title": "WebTools",
       "logo": {
         "src": "/logo.png",
-        "alt": "Ziying AI SaaS Resources",
+        "alt": "WebTools",
         "width": 100,
         "height": 100
       },
@@ -78,11 +78,11 @@
   "footer": {
     "id": "footer",
     "brand": {
-      "title": "Ziying AI SaaS Resources",
+      "title": "WebTools",
       "description": "A one-stop resource platform for AI Web SaaS founders, covering building, design, development, models, deployment, SEO, and growth.",
       "logo": {
         "src": "/logo.png",
-        "alt": "Ziying AI SaaS Resources",
+        "alt": "WebTools",
         "width": 1024,
         "height": 1024
       },

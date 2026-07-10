@@ -1,10 +1,10 @@
 {
   "header": {
     "brand": {
-      "title": "Ziying AI SaaS Resources",
+      "title": "WebTools",
       "logo": {
         "src": "/logo.png",
-        "alt": "Ziying AI SaaS Resources"
+        "alt": "WebTools"
       },
       "url": "/admin"
     },
