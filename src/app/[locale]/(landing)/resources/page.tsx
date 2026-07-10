@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 
+import { pickLocaleText, platformResources } from '@/config/seed/platform-content';
 import { getMetadata } from '@/shared/lib/seo';
 
 export const generateMetadata = getMetadata({
@@ -8,37 +10,24 @@ export const generateMetadata = getMetadata({
   canonicalUrl: '/resources',
 });
 
-const resourceTypes = [
-  '参考网站',
-  '工具',
-  'Chrome 插件',
-  'Skill',
-  'MCP',
-  'Starter',
-  'UI 模板',
-  '组件库',
-  '模型榜单',
-  '基础设施',
-];
-
-const stages = [
-  '需求发现',
-  '原型设计',
-  '前端开发',
-  'AI 模型',
-  '部署上线',
-  'SEO',
-  '运营增长',
-];
-
 export default async function ResourcesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ type?: string; stage?: string }>;
 }) {
   const { locale } = await params;
+  const { type = '', stage = '' } = await searchParams;
   setRequestLocale(locale);
   const isZh = locale === 'zh';
+  const resourceTypes = Array.from(new Set(platformResources.map((resource) => pickLocaleText(resource.type, locale))));
+  const stages = Array.from(new Set(platformResources.map((resource) => pickLocaleText(resource.stage, locale))));
+  const visibleResources = platformResources.filter((resource) => {
+    const resourceType = pickLocaleText(resource.type, locale);
+    const resourceStage = pickLocaleText(resource.stage, locale);
+    return (!type || resourceType === type) && (!stage || resourceStage === stage);
+  });
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16 md:py-24">
@@ -56,36 +45,75 @@ export default async function ResourcesPage({
         </p>
       </section>
 
-      <section className="mt-14 grid gap-6 md:grid-cols-2">
-        <div className="rounded-3xl border p-6">
-          <h2 className="text-xl font-semibold">{isZh ? '资源类型' : 'Resource types'}</h2>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {resourceTypes.map((type) => (
-              <span key={type} className="bg-muted rounded-full px-3 py-1 text-sm">
-                {type}
-              </span>
-            ))}
-          </div>
+      <section className="mt-10 rounded-3xl border bg-muted/30 p-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href={`/${locale}/resources`}
+            className={`rounded-full px-4 py-2 text-sm font-medium ${!type && !stage ? 'bg-primary text-primary-foreground' : 'border bg-background'}`}
+          >
+            {isZh ? '全部资源' : 'All resources'}
+          </Link>
+          {resourceTypes.map((item) => (
+            <Link
+              key={item}
+              href={`/${locale}/resources?type=${encodeURIComponent(item)}`}
+              className={`rounded-full px-4 py-2 text-sm font-medium ${type === item ? 'bg-primary text-primary-foreground' : 'border bg-background'}`}
+            >
+              {item}
+            </Link>
+          ))}
         </div>
-        <div className="rounded-3xl border p-6">
-          <h2 className="text-xl font-semibold">{isZh ? '使用阶段' : 'Workflow stages'}</h2>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {stages.map((stage) => (
-              <span key={stage} className="bg-muted rounded-full px-3 py-1 text-sm">
-                {stage}
-              </span>
-            ))}
-          </div>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {stages.map((item) => (
+            <Link
+              key={item}
+              href={`/${locale}/resources?stage=${encodeURIComponent(item)}`}
+              className={`rounded-full px-4 py-2 text-sm font-medium ${stage === item ? 'bg-primary text-primary-foreground' : 'border bg-background'}`}
+            >
+              {item}
+            </Link>
+          ))}
         </div>
       </section>
 
-      <section className="bg-muted/40 mt-10 rounded-3xl border p-8">
-        <h2 className="text-2xl font-semibold">{isZh ? '迁移状态' : 'Migration status'}</h2>
-        <p className="text-muted-foreground mt-3">
-          {isZh
-            ? '数据库模型已经为资源、专题、投稿、标签、分类、阶段和 AI 引用开关预留。下一步接入后台 CRUD 和第一批资源数据。'
-            : 'Database models are prepared for resources, collections, submissions, tags, categories, stages, and AI citation controls. Admin CRUD and initial resources come next.'}
-        </p>
+      <section className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {visibleResources.map((resource) => (
+          <article key={resource.slug} className="flex flex-col rounded-3xl border bg-background p-6 shadow-sm">
+            <div className="flex flex-wrap gap-2">
+              {[pickLocaleText(resource.type, locale), pickLocaleText(resource.stage, locale), pickLocaleText(resource.priceType, locale)].map((item) => (
+                <span key={item} className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <h2 className="mt-4 text-xl font-semibold leading-snug">
+              {pickLocaleText(resource.name, locale)}
+            </h2>
+            <p className="text-muted-foreground mt-3 text-sm leading-6">
+              {pickLocaleText(resource.summary, locale)}
+            </p>
+            <div className="mt-5 space-y-3 text-sm leading-6">
+              <p>
+                <span className="font-medium">{isZh ? '推荐理由：' : 'Why: '}</span>
+                <span className="text-muted-foreground">{pickLocaleText(resource.reason, locale)}</span>
+              </p>
+              <p>
+                <span className="font-medium">{isZh ? '使用场景：' : 'Use case: '}</span>
+                <span className="text-muted-foreground">{pickLocaleText(resource.useCase, locale)}</span>
+              </p>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {resource.tags.map((tag) => (
+                <span key={pickLocaleText(tag, locale)} className="text-muted-foreground rounded-full border px-3 py-1 text-xs">
+                  {pickLocaleText(tag, locale)}
+                </span>
+              ))}
+            </div>
+            <Link href={resource.website} target="_blank" className="text-primary mt-6 inline-flex text-sm font-medium">
+              {isZh ? '访问官网' : 'Visit website'}
+            </Link>
+          </article>
+        ))}
       </section>
     </main>
   );

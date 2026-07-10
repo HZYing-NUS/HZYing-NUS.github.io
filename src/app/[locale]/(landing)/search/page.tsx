@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 
 import { legacyPosts } from '@/config/seed/legacy-content';
+import { pickLocaleText, searchPlatformContent } from '@/config/seed/platform-content';
 import { getMetadata } from '@/shared/lib/seo';
 
 export const generateMetadata = getMetadata({
@@ -30,6 +32,7 @@ export default async function SearchPage({
   setRequestLocale(locale);
   const isZh = locale === 'zh';
   const keyword = q.trim().toLowerCase();
+  const { resources, collections } = searchPlatformContent(keyword, locale);
   const posts = legacyPosts.filter((post) => {
     if (!keyword) return post.locale === locale;
     return (
@@ -39,6 +42,7 @@ export default async function SearchPage({
         .includes(keyword)
     );
   });
+  const resultCount = resources.length + collections.length + posts.length;
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 md:py-24">
@@ -51,8 +55,8 @@ export default async function SearchPage({
         </h1>
         <p className="text-muted-foreground mt-6 text-lg">
           {isZh
-            ? 'V1 搜索将覆盖资源、专题、文章和关于我。当前先展示旧博客种子数据的搜索结果。'
-            : 'V1 search will cover resources, collections, articles, and profile content. For now it searches the legacy post seed.'}
+            ? '当前已覆盖第一批资源、专题和旧博客种子数据；后续会替换为 PostgreSQL 全站搜索。'
+            : 'Currently covers the initial resource, collection, and legacy post seed data; later this will move to PostgreSQL site search.'}
         </p>
       </section>
 
@@ -68,18 +72,82 @@ export default async function SearchPage({
         </button>
       </form>
 
-      <section className="mt-10 space-y-4">
-        {posts.map((post) => (
-          <article key={post.slug} className="rounded-3xl border p-6">
-            <p className="text-muted-foreground text-sm">{post.publishedAt}</p>
-            <h2 className="mt-2 text-xl font-semibold">
-              {pickLegacyText(post.title, locale)}
-            </h2>
+      <p className="text-muted-foreground mt-6 text-sm">
+        {isZh ? `找到 ${resultCount} 条结果` : `${resultCount} results found`}
+      </p>
+
+      <section className="mt-8 space-y-10">
+        {resources.length ? (
+          <div>
+            <h2 className="text-2xl font-semibold">{isZh ? '资源' : 'Resources'}</h2>
+            <div className="mt-4 space-y-4">
+              {resources.map((resource) => (
+                <article key={resource.slug} className="rounded-3xl border p-6">
+                  <p className="text-muted-foreground text-sm">
+                    {pickLocaleText(resource.type, locale)} · {pickLocaleText(resource.stage, locale)}
+                  </p>
+                  <h3 className="mt-2 text-xl font-semibold">{pickLocaleText(resource.name, locale)}</h3>
+                  <p className="text-muted-foreground mt-3 text-sm leading-6">
+                    {pickLocaleText(resource.summary, locale)}
+                  </p>
+                  <Link href={resource.website} target="_blank" className="text-primary mt-4 inline-flex text-sm font-medium">
+                    {isZh ? '访问官网' : 'Visit website'}
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {collections.length ? (
+          <div>
+            <h2 className="text-2xl font-semibold">{isZh ? '专题' : 'Collections'}</h2>
+            <div className="mt-4 space-y-4">
+              {collections.map((collection) => (
+                <article key={collection.slug} className="rounded-3xl border p-6">
+                  <p className="text-muted-foreground text-sm">
+                    {pickLocaleText(collection.stage, locale)} · {pickLocaleText(collection.category, locale)}
+                  </p>
+                  <h3 className="mt-2 text-xl font-semibold">{pickLocaleText(collection.title, locale)}</h3>
+                  <p className="text-muted-foreground mt-3 text-sm leading-6">
+                    {pickLocaleText(collection.summary, locale)}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {posts.length ? (
+          <div>
+            <h2 className="text-2xl font-semibold">{isZh ? '文章' : 'Articles'}</h2>
+            <div className="mt-4 space-y-4">
+              {posts.map((post) => (
+                <article key={post.slug} className="rounded-3xl border p-6">
+                  <p className="text-muted-foreground text-sm">{post.publishedAt}</p>
+                  <h3 className="mt-2 text-xl font-semibold">
+                    {pickLegacyText(post.title, locale)}
+                  </h3>
+                  <p className="text-muted-foreground mt-3 text-sm leading-6">
+                    {pickLegacyText(post.summary, locale)}
+                  </p>
+                  <Link href={`/${locale}/blog/${post.slug}`} className="text-primary mt-4 inline-flex text-sm font-medium">
+                    {isZh ? '阅读文章' : 'Read article'}
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {!resultCount ? (
+          <div className="rounded-3xl border bg-muted/40 p-8 text-center">
+            <h2 className="text-xl font-semibold">{isZh ? '没有找到结果' : 'No results found'}</h2>
             <p className="text-muted-foreground mt-3 text-sm">
-              {pickLegacyText(post.summary, locale)}
+              {isZh ? '换一个关键词试试，例如 Vercel、SEO、Claude Code。' : 'Try another keyword, such as Vercel, SEO, or Claude Code.'}
             </p>
-          </article>
-        ))}
+          </div>
+        ) : null}
       </section>
     </main>
   );

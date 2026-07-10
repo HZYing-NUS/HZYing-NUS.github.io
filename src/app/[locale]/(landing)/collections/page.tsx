@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 
+import { getResourcesBySlugs, pickLocaleText, platformCollections } from '@/config/seed/platform-content';
 import { getMetadata } from '@/shared/lib/seo';
 
 export const generateMetadata = getMetadata({
@@ -7,15 +9,6 @@ export const generateMetadata = getMetadata({
   description: '按任务目标组织 AI Web SaaS 资源和文章。',
   canonicalUrl: '/collections',
 });
-
-const examples = [
-  '从 0 做一个 AI SaaS Landing Page',
-  'Claude Code 开发资源',
-  'SEO 工具清单',
-  'AI 模型榜单合集',
-  '需求发现网站合集',
-  'Vercel + Neon 上线清单',
-];
 
 export default async function CollectionsPage({
   params,
@@ -42,17 +35,57 @@ export default async function CollectionsPage({
         </p>
       </section>
 
-      <section className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {examples.map((title) => (
-          <article key={title} className="rounded-3xl border p-6">
-            <h2 className="text-lg font-semibold">{title}</h2>
-            <p className="text-muted-foreground mt-3 text-sm">
-              {isZh
-                ? '示例专题，后续将从数据库读取并关联资源与文章。'
-                : 'Example collection. Later this will load from the database and link resources with articles.'}
-            </p>
-          </article>
-        ))}
+      <section className="mt-14 space-y-6">
+        {platformCollections.map((collection) => {
+          const resources = getResourcesBySlugs(collection.resourceSlugs);
+
+          return (
+            <article key={collection.slug} className="rounded-3xl border bg-background p-6 shadow-sm md:p-8">
+              <div className="flex flex-wrap gap-2">
+                {[pickLocaleText(collection.stage, locale), pickLocaleText(collection.category, locale)].map((item) => (
+                  <span key={item} className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-4 grid gap-8 lg:grid-cols-[1fr_340px]">
+                <div>
+                  <h2 className="text-2xl font-semibold tracking-tight">
+                    {pickLocaleText(collection.title, locale)}
+                  </h2>
+                  <p className="text-muted-foreground mt-4 leading-7">
+                    {pickLocaleText(collection.summary, locale)}
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {collection.tags.map((tag) => (
+                      <span key={pickLocaleText(tag, locale)} className="text-muted-foreground rounded-full border px-3 py-1 text-xs">
+                        {pickLocaleText(tag, locale)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-muted/50 p-4">
+                  <p className="text-sm font-medium">{isZh ? '关联资源' : 'Linked resources'}</p>
+                  <div className="mt-3 space-y-2">
+                    {resources.map((resource) => (
+                      <Link
+                        key={resource.slug}
+                        href={resource.website}
+                        target="_blank"
+                        className="block rounded-xl border bg-background px-4 py-3 text-sm font-medium transition hover:border-primary"
+                      >
+                        {pickLocaleText(resource.name, locale)}
+                        <span className="text-muted-foreground ml-2 font-normal">
+                          {pickLocaleText(resource.type, locale)}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </article>
+          );
+        })}
       </section>
     </main>
   );
