@@ -19,7 +19,7 @@
         "highlight_text": "One-stop",
         "description": "A searchable, manageable resource map for idea discovery, product design, frontend work, AI models, deployment, SEO, and growth.",
         "announcement": {
-          "badge": "Migrating",
+          "badge": "Continuously updated",
           "title": "Upgrading Ziying’s personal site into a resource platform",
           "url": "/about"
         },
@@ -338,8 +338,8 @@
             "description": "The new site preserves the old about page, posts, images, and AI entry while upgrading the core positioning into a one-stop AI Web SaaS resource platform."
           },
           {
-            "title": "Why build on ShipAny?",
-            "description": "ShipAny already provides Next.js, i18n, auth, database, admin, and deployment foundations, so the work can focus on resources, collections, submissions, and the AI assistant."
+            "title": "How should I use this resource platform?",
+            "description": "Filter the library by product-building stage, use collections to assemble practical workflows, and use articles and the profile page for first-hand context."
           },
           {
             "title": "Will V1 include payments or credits?",
@@ -374,8 +374,8 @@
       },
       "subscribe": {
         "id": "subscribe",
-        "title": "Subscribe to our newsletter",
-        "description": "Get the latest news and updates from ShipAny.",
+        "title": "Follow platform updates",
+        "description": "Get newly added resources, collections, and practical AI Web SaaS notes.",
         "submit": {
           "input": {
             "placeholder": "Enter your email"

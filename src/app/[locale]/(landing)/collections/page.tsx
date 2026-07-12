@@ -56,13 +56,12 @@ export default async function CollectionsPage({
                   <p className="text-muted-foreground mt-4 leading-7">
                     {pickLocaleText(collection.summary, locale)}
                   </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {collection.tags.map((tag) => (
-                      <span key={pickLocaleText(tag, locale)} className="text-muted-foreground rounded-full border px-3 py-1 text-xs">
-                        {pickLocaleText(tag, locale)}
-                      </span>
-                    ))}
-                  </div>
+                  <Link
+                    href={`/${locale}/collections/${collection.slug}`}
+                    className="mt-5 inline-flex text-sm font-medium text-primary"
+                  >
+                    {isZh ? '查看专题详情' : 'View collection details'}
+                  </Link>
                 </div>
                 <div className="rounded-2xl bg-muted/50 p-4">
                   <p className="text-sm font-medium">{isZh ? '关联资源' : 'Linked resources'}</p>

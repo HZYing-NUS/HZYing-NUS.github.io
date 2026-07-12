@@ -1,5 +1,10 @@
-import { notFound } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
-export default function DisabledCommercialPage() {
-  notFound();
+export default async function PricingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  permanentRedirect(`/${locale}/resources`);
 }

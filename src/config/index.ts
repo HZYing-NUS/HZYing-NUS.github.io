@@ -7,8 +7,10 @@ export type ConfigMap = Record<string, string>;
 
 export const envConfigs: ConfigMap = {
   app_url: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
-  app_name: process.env.NEXT_PUBLIC_APP_NAME ?? 'ShipAny App',
-  app_description: process.env.NEXT_PUBLIC_APP_DESCRIPTION ?? '',
+  app_name: process.env.NEXT_PUBLIC_APP_NAME ?? 'WebTools',
+  app_description:
+    process.env.NEXT_PUBLIC_APP_DESCRIPTION ??
+    'AI Web SaaS 出海资源平台，按建站流程整理工具、模板、服务与实战经验。',
   app_logo: process.env.NEXT_PUBLIC_APP_LOGO ?? '/logo.png',
   app_favicon: process.env.NEXT_PUBLIC_APP_FAVICON ?? '/favicon.ico',
   app_preview_image:

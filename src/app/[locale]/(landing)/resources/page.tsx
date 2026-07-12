@@ -109,8 +109,8 @@ export default async function ResourcesPage({
                 </span>
               ))}
             </div>
-            <Link href={resource.website} target="_blank" className="text-primary mt-6 inline-flex text-sm font-medium">
-              {isZh ? '访问官网' : 'Visit website'}
+            <Link href={`/${locale}/resources/${resource.slug}`} className="text-primary mt-6 inline-flex text-sm font-medium">
+              {isZh ? '查看资源详情' : 'View resource details'}
             </Link>
           </article>
         ))}

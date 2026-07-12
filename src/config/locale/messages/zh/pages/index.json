@@ -19,7 +19,7 @@
         "highlight_text": "一站式",
         "description": "把需求发现、产品设计、前端实现、AI 模型、部署上线、SEO 和增长工具按创业流程整理成可搜索、可投稿、可引用的资源库。",
         "announcement": {
-          "badge": "迁移中",
+          "badge": "持续更新",
           "title": "从梓颖个人站升级为资源平台",
           "url": "/about"
         },
@@ -337,8 +337,8 @@
             "description": "新站会完整迁移旧个人站的关于我、文章、图片和 AI 入口，同时把核心定位升级为 AI Web SaaS 一站式出海资源平台。"
           },
           {
-            "title": "为什么基于 ShipAny？",
-            "description": "ShipAny 已有 Next.js、i18n、auth、数据库、后台和部署能力，可以避免重复造轮子，把精力放在资源库、专题、投稿和 AI 助手上。"
+            "title": "如何使用这个资源平台？",
+            "description": "从资源库按建站阶段筛选工具，再通过专题将多项资源组合成可执行的工作流；文章和关于我提供真实项目经验作为补充。"
           },
           {
             "title": "V1 会做支付和积分吗？",
@@ -373,8 +373,8 @@
       },
       "subscribe": {
         "id": "subscribe",
-        "title": "订阅我们的邮件通知",
-        "description": "获取 ShipAny 最新资讯与产品动态。",
+        "title": "订阅平台更新",
+        "description": "获取新增资源、专题整理和 AI Web SaaS 实战笔记。",
         "submit": {
           "input": {
             "placeholder": "输入邮箱"
