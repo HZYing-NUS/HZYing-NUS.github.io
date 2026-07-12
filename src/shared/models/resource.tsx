@@ -1,9 +1,9 @@
-import { and, count, eq, ilike, inArray, or } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, inArray, or } from 'drizzle-orm';
 
 import { TableColumn } from '@/shared/types/blocks/table';
 
 import { db } from '@/core/db';
-import { resource, resourceTag, tag } from '@/config/db/schema';
+import { category, resource, resourceTag, stage, tag } from '@/config/db/schema';
 
 function getResourcesWhere(query = '') {
   const keyword = query.trim();
@@ -142,6 +142,114 @@ export async function deleteResource(id: string) {
     .returning();
 
   return item;
+}
+
+function publicResourceWhere(filters: {
+  query?: string;
+  resourceType?: string;
+  stageId?: string;
+  categoryId?: string;
+  pricingType?: string;
+  allowAiCitation?: boolean;
+}) {
+  const clauses = [eq(resource.status, 'published')];
+  const query = filters.query?.trim();
+  if (query) {
+    clauses.push(or(
+      ilike(resource.nameZh, `%${query}%`),
+      ilike(resource.nameEn, `%${query}%`),
+      ilike(resource.summaryZh, `%${query}%`),
+      ilike(resource.summaryEn, `%${query}%`),
+      ilike(resource.slug, `%${query}%`)
+    )!);
+  }
+  if (filters.resourceType) clauses.push(eq(resource.resourceType, filters.resourceType));
+  if (filters.stageId) clauses.push(eq(resource.stageId, filters.stageId));
+  if (filters.categoryId) clauses.push(eq(resource.categoryId, filters.categoryId));
+  if (filters.pricingType) clauses.push(eq(resource.pricingType, filters.pricingType));
+  if (filters.allowAiCitation) clauses.push(eq(resource.allowAiCitation, true));
+  return and(...clauses);
+}
+
+function localeText(locale: string, zh: string | null, en: string | null) {
+  return locale === 'en' ? en || zh || '' : zh || en || '';
+}
+
+export async function getPublishedResources({
+  locale,
+  query,
+  resourceType,
+  stageId,
+  categoryId,
+  pricingType,
+  allowAiCitation,
+}: {
+  locale: string;
+  query?: string;
+  resourceType?: string;
+  stageId?: string;
+  categoryId?: string;
+  pricingType?: string;
+  allowAiCitation?: boolean;
+}) {
+  const rows = await db()
+    .select({ resource, stage, category })
+    .from(resource)
+    .leftJoin(stage, eq(resource.stageId, stage.id))
+    .leftJoin(category, eq(resource.categoryId, category.id))
+    .where(publicResourceWhere({ query, resourceType, stageId, categoryId, pricingType }))
+    .orderBy(asc(resource.sortOrder), asc(resource.createdAt));
+
+  const resourceIds = (rows as { resource: typeof resource.$inferSelect }[]).map((row) => row.resource.id);
+  const tagRows = resourceIds.length
+    ? await db()
+        .select({ resourceId: resourceTag.resourceId, id: tag.id, nameZh: tag.nameZh, nameEn: tag.nameEn })
+        .from(resourceTag)
+        .innerJoin(tag, eq(resourceTag.tagId, tag.id))
+        .where(inArray(resourceTag.resourceId, resourceIds))
+    : [];
+  const tagsByResource = new Map<string, { id: string; name: string }[]>();
+  for (const row of tagRows as { resourceId: string; id: string; nameZh: string; nameEn: string | null }[]) {
+    const items = tagsByResource.get(row.resourceId) || [];
+    items.push({ id: row.id, name: localeText(locale, row.nameZh, row.nameEn) });
+    tagsByResource.set(row.resourceId, items);
+  }
+
+  return (rows as { resource: typeof resource.$inferSelect; stage: typeof stage.$inferSelect | null; category: typeof category.$inferSelect | null }[]).map((row) => ({
+    id: row.resource.id,
+    slug: row.resource.slug,
+    name: localeText(locale, row.resource.nameZh, row.resource.nameEn),
+    summary: localeText(locale, row.resource.summaryZh, row.resource.summaryEn),
+    reason: localeText(locale, row.resource.reasonZh, row.resource.reasonEn),
+    useCase: localeText(locale, row.resource.useCaseZh, row.resource.useCaseEn),
+    websiteUrl: row.resource.websiteUrl,
+    iconUrl: row.resource.iconUrl,
+    screenshotUrl: row.resource.screenshotUrl,
+    resourceType: row.resource.resourceType,
+    pricingType: row.resource.pricingType,
+    stage: row.stage ? localeText(locale, row.stage.nameZh, row.stage.nameEn) : '',
+    category: row.category ? localeText(locale, row.category.nameZh, row.category.nameEn) : '',
+    featured: row.resource.featured,
+    tags: tagsByResource.get(row.resource.id) || [],
+  }));
+}
+
+export async function getPublishedResourceBySlug(slug: string, locale: string) {
+  const items = await getPublishedResources({ locale });
+  return items.find((item) => item.slug === slug) || null;
+}
+
+export async function getPublicResourceFilters(locale: string) {
+  const [stages, categories, tags] = await Promise.all([
+    db().select().from(stage).orderBy(asc(stage.sortOrder), asc(stage.nameZh)),
+    db().select().from(category).orderBy(asc(category.nameZh)),
+    db().select().from(tag).orderBy(asc(tag.nameZh)),
+  ]);
+  return {
+    stages: (stages as (typeof stage.$inferSelect)[]).map((item) => ({ id: item.id, name: localeText(locale, item.nameZh, item.nameEn) })),
+    categories: (categories as (typeof category.$inferSelect)[]).map((item) => ({ id: item.id, name: localeText(locale, item.nameZh, item.nameEn) })),
+    tags: (tags as (typeof tag.$inferSelect)[]).map((item) => ({ id: item.id, name: localeText(locale, item.nameZh, item.nameEn) })),
+  };
 }
 
 export function getResourceTableColumns(locale: string): TableColumn[] {

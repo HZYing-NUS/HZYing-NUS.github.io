@@ -56,6 +56,11 @@
               "url": "/admin/resources"
             },
             {
+              "title": "Collections",
+              "icon": "PanelsTopLeft",
+              "url": "/admin/collections"
+            },
+            {
               "title": "Resource Stages",
               "icon": "Milestone",
               "url": "/admin/resource-stages"
@@ -69,6 +74,16 @@
               "title": "Resource Tags",
               "icon": "Tags",
               "url": "/admin/resource-tags"
+            },
+            {
+              "title": "Submissions",
+              "icon": "MessageSquarePlus",
+              "url": "/admin/submissions"
+            },
+            {
+              "title": "Profile",
+              "icon": "UserRound",
+              "url": "/admin/profile"
             }
           ]
         }

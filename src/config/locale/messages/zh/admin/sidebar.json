@@ -56,6 +56,11 @@
               "url": "/admin/resources"
             },
             {
+              "title": "专题",
+              "icon": "PanelsTopLeft",
+              "url": "/admin/collections"
+            },
+            {
               "title": "资源阶段",
               "icon": "Milestone",
               "url": "/admin/resource-stages"
@@ -69,6 +74,16 @@
               "title": "资源标签",
               "icon": "Tags",
               "url": "/admin/resource-tags"
+            },
+            {
+              "title": "投稿建议",
+              "icon": "MessageSquarePlus",
+              "url": "/admin/submissions"
+            },
+            {
+              "title": "关于我",
+              "icon": "UserRound",
+              "url": "/admin/profile"
             }
           ]
         }

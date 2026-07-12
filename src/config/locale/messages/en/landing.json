@@ -40,7 +40,7 @@
         },
         {
           "title": "AI Assistant",
-          "url": "/chat",
+          "url": "/assistant",
           "icon": "RiMessage2Line"
         }
       ]
@@ -72,7 +72,7 @@
     "show_theme": true,
     "show_locale": true,
     "topbanner": {
-      "text": "The AI Web SaaS resource platform is being migrated from the legacy personal site."
+      "text": "New resources, collections, and field notes are published continuously."
     }
   },
   "footer": {

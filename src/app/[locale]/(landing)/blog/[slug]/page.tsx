@@ -1,4 +1,7 @@
+import { permanentRedirect } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+
+import { legacyPosts } from '@/config/seed/legacy-content';
 
 import { getThemePage } from '@/core/theme';
 import { envConfigs } from '@/config';
@@ -21,7 +24,11 @@ export async function generateMetadata({
       ? `${envConfigs.app_url}/${locale}/blog/${slug}`
       : `${envConfigs.app_url}/blog/${slug}`;
 
+  const legacyPost = legacyPosts.find((item) => item.locale === locale && (item.slug === slug || item.legacyFileName.replace(/\.md$/, '') === slug));
   const post = await getPost({ slug, locale });
+  if (!post && legacyPost && legacyPost.slug !== slug) {
+    return { alternates: { canonical: `${envConfigs.app_url}/${locale}/blog/${legacyPost.slug}` } };
+  }
   if (!post) {
     return {
       title: `${slug} | ${t('title')}`,
@@ -52,6 +59,8 @@ export default async function BlogDetailPage({
   const post = await getPost({ slug, locale });
 
   if (!post) {
+    const legacyPost = legacyPosts.find((item) => item.locale === locale && item.legacyFileName.replace(/\.md$/, '') === slug);
+    if (legacyPost) permanentRedirect(`/${locale}/blog/${legacyPost.slug}`);
     return <Empty message={`Post not found`} />;
   }
 

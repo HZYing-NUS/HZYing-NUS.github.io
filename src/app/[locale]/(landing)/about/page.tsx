@@ -6,6 +6,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { legacyProfileContent } from '@/config/seed/legacy-content';
 import { getMetadata } from '@/shared/lib/seo';
+import { getPublishedProfile } from '@/shared/models/profile';
 
 export const generateMetadata = getMetadata({
   title: '关于我',
@@ -144,12 +145,13 @@ export default async function AboutPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const isZh = locale === 'zh';
-  const intro = pickText(legacyProfileContent.自我介绍, locale);
-  const education = legacyProfileContent.教育列表 as readonly LegacyRecord[];
-  const projects = legacyProfileContent.作品列表 as readonly LegacyRecord[];
-  const papers = legacyProfileContent.论文列表 as readonly LegacyRecord[];
-  const experiences = legacyProfileContent.经历列表 as readonly LegacyRecord[];
-  const awards = legacyProfileContent.奖项列表 as readonly LegacyRecord[];
+  const profile = (await getPublishedProfile(locale)) || legacyProfileContent;
+  const intro = pickText(profile.自我介绍, locale);
+  const education = profile.教育列表 as readonly LegacyRecord[];
+  const projects = profile.作品列表 as readonly LegacyRecord[];
+  const papers = profile.论文列表 as readonly LegacyRecord[];
+  const experiences = profile.经历列表 as readonly LegacyRecord[];
+  const awards = profile.奖项列表 as readonly LegacyRecord[];
   const groupedAwards = awards.reduce<Record<string, LegacyRecord[]>>((groups, award) => {
     const category = pickText(award.类别, locale) || (isZh ? '其他' : 'Other');
     groups[category] = groups[category] || [];

@@ -1,5 +1,5 @@
 import { getMDXComponents } from '@/mdx-components';
-import { and, count, desc, eq, like } from 'drizzle-orm';
+import { and, count, desc, eq, ilike, like, or } from 'drizzle-orm';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import moment from 'moment';
 
@@ -138,6 +138,34 @@ export async function getPostsCount({
     .limit(1);
 
   return result?.count || 0;
+}
+
+export async function searchPublishedPosts({ locale, query, limit = 20 }: { locale: string; query?: string; limit?: number }) {
+  const keyword = query?.trim();
+  const rows = await db()
+    .select()
+    .from(post)
+    .where(and(
+      eq(post.type, PostType.ARTICLE),
+      eq(post.status, PostStatus.PUBLISHED),
+      keyword ? or(
+        ilike(post.title, `%${keyword}%`),
+        ilike(post.description, `%${keyword}%`),
+        ilike(post.summaryZh, `%${keyword}%`),
+        ilike(post.summaryEn, `%${keyword}%`),
+        ilike(post.contentZh, `%${keyword}%`),
+        ilike(post.contentEn, `%${keyword}%`)
+      ) : undefined
+    ))
+    .orderBy(desc(post.publishedAt), desc(post.updatedAt))
+    .limit(limit);
+
+  return (rows as Post[]).map((item) => ({
+    slug: item.slug,
+    title: locale === 'en' ? item.title : item.title,
+    summary: locale === 'en' ? item.summaryEn || item.description || '' : item.summaryZh || item.description || '',
+    publishedAt: item.publishedAt || item.createdAt,
+  }));
 }
 
 // get single post, both from local file and database
