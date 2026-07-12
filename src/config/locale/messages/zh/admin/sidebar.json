@@ -49,6 +49,26 @@
               "title": "文章",
               "icon": "FileText",
               "url": "/admin/posts"
+            },
+            {
+              "title": "资源",
+              "icon": "Boxes",
+              "url": "/admin/resources"
+            },
+            {
+              "title": "资源阶段",
+              "icon": "Milestone",
+              "url": "/admin/resource-stages"
+            },
+            {
+              "title": "资源分类",
+              "icon": "FolderTree",
+              "url": "/admin/resource-categories"
+            },
+            {
+              "title": "资源标签",
+              "icon": "Tags",
+              "url": "/admin/resource-tags"
             }
           ]
         }
