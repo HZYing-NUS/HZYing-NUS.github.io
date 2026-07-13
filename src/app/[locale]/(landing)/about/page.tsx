@@ -1,138 +1,175 @@
-import type { ReactNode } from 'react';
-
 import Image from 'next/image';
 import Link from 'next/link';
-import { setRequestLocale } from 'next-intl/server';
+import { Github, Mail, MapPin, ExternalLink } from 'lucide-react';
 
+import { CertificateViewer } from './certificate-viewer';
 import { legacyProfileContent } from '@/config/seed/legacy-content';
-import { getMetadata } from '@/shared/lib/seo';
 import { getPublishedProfile } from '@/shared/models/profile';
 
-export const generateMetadata = getMetadata({
-  title: '关于我',
-  description: '梓颖的个人介绍、教育背景、工作与创业经历、作品项目、论文、奖项和联系方式。',
-  canonicalUrl: '/about',
-});
+type ContentRecord = Record<string, unknown>;
 
-type LegacyRecord = Record<string, unknown>;
+type DatedRecord = ContentRecord & {
+  __originalIndex: number;
+  __sortTimestamp: number | null;
+};
 
-function isRecord(value: unknown): value is LegacyRecord {
-  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
-}
-
-function pickText(value: unknown, locale: string) {
-  if (typeof value === 'string') return value.trim();
-  if (isRecord(value)) {
-    const zh = typeof value.zh === 'string' ? value.zh.trim() : '';
-    const en = typeof value.en === 'string' ? value.en.trim() : '';
-    return locale === 'en' ? en || zh : zh || en;
+function pickText(value: unknown, locale: string): string {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    const localized = locale === 'zh' ? record.zh : record.en;
+    if (typeof localized === 'string') return localized;
+    if (typeof record.zh === 'string') return record.zh;
+    if (typeof record.en === 'string') return record.en;
   }
   return '';
 }
 
-function pickImages(value: unknown) {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+function pickImages(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    : [];
 }
 
-function splitParagraphs(value: string) {
-  return value
-    .split(/\n{2,}/)
-    .map((part) => part.trim())
+function splitParagraphs(text: string): string[] {
+  return text
+    .split(/\n\s*\n|\r?\n/)
+    .map((paragraph) => paragraph.trim())
     .filter(Boolean);
+}
+
+function parseStartTimestamp(value: unknown): number | null {
+  if (typeof value !== 'string') return null;
+
+  const normalized = value
+    .replace(/[–—]/g, '-')
+    .replace(/年/g, '.')
+    .replace(/月/g, '')
+    .trim();
+  const firstSegment = normalized.split(/\s+-\s+|\s+to\s+/i)[0]?.trim() ?? '';
+  const numericMatch = firstSegment.match(/(\d{4})(?:\D+(\d{1,2}))?/);
+
+  if (numericMatch) {
+    const year = Number(numericMatch[1]);
+    const month = Number(numericMatch[2] ?? 1) - 1;
+    return Date.UTC(year, Math.max(0, Math.min(11, month)), 1);
+  }
+
+  const parsed = Date.parse(firstSegment);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function sortByTime(items: ContentRecord[], locale: string): ContentRecord[] {
+  const sorted: DatedRecord[] = items.map((item, index) => ({
+    ...item,
+    __originalIndex: index,
+    __sortTimestamp: parseStartTimestamp(pickText(item['时间'], locale)),
+  }));
+
+  sorted.sort((left, right) => {
+    if (left.__sortTimestamp === null && right.__sortTimestamp === null) {
+      return left.__originalIndex - right.__originalIndex;
+    }
+    if (left.__sortTimestamp === null) return 1;
+    if (right.__sortTimestamp === null) return -1;
+    return right.__sortTimestamp - left.__sortTimestamp || left.__originalIndex - right.__originalIndex;
+  });
+
+  return sorted.map(({ __originalIndex, __sortTimestamp, ...item }) => item);
 }
 
 function Section({
   eyebrow,
   title,
-  description,
   children,
 }: {
   eyebrow: string;
   title: string;
-  description?: string;
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
-    <section className="mt-20">
-      <div className="mb-8 max-w-3xl">
-        <p className="text-muted-foreground text-sm font-medium uppercase tracking-[0.3em]">
-          {eyebrow}
-        </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">{title}</h2>
-        {description ? <p className="text-muted-foreground mt-4 leading-7">{description}</p> : null}
+    <section className="scroll-mt-24 border-t border-border/70 py-14 sm:py-20">
+      <div className="mb-9 grid gap-2 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-8">
+        <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">{eyebrow}</p>
+        <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
       </div>
-      {children}
+      <div className="sm:ml-[13rem]">{children}</div>
     </section>
   );
 }
 
-function ProofImages({ images, label }: { images: string[]; label: string }) {
-  if (!images.length) return null;
+function ProfileRecord({
+  item,
+  locale,
+}: {
+  item: ContentRecord;
+  locale: string;
+}) {
+  const title = pickText(item['标题'], locale);
+  const period = pickText(item['时间'], locale);
+  const organization = pickText(item['单位'], locale);
+  const role = pickText(item['职位'], locale);
+  const description = pickText(item['描述'], locale);
+  const link = typeof item['链接'] === 'string' ? item['链接'] : '';
+  const images = pickImages(item['证明图片']);
 
   return (
-    <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {images.map((src, index) => (
-        <Link
-          key={`${src}-${index}`}
-          href={src}
-          target="_blank"
-          className="group relative block overflow-hidden rounded-2xl border bg-muted"
-        >
-          <Image
-            src={src}
-            alt={`${label} ${index + 1}`}
-            width={360}
-            height={240}
-            className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105"
-          />
-        </Link>
-      ))}
-    </div>
+    <article className="relative grid gap-3 border-b border-border/60 py-7 last:border-b-0 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8 sm:py-8">
+      <div className="flex items-center gap-3 sm:block">
+        <span className="hidden size-2 rounded-full bg-primary sm:absolute sm:-left-[1.1rem] sm:top-[2.4rem] sm:block" />
+        <p className="shrink-0 text-sm tabular-nums text-muted-foreground">{period}</p>
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-lg font-semibold leading-snug text-foreground">{title}</h3>
+        {organization || role ? (
+          <p className="mt-1 text-sm text-muted-foreground">
+            {[organization, role].filter(Boolean).join(' · ')}
+          </p>
+        ) : null}
+        {description ? <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground">{description}</p> : null}
+        {link || images.length > 0 ? (
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+            {link ? (
+              <Link
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                href={link}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {locale === 'zh' ? '查看链接' : 'Open link'}
+                <ExternalLink className="size-3.5" />
+              </Link>
+            ) : null}
+            {images.length > 0 ? <CertificateViewer images={images} locale={locale} title={title} /> : null}
+          </div>
+        ) : null}
+      </div>
+    </article>
   );
 }
 
-function ContentCard({
+function AwardRecord({
   item,
   locale,
-  titleKey,
-  subtitleKey,
-  metaKeys,
-  descriptionKey = '描述',
 }: {
-  item: LegacyRecord;
+  item: ContentRecord;
   locale: string;
-  titleKey: string;
-  subtitleKey?: string;
-  metaKeys?: string[];
-  descriptionKey?: string;
 }) {
-  const title = pickText(item[titleKey], locale);
-  const subtitle = subtitleKey ? pickText(item[subtitleKey], locale) : '';
-  const description = pickText(item[descriptionKey], locale);
-  const href = pickText(item.链接, locale);
-  const images = pickImages(item.证明图片);
-  const metas = (metaKeys || [])
-    .map((key) => pickText(item[key], locale))
-    .filter(Boolean);
+  const title = pickText(item['标题'], locale);
+  const period = pickText(item['时间'], locale);
+  const organization = pickText(item['单位'], locale);
+  const description = pickText(item['描述'], locale);
+  const images = pickImages(item['证明图片']);
 
   return (
-    <article className="rounded-3xl border bg-background p-6 shadow-sm">
-      {metas.length ? (
-        <div className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-sm">
-          {metas.map((meta) => (
-            <span key={meta}>{meta}</span>
-          ))}
-        </div>
-      ) : null}
-      <h3 className="mt-3 text-xl font-semibold leading-snug">{title}</h3>
-      {subtitle ? <p className="text-primary mt-2 text-sm font-medium">{subtitle}</p> : null}
-      {description ? <p className="text-muted-foreground mt-4 text-sm leading-7">{description}</p> : null}
-      {href ? (
-        <Link href={href} target="_blank" className="text-primary mt-4 inline-flex text-sm font-medium">
-          {locale === 'zh' ? '查看链接' : 'Open link'}
-        </Link>
-      ) : null}
-      <ProofImages images={images} label={title} />
+    <article className="grid gap-2 border-b border-border/60 py-5 last:border-b-0 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8">
+      <p className="text-sm tabular-nums text-muted-foreground">{period}</p>
+      <div>
+        <h3 className="font-medium leading-snug">{title}</h3>
+        {organization ? <p className="mt-1 text-sm text-muted-foreground">{organization}</p> : null}
+        {description ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p> : null}
+        {images.length > 0 ? <div className="mt-3"><CertificateViewer images={images} locale={locale} title={title} /></div> : null}
+      </div>
     </article>
   );
 }
@@ -143,212 +180,163 @@ export default async function AboutPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  setRequestLocale(locale);
-  const isZh = locale === 'zh';
-  const profile = (await getPublishedProfile(locale)) || legacyProfileContent;
-  const intro = pickText(profile.自我介绍, locale);
-  const avatar = pickText(profile.头像图片, locale);
-  const name = pickText(profile.名字, locale);
-  const tagline = pickText(profile.一句话标签, locale);
-  const identity = pickText(profile.身份说明, locale);
-  const email = pickText(profile.邮箱, locale);
-  const github = pickText(profile.GitHub, locale);
-  const wechatQr = pickText(profile.微信二维码图片, locale);
-  const officialQr = pickText(profile.公众号二维码图片, locale);
-  const wechatLabel = pickText(profile.微信号文字, locale);
-  const officialLabel = pickText(profile.公众号文字, locale);
-  const education = profile.教育列表 as readonly LegacyRecord[];
-  const projects = profile.作品列表 as readonly LegacyRecord[];
-  const papers = profile.论文列表 as readonly LegacyRecord[];
-  const experiences = profile.经历列表 as readonly LegacyRecord[];
-  const awards = profile.奖项列表 as readonly LegacyRecord[];
-  const groupedAwards = awards.reduce<Record<string, LegacyRecord[]>>((groups, award) => {
-    const category = pickText(award.类别, locale) || (isZh ? '其他' : 'Other');
-    groups[category] = groups[category] || [];
-    groups[category].push(award);
+  const profile = await getPublishedProfile(locale);
+  const content = (profile.content && typeof profile.content === 'object'
+    ? profile.content
+    : legacyProfileContent) as ContentRecord;
+  const isChinese = locale === 'zh';
+
+  const avatar = typeof content['头像图片'] === 'string' ? content['头像图片'] : '';
+  const email = typeof content['邮箱'] === 'string' ? content['邮箱'] : '';
+  const github = typeof content['GitHub'] === 'string' ? content['GitHub'] : '';
+  const wechatQr = typeof content['微信二维码图片'] === 'string' ? content['微信二维码图片'] : '';
+  const wechatId = pickText(content['微信号文字'], locale);
+  const officialQr = typeof content['公众号二维码图片'] === 'string' ? content['公众号二维码图片'] : '';
+  const officialName = pickText(content['公众号文字'], locale);
+  const bio = pickText(content['个人介绍'], locale);
+  const education = Array.isArray(content['教育列表']) ? sortByTime(content['教育列表'] as ContentRecord[], locale) : [];
+  const projects = Array.isArray(content['作品列表']) ? sortByTime(content['作品列表'] as ContentRecord[], locale) : [];
+  const papers = Array.isArray(content['论文列表']) ? sortByTime(content['论文列表'] as ContentRecord[], locale) : [];
+  const experiences = Array.isArray(content['经历列表']) ? sortByTime(content['经历列表'] as ContentRecord[], locale) : [];
+  const awards = Array.isArray(content['奖项列表']) ? content['奖项列表'] as ContentRecord[] : [];
+
+  const awardsByCategory = awards.reduce<Record<string, ContentRecord[]>>((groups, item) => {
+    const category = pickText(item['类别'], locale) || (isChinese ? '其他' : 'Other');
+    groups[category] ??= [];
+    groups[category].push(item);
     return groups;
   }, {});
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-      <section className="grid items-center gap-10 md:grid-cols-[240px_1fr]">
-        <div className="relative mx-auto size-48 overflow-hidden rounded-full border bg-muted md:mx-0">
-          <Image
-            src={avatar}
-            alt={name}
-            fill
-            className="object-cover"
-            sizes="192px"
-            priority
-          />
-        </div>
-        <div>
-          <p className="text-muted-foreground text-sm font-medium uppercase tracking-[0.3em]">
-            About
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
-            {name}
-          </h1>
-          <p className="text-primary mt-4 text-xl font-medium">
-            {tagline}
-          </p>
-          <p className="text-muted-foreground mt-4 text-lg leading-8">
-            {identity}
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Link
-              href={`mailto:${email}`}
-              className="bg-primary text-primary-foreground rounded-full px-5 py-2.5 text-sm font-medium"
-            >
-              {email}
-            </Link>
-            <Link
-              href={github}
-              target="_blank"
-              className="rounded-full border px-5 py-2.5 text-sm font-medium"
-            >
-              GitHub
-            </Link>
+    <main className="bg-background text-foreground">
+      <div className="mx-auto max-w-6xl px-5 pb-12 pt-12 sm:px-8 sm:pb-20 sm:pt-20">
+        <section className="grid gap-9 pb-16 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-8 sm:pb-24">
+          <div className="flex items-start gap-5 sm:block">
+            {avatar ? (
+              <Image
+                alt={profile.title}
+                className="size-20 rounded-full border border-border object-cover sm:size-32"
+                height={320}
+                priority
+                src={avatar}
+                width={320}
+              />
+            ) : null}
+            <p className="mt-1 text-sm leading-6 text-muted-foreground sm:mt-5">
+              {isChinese ? '杭州，中国' : 'Hangzhou, China'}
+            </p>
           </div>
-        </div>
-      </section>
-
-      <section className="mt-14 grid gap-5 md:grid-cols-4">
-        {[
-          [education.length, isZh ? '段教育经历' : 'education entries'],
-          [projects.length, isZh ? '个作品项目' : 'projects'],
-          [papers.length, isZh ? '篇论文' : 'papers'],
-          [awards.length, isZh ? '项奖项证书' : 'awards and certificates'],
-        ].map(([count, label]) => (
-          <div key={label} className="rounded-3xl border p-6 text-center">
-            <p className="text-3xl font-semibold">{count}</p>
-            <p className="text-muted-foreground mt-2 text-sm">{label}</p>
-          </div>
-        ))}
-      </section>
-
-      <Section
-        eyebrow="Profile"
-        title={isZh ? '自我介绍' : 'Introduction'}
-        description={isZh ? '完整承接原个人网站的双语自我介绍。' : 'Migrated from the original bilingual personal site.'}
-      >
-        <div className="rounded-3xl border bg-muted/30 p-6 md:p-8">
-          <div className="text-muted-foreground space-y-5 leading-8">
-            {splitParagraphs(intro).map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      <Section eyebrow="Contact" title={isZh ? '联系方式与二维码' : 'Contact and QR codes'}>
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-3xl border p-6 md:col-span-1">
-            <h3 className="text-xl font-semibold">Email / GitHub</h3>
-            <div className="text-muted-foreground mt-4 space-y-3 text-sm">
-              <p>{email}</p>
-              <Link href={github} target="_blank" className="text-primary block break-all">
-                {github}
-              </Link>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              {isChinese ? '关于我' : 'About me'}
+            </p>
+            <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">{profile.title}</h1>
+            {profile.description ? <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">{profile.description}</p> : null}
+            <div className="mt-7 flex flex-wrap gap-5">
+              {email ? (
+                <Link className="inline-flex items-center gap-2 text-sm font-medium hover:underline" href={`mailto:${email}`}>
+                  <Mail className="size-4" />
+                  {isChinese ? '发送邮件' : 'Email'}
+                </Link>
+              ) : null}
+              {github ? (
+                <Link className="inline-flex items-center gap-2 text-sm font-medium hover:underline" href={github} rel="noreferrer" target="_blank">
+                  <Github className="size-4" />
+                  GitHub
+                </Link>
+              ) : null}
             </div>
           </div>
-          {[
-            [wechatQr, wechatLabel, isZh ? '微信' : 'WeChat'],
-            [officialQr, officialLabel, isZh ? '公众号' : 'Official account'],
-          ].map(([src, label, title]) => (
-            <div key={title} className="rounded-3xl border p-6 text-center">
-              <div className="mx-auto w-36 overflow-hidden rounded-2xl border bg-muted p-2">
-                <Image src={src} alt={title} width={240} height={240} className="w-full" />
+        </section>
+
+        {bio ? (
+          <Section eyebrow={isChinese ? '简介' : 'Introduction'} title={isChinese ? '正在做的事' : 'What I am working on'}>
+            <div className="max-w-3xl space-y-5 text-base leading-8 text-muted-foreground">
+              {splitParagraphs(bio).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            </div>
+          </Section>
+        ) : null}
+
+        {education.length > 0 ? (
+          <Section eyebrow={isChinese ? '教育' : 'Education'} title={isChinese ? '读过的书' : 'Academic foundation'}>
+            <div className="border-l border-border/70 pl-5 sm:pl-7">
+              {education.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
+            </div>
+          </Section>
+        ) : null}
+
+        {experiences.length > 0 ? (
+          <Section eyebrow={isChinese ? '经历' : 'Experience'} title={isChinese ? '做过的事' : 'Work and practice'}>
+            <div className="border-l border-border/70 pl-5 sm:pl-7">
+              {experiences.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
+            </div>
+          </Section>
+        ) : null}
+
+        {projects.length > 0 ? (
+          <Section eyebrow={isChinese ? '项目' : 'Projects'} title={isChinese ? '做出的产品' : 'Products I built'}>
+            <div className="border-l border-border/70 pl-5 sm:pl-7">
+              {projects.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
+            </div>
+          </Section>
+        ) : null}
+
+        {papers.length > 0 ? (
+          <Section eyebrow={isChinese ? '论文' : 'Research'} title={isChinese ? '写过的论文' : 'Research and writing'}>
+            <div className="border-l border-border/70 pl-5 sm:pl-7">
+              {papers.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
+            </div>
+          </Section>
+        ) : null}
+
+        {Object.keys(awardsByCategory).length > 0 ? (
+          <Section eyebrow={isChinese ? '奖项' : 'Recognition'} title={isChinese ? '获得的认可' : 'Recognition received'}>
+            <div className="space-y-10">
+              {Object.entries(awardsByCategory).map(([category, records]) => (
+                <div key={category}>
+                  <h3 className="border-b border-border pb-3 text-sm font-semibold uppercase tracking-[0.1em] text-muted-foreground">{category}</h3>
+                  <div>{sortByTime(records, locale).map((item, index) => <AwardRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}</div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {(email || github || wechatQr || officialQr) ? (
+          <Section eyebrow={isChinese ? '联系' : 'Contact'} title={isChinese ? '保持联系' : 'Keep in touch'}>
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+              <div className="space-y-5">
+                <p className="max-w-xl text-base leading-8 text-muted-foreground">
+                  {isChinese ? '欢迎通过邮件、GitHub 或微信联系我。' : 'Reach me by email, GitHub, or WeChat.'}
+                </p>
+                <div className="space-y-3 text-sm">
+                  {email ? <Link className="flex w-fit items-center gap-2 hover:underline" href={`mailto:${email}`}><Mail className="size-4" />{email}</Link> : null}
+                  {github ? <Link className="flex w-fit items-center gap-2 hover:underline" href={github} rel="noreferrer" target="_blank"><Github className="size-4" />{github.replace(/^https?:\/\//, '')}</Link> : null}
+                  <p className="flex items-center gap-2 text-muted-foreground"><MapPin className="size-4" />{isChinese ? '杭州，中国' : 'Hangzhou, China'}</p>
+                </div>
               </div>
-              <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-              <p className="text-muted-foreground mt-1 text-sm">{label}</p>
+              {(wechatQr || officialQr) ? (
+                <div className="flex flex-wrap gap-6">
+                  {wechatQr ? <QrCode image={wechatQr} label={isChinese ? '微信' : 'WeChat'} value={wechatId} /> : null}
+                  {officialQr ? <QrCode image={officialQr} label={isChinese ? '公众号' : 'Official account'} value={officialName} /> : null}
+                </div>
+              ) : null}
             </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section eyebrow="Education" title={isZh ? '教育背景' : 'Education'}>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {education.map((item) => (
-            <ContentCard
-              key={pickText(item.学校, locale)}
-              item={item}
-              locale={locale}
-              titleKey="学校"
-              subtitleKey="学位"
-              metaKeys={['时间']}
-            />
-          ))}
-        </div>
-      </Section>
-
-      <Section eyebrow="Projects" title={isZh ? '作品 / 项目' : 'Projects'}>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {projects.map((item) => (
-            <ContentCard
-              key={pickText(item.标题, locale)}
-              item={item}
-              locale={locale}
-              titleKey="标题"
-              subtitleKey="角色"
-              metaKeys={['时间']}
-            />
-          ))}
-        </div>
-      </Section>
-
-      <Section eyebrow="Papers" title={isZh ? '论文' : 'Papers'}>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {papers.map((item) => (
-            <ContentCard
-              key={pickText(item.标题, locale)}
-              item={item}
-              locale={locale}
-              titleKey="标题"
-              subtitleKey="期刊"
-              metaKeys={['时间', '作者']}
-            />
-          ))}
-        </div>
-      </Section>
-
-      <Section eyebrow="Experience" title={isZh ? '工作 / 创业经历' : 'Work and founder experience'}>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {experiences.map((item) => (
-            <ContentCard
-              key={pickText(item.公司, locale)}
-              item={item}
-              locale={locale}
-              titleKey="公司"
-              subtitleKey="职位"
-              metaKeys={['时间']}
-            />
-          ))}
-        </div>
-      </Section>
-
-      <Section eyebrow="Awards" title={isZh ? '奖项 · 证书 · 荣誉' : 'Awards, certificates, and honors'}>
-        <div className="space-y-10">
-          {Object.entries(groupedAwards).map(([category, items]) => (
-            <div key={category}>
-              <h3 className="mb-5 text-2xl font-semibold">{category}</h3>
-              <div className="grid gap-5 lg:grid-cols-2">
-                {items.map((item) => (
-                  <ContentCard
-                    key={pickText(item.标题, locale)}
-                    item={item}
-                    locale={locale}
-                    titleKey="标题"
-                    subtitleKey="等级"
-                    metaKeys={['时间', '标签']}
-                    descriptionKey=""
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
+          </Section>
+        ) : null}
+      </div>
     </main>
+  );
+}
+
+function QrCode({ image, label, value }: { image: string; label: string; value: string }) {
+  return (
+    <figure className="w-32">
+      <Image alt={label} className="aspect-square w-32 border border-border bg-white p-1" height={256} src={image} width={256} />
+      <figcaption className="mt-3 text-center text-sm">
+        <span className="block font-medium">{label}</span>
+        {value ? <span className="mt-1 block text-xs text-muted-foreground">{value}</span> : null}
+      </figcaption>
+    </figure>
   );
 }
