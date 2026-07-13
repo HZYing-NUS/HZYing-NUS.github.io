@@ -147,6 +147,16 @@ export default async function AboutPage({
   const isZh = locale === 'zh';
   const profile = (await getPublishedProfile(locale)) || legacyProfileContent;
   const intro = pickText(profile.自我介绍, locale);
+  const avatar = pickText(profile.头像图片, locale);
+  const name = pickText(profile.名字, locale);
+  const tagline = pickText(profile.一句话标签, locale);
+  const identity = pickText(profile.身份说明, locale);
+  const email = pickText(profile.邮箱, locale);
+  const github = pickText(profile.GitHub, locale);
+  const wechatQr = pickText(profile.微信二维码图片, locale);
+  const officialQr = pickText(profile.公众号二维码图片, locale);
+  const wechatLabel = pickText(profile.微信号文字, locale);
+  const officialLabel = pickText(profile.公众号文字, locale);
   const education = profile.教育列表 as readonly LegacyRecord[];
   const projects = profile.作品列表 as readonly LegacyRecord[];
   const papers = profile.论文列表 as readonly LegacyRecord[];
@@ -164,8 +174,8 @@ export default async function AboutPage({
       <section className="grid items-center gap-10 md:grid-cols-[240px_1fr]">
         <div className="relative mx-auto size-48 overflow-hidden rounded-full border bg-muted md:mx-0">
           <Image
-            src={legacyProfileContent.头像图片}
-            alt={pickText(legacyProfileContent.名字, locale)}
+            src={avatar}
+            alt={name}
             fill
             className="object-cover"
             sizes="192px"
@@ -177,23 +187,23 @@ export default async function AboutPage({
             About
           </p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
-            {pickText(legacyProfileContent.名字, locale)}
+            {name}
           </h1>
           <p className="text-primary mt-4 text-xl font-medium">
-            {pickText(legacyProfileContent.一句话标签, locale)}
+            {tagline}
           </p>
           <p className="text-muted-foreground mt-4 text-lg leading-8">
-            {pickText(legacyProfileContent.身份说明, locale)}
+            {identity}
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
-              href={`mailto:${legacyProfileContent.邮箱}`}
+              href={`mailto:${email}`}
               className="bg-primary text-primary-foreground rounded-full px-5 py-2.5 text-sm font-medium"
             >
-              {legacyProfileContent.邮箱}
+              {email}
             </Link>
             <Link
-              href={legacyProfileContent.GitHub}
+              href={github}
               target="_blank"
               className="rounded-full border px-5 py-2.5 text-sm font-medium"
             >
@@ -236,15 +246,15 @@ export default async function AboutPage({
           <div className="rounded-3xl border p-6 md:col-span-1">
             <h3 className="text-xl font-semibold">Email / GitHub</h3>
             <div className="text-muted-foreground mt-4 space-y-3 text-sm">
-              <p>{legacyProfileContent.邮箱}</p>
-              <Link href={legacyProfileContent.GitHub} target="_blank" className="text-primary block break-all">
-                {legacyProfileContent.GitHub}
+              <p>{email}</p>
+              <Link href={github} target="_blank" className="text-primary block break-all">
+                {github}
               </Link>
             </div>
           </div>
           {[
-            [legacyProfileContent.微信二维码图片, pickText(legacyProfileContent.微信号文字, locale), isZh ? '微信' : 'WeChat'],
-            [legacyProfileContent.公众号二维码图片, pickText(legacyProfileContent.公众号文字, locale), isZh ? '公众号' : 'Official account'],
+            [wechatQr, wechatLabel, isZh ? '微信' : 'WeChat'],
+            [officialQr, officialLabel, isZh ? '公众号' : 'Official account'],
           ].map(([src, label, title]) => (
             <div key={title} className="rounded-3xl border p-6 text-center">
               <div className="mx-auto w-36 overflow-hidden rounded-2xl border bg-muted p-2">

@@ -3,8 +3,6 @@ import path from 'node:path';
 
 import { config } from 'dotenv';
 
-import { getStorageService } from '../src/shared/services/storage';
-import { getProfileByLocale, saveProfile } from '../src/shared/models/profile';
 
 const args = new Set(process.argv.slice(2));
 const envArgument = [...args].find((arg) => arg.startsWith('--env='));
@@ -24,7 +22,6 @@ if (apply && process.env.CONFIRM_LEGACY_MEDIA_MIGRATION !== '1') {
   throw new Error('Upload and database apply require CONFIRM_LEGACY_MEDIA_MIGRATION=1.');
 }
 
-config({ path: envFile, override: true });
 
 type ManifestItem = {
   sourcePath: string;
@@ -67,10 +64,35 @@ async function probe(url: string, expectedContentType: string) {
 }
 
 async function main() {
+  const [
+    { R2Provider },
+    { db },
+    { config: configTable },
+    { inArray },
+    { getProfileByLocale, saveProfile },
+  ] = await Promise.all([
+    import('../src/extensions/storage/r2'),
+    import('../src/core/db'),
+    import('../src/config/db/schema.postgres'),
+    import('drizzle-orm'),
+    import('../src/shared/models/profile'),
+  ]);
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as Manifest;
-  const storage = await getStorageService();
-  const r2 = storage.getProvider('r2');
-  if (!r2?.exists || !r2.getPublicUrl) {
+  const settingNames = ['r2_access_key', 'r2_secret_key', 'r2_bucket_name', 'r2_upload_path', 'r2_endpoint', 'r2_domain'];
+  const settingRows = await db().select().from(configTable).where(inArray(configTable.name, settingNames));
+  const settings = Object.fromEntries((settingRows as { name: string; value: string | null }[]).map((row) => [row.name, row.value || '']));
+  const endpointAccountId = settings.r2_endpoint.match(/^https?:\/\/([^.]+)\.r2\.cloudflarestorage\.com/i)?.[1] || 'configured-endpoint';
+  const r2 = new R2Provider({
+    accountId: endpointAccountId,
+    accessKeyId: settings.r2_access_key,
+    secretAccessKey: settings.r2_secret_key,
+    bucket: settings.r2_bucket_name,
+    region: 'auto',
+    endpoint: settings.r2_endpoint,
+    publicDomain: settings.r2_domain,
+    uploadPath: settings.r2_upload_path,
+  });
+  if (!r2.exists || !r2.getPublicUrl) {
     throw new Error('Existing R2 storage provider is not configured. No media was changed.');
   }
 
@@ -124,6 +146,7 @@ async function main() {
       const profile = await getProfileByLocale(locale);
       if (!profile) throw new Error(`Published Profile not found for ${locale}`);
       const content = structuredClone(profile.content) as Record<string, unknown>;
+      let changed = false;
       for (const item of items) {
         const reference = item.references[0];
         let current: any = content;
@@ -133,10 +156,15 @@ async function main() {
           counters.conflicts += 1;
           throw new Error(`Profile content changed at ${reference.path}; refusing to overwrite`);
         }
-        setJsonPath(content, reference.path, item.expectedPublicUrl!);
+        if (current !== item.expectedPublicUrl) {
+          setJsonPath(content, reference.path, item.expectedPublicUrl!);
+          changed = true;
+        }
       }
-      await saveProfile({ locale, content, status: profile.status, allowAiCitation: profile.allowAiCitation });
-      counters.patchedProfiles += 1;
+      if (changed) {
+        await saveProfile({ locale, content, status: profile.status, allowAiCitation: profile.allowAiCitation });
+        counters.patchedProfiles += 1;
+      }
     }
   }
 

@@ -9,7 +9,7 @@
       "bytes": 401224,
       "contentType": "image/png",
       "key": "legacy/v1/e8889b5fdafa2bdd948bf1e25052b64d556bc775f940d4288fda58323cc105d6.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/e8889b5fdafa2bdd948bf1e25052b64d556bc775f940d4288fda58323cc105d6.png",
       "references": [
         {
           "locale": "zh",
@@ -21,7 +21,8 @@
           "path": "$.公众号二维码图片",
           "sourceUrl": "/images/legacy/公众号二维码.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:23.991Z"
     },
     {
       "sourcePath": "public/images/legacy/头像.jpeg",
@@ -29,7 +30,7 @@
       "bytes": 9582,
       "contentType": "image/jpeg",
       "key": "legacy/v1/804731957925cc5e0c81c0508a6f0ad6bbd5042a924ce86a5e9e25802413b38a.jpeg",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/804731957925cc5e0c81c0508a6f0ad6bbd5042a924ce86a5e9e25802413b38a.jpeg",
       "references": [
         {
           "locale": "zh",
@@ -41,7 +42,8 @@
           "path": "$.头像图片",
           "sourceUrl": "/images/legacy/头像.jpeg"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:27.443Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/HarmonyOS-高级认证.png",
@@ -49,7 +51,7 @@
       "bytes": 1054579,
       "contentType": "image/png",
       "key": "legacy/v1/70df83a03dacd20cdb7e879c4fcad633ba585e277f5cb81ac8d6676f1e12ac69.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/70df83a03dacd20cdb7e879c4fcad633ba585e277f5cb81ac8d6676f1e12ac69.png",
       "references": [
         {
           "locale": "zh",
@@ -61,7 +63,8 @@
           "path": "$.奖项列表[6].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/HarmonyOS-高级认证.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:29.950Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/上理工-优秀学生-2023-2024.png",
@@ -69,7 +72,7 @@
       "bytes": 5990999,
       "contentType": "image/png",
       "key": "legacy/v1/c63765399abccc1d8cf49c68f79e69d0cb236cbb50455b6e5cc1b8e7a4e0b7ea.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/c63765399abccc1d8cf49c68f79e69d0cb236cbb50455b6e5cc1b8e7a4e0b7ea.png",
       "references": [
         {
           "locale": "zh",
@@ -81,7 +84,8 @@
           "path": "$.奖项列表[9].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/上理工-优秀学生-2023-2024.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:32.623Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/上理工-学习优秀三等奖学金-2023-2024.png",
@@ -89,7 +93,7 @@
       "bytes": 5551427,
       "contentType": "image/png",
       "key": "legacy/v1/bec5eb4e95b68e6d035a908c5c65446e10763273566cc9be3e191a9c4b0fe2f7.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/bec5eb4e95b68e6d035a908c5c65446e10763273566cc9be3e191a9c4b0fe2f7.png",
       "references": [
         {
           "locale": "zh",
@@ -101,7 +105,8 @@
           "path": "$.奖项列表[11].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/上理工-学习优秀三等奖学金-2023-2024.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:35.491Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/上理工-学习优秀二等奖学金-2024-2025.png",
@@ -109,7 +114,7 @@
       "bytes": 5555787,
       "contentType": "image/png",
       "key": "legacy/v1/7f9f860d455d5779ab63b9c66a246fa9f0430f3de560cf1e8d0e29d6d6911f11.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/7f9f860d455d5779ab63b9c66a246fa9f0430f3de560cf1e8d0e29d6d6911f11.png",
       "references": [
         {
           "locale": "zh",
@@ -121,7 +126,8 @@
           "path": "$.奖项列表[10].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/上理工-学习优秀二等奖学金-2024-2025.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:37.610Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/上理工-社会工作专项奖学金-2022-2023.png",
@@ -129,7 +135,7 @@
       "bytes": 5796815,
       "contentType": "image/png",
       "key": "legacy/v1/1f01437d65c93119560e2c9d76aa5d88cca71448d1a767ef1bda4b655d61207b.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/1f01437d65c93119560e2c9d76aa5d88cca71448d1a767ef1bda4b655d61207b.png",
       "references": [
         {
           "locale": "zh",
@@ -141,7 +147,8 @@
           "path": "$.奖项列表[12].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/上理工-社会工作专项奖学金-2022-2023.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:39.161Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/北京大数据协会-数据分析师初级.png",
@@ -149,7 +156,7 @@
       "bytes": 4626839,
       "contentType": "image/png",
       "key": "legacy/v1/a3171399802b778623105379d21754431418f9d0510ac6ecdc9d74c622a4db1a.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/a3171399802b778623105379d21754431418f9d0510ac6ecdc9d74c622a4db1a.png",
       "references": [
         {
           "locale": "zh",
@@ -161,7 +168,8 @@
           "path": "$.奖项列表[7].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/北京大数据协会-数据分析师初级.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:41.401Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/商业精英挑战赛-国际贸易-上海市一等奖.png",
@@ -169,7 +177,7 @@
       "bytes": 6096677,
       "contentType": "image/png",
       "key": "legacy/v1/80d9a8d88207e1176f6f90475c9683f6f079003100fedfa2c61f1c5d97b0101b.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/80d9a8d88207e1176f6f90475c9683f6f079003100fedfa2c61f1c5d97b0101b.png",
       "references": [
         {
           "locale": "zh",
@@ -181,7 +189,8 @@
           "path": "$.奖项列表[4].证明图片[1]",
           "sourceUrl": "/images/legacy/奖项/商业精英挑战赛-国际贸易-上海市一等奖.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:43.921Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/商业精英挑战赛-国际贸易-全国二等奖.png",
@@ -189,7 +198,7 @@
       "bytes": 2437221,
       "contentType": "image/png",
       "key": "legacy/v1/4114683265c34253af1203bf8c0eba36a9a5997bd13fd82e925adeab35fb1baf.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/4114683265c34253af1203bf8c0eba36a9a5997bd13fd82e925adeab35fb1baf.png",
       "references": [
         {
           "locale": "zh",
@@ -201,7 +210,8 @@
           "path": "$.奖项列表[4].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/商业精英挑战赛-国际贸易-全国二等奖.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:46.464Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/复旦大学-国际胜任力培训.png",
@@ -209,7 +219,7 @@
       "bytes": 2264420,
       "contentType": "image/png",
       "key": "legacy/v1/de6f6c0a10ac497c1ee542cad7db1a17c8def7632fc9e100c02d416ae333d7a8.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/de6f6c0a10ac497c1ee542cad7db1a17c8def7632fc9e100c02d416ae333d7a8.png",
       "references": [
         {
           "locale": "zh",
@@ -221,7 +231,8 @@
           "path": "$.奖项列表[8].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/复旦大学-国际胜任力培训.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:48.581Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/大学生数学竞赛-全国三等奖.png",
@@ -229,7 +240,7 @@
       "bytes": 6503223,
       "contentType": "image/png",
       "key": "legacy/v1/a7a5efe032b4fe397303e82fc40d7ac7aa3e5be3b0cc228bed62f372ae3d19cb.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/a7a5efe032b4fe397303e82fc40d7ac7aa3e5be3b0cc228bed62f372ae3d19cb.png",
       "references": [
         {
           "locale": "zh",
@@ -241,7 +252,8 @@
           "path": "$.奖项列表[2].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/大学生数学竞赛-全国三等奖.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:50.940Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/大数据分析竞赛-上海市三等奖.png",
@@ -249,7 +261,7 @@
       "bytes": 6528446,
       "contentType": "image/png",
       "key": "legacy/v1/06631ba6f3303a950d89ac58d9cd295403447d47311f4729fba496705c8b1176.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/06631ba6f3303a950d89ac58d9cd295403447d47311f4729fba496705c8b1176.png",
       "references": [
         {
           "locale": "zh",
@@ -261,7 +273,8 @@
           "path": "$.奖项列表[5].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/大数据分析竞赛-上海市三等奖.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:53.141Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/市场调查与分析大赛-上海市一等奖.png",
@@ -269,7 +282,7 @@
       "bytes": 3554012,
       "contentType": "image/png",
       "key": "legacy/v1/994071c62ea19b06e4c9449329a0fb05f5a5b3e853b7a8b9c0604ab2ecc9c14e.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/994071c62ea19b06e4c9449329a0fb05f5a5b3e853b7a8b9c0604ab2ecc9c14e.png",
       "references": [
         {
           "locale": "zh",
@@ -281,7 +294,8 @@
           "path": "$.奖项列表[1].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/市场调查与分析大赛-上海市一等奖.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:57.035Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/数学建模竞赛-上海市三等奖.png",
@@ -289,7 +303,7 @@
       "bytes": 5199054,
       "contentType": "image/png",
       "key": "legacy/v1/9a3c8c7b12a35514dff411269fa3ccb34c64f748f673cc83e13321a9a4e25d55.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/9a3c8c7b12a35514dff411269fa3ccb34c64f748f673cc83e13321a9a4e25d55.png",
       "references": [
         {
           "locale": "zh",
@@ -301,7 +315,8 @@
           "path": "$.奖项列表[3].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/数学建模竞赛-上海市三等奖.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:32:59.871Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/疫情防控-青年志愿者.png",
@@ -309,7 +324,7 @@
       "bytes": 1206536,
       "contentType": "image/png",
       "key": "legacy/v1/fa065d62efc912f5ff4ad1b2f1124b1271adfd80858077380def4a042aaefc2c.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/fa065d62efc912f5ff4ad1b2f1124b1271adfd80858077380def4a042aaefc2c.png",
       "references": [
         {
           "locale": "zh",
@@ -321,7 +336,8 @@
           "path": "$.奖项列表[13].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/疫情防控-青年志愿者.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:01.891Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/管理学院-优秀志愿者.png",
@@ -329,7 +345,7 @@
       "bytes": 4147580,
       "contentType": "image/png",
       "key": "legacy/v1/6adcc4a3b9ec8823e581fd931e8e0d8097df063680cd3239955ade0a41a9d88a.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/6adcc4a3b9ec8823e581fd931e8e0d8097df063680cd3239955ade0a41a9d88a.png",
       "references": [
         {
           "locale": "zh",
@@ -341,7 +357,8 @@
           "path": "$.奖项列表[13].证明图片[1]",
           "sourceUrl": "/images/legacy/奖项/管理学院-优秀志愿者.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:04.791Z"
     },
     {
       "sourcePath": "public/images/legacy/奖项/金融智能工程-上海市特等奖.png",
@@ -349,7 +366,7 @@
       "bytes": 3739855,
       "contentType": "image/png",
       "key": "legacy/v1/fe2b1511ca8d161ef8761e3a50f609b308b3a0fd76ca06db3defd962ac920594.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/fe2b1511ca8d161ef8761e3a50f609b308b3a0fd76ca06db3defd962ac920594.png",
       "references": [
         {
           "locale": "zh",
@@ -361,7 +378,8 @@
           "path": "$.奖项列表[0].证明图片[0]",
           "sourceUrl": "/images/legacy/奖项/金融智能工程-上海市特等奖.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:08.461Z"
     },
     {
       "sourcePath": "public/images/legacy/微信二维码.png",
@@ -369,7 +387,7 @@
       "bytes": 603891,
       "contentType": "image/png",
       "key": "legacy/v1/0d4dd9648543376acb43078d657151be4a820c21dfc336298e7e7ff180b83d8c.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/0d4dd9648543376acb43078d657151be4a820c21dfc336298e7e7ff180b83d8c.png",
       "references": [
         {
           "locale": "zh",
@@ -381,7 +399,8 @@
           "path": "$.微信二维码图片",
           "sourceUrl": "/images/legacy/微信二维码.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:11.012Z"
     },
     {
       "sourcePath": "public/images/legacy/教育/NUS-数字解决方案开发-Web应用.png",
@@ -389,7 +408,7 @@
       "bytes": 191580,
       "contentType": "image/png",
       "key": "legacy/v1/d4c243655f4ae188144eb18a8d01ea0b6ccf7996a8ae3ba2c599e294baf06ad2.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/d4c243655f4ae188144eb18a8d01ea0b6ccf7996a8ae3ba2c599e294baf06ad2.png",
       "references": [
         {
           "locale": "zh",
@@ -401,7 +420,8 @@
           "path": "$.教育列表[1].证明图片[1]",
           "sourceUrl": "/images/legacy/教育/NUS-数字解决方案开发-Web应用.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:12.782Z"
     },
     {
       "sourcePath": "public/images/legacy/教育/NUS-数字解决方案开发-设计.png",
@@ -409,7 +429,7 @@
       "bytes": 190192,
       "contentType": "image/png",
       "key": "legacy/v1/f1f1818b9e1e6909308146e15fbd08df108075e0522a5b2ab23e41abffc75f57.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/f1f1818b9e1e6909308146e15fbd08df108075e0522a5b2ab23e41abffc75f57.png",
       "references": [
         {
           "locale": "zh",
@@ -421,7 +441,8 @@
           "path": "$.教育列表[1].证明图片[0]",
           "sourceUrl": "/images/legacy/教育/NUS-数字解决方案开发-设计.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:16.762Z"
     },
     {
       "sourcePath": "public/images/legacy/教育/上理工-学位证书.png",
@@ -429,7 +450,7 @@
       "bytes": 5184858,
       "contentType": "image/png",
       "key": "legacy/v1/2655b8dc8582472089e9bf9da5a89c587a2331a677f14b4092cb640f28e4a964.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/2655b8dc8582472089e9bf9da5a89c587a2331a677f14b4092cb640f28e4a964.png",
       "references": [
         {
           "locale": "zh",
@@ -441,7 +462,8 @@
           "path": "$.教育列表[0].证明图片[1]",
           "sourceUrl": "/images/legacy/教育/上理工-学位证书.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:18.951Z"
     },
     {
       "sourcePath": "public/images/legacy/教育/上理工-毕业证书.png",
@@ -449,7 +471,7 @@
       "bytes": 7117701,
       "contentType": "image/png",
       "key": "legacy/v1/fbd04d5042bb7e8ea657dc82ad40cceb441b2630077ce96bad6ae0ef0a1b04d5.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/fbd04d5042bb7e8ea657dc82ad40cceb441b2630077ce96bad6ae0ef0a1b04d5.png",
       "references": [
         {
           "locale": "zh",
@@ -461,7 +483,8 @@
           "path": "$.教育列表[0].证明图片[0]",
           "sourceUrl": "/images/legacy/教育/上理工-毕业证书.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:20.962Z"
     },
     {
       "sourcePath": "public/images/legacy/经历/中国商飞-实习证明.png",
@@ -469,7 +492,7 @@
       "bytes": 2233791,
       "contentType": "image/png",
       "key": "legacy/v1/49129bb3798839ba2d5faa51ed9c3f15671e862c94c2ba40b3724de45c6d684f.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/49129bb3798839ba2d5faa51ed9c3f15671e862c94c2ba40b3724de45c6d684f.png",
       "references": [
         {
           "locale": "zh",
@@ -481,7 +504,8 @@
           "path": "$.经历列表[2].证明图片[0]",
           "sourceUrl": "/images/legacy/经历/中国商飞-实习证明.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:25.811Z"
     },
     {
       "sourcePath": "public/images/legacy/论文/OperationsResearch发表.png",
@@ -489,7 +513,7 @@
       "bytes": 356208,
       "contentType": "image/png",
       "key": "legacy/v1/55af0572e657dbd741bd4beb231a7ec1b9f7230338539de2cdddf5947ea5699c.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/55af0572e657dbd741bd4beb231a7ec1b9f7230338539de2cdddf5947ea5699c.png",
       "references": [
         {
           "locale": "zh",
@@ -501,7 +525,8 @@
           "path": "$.论文列表[0].证明图片[0]",
           "sourceUrl": "/images/legacy/论文/OperationsResearch发表.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:29.122Z"
     },
     {
       "sourcePath": "public/images/legacy/论文/PureMathematics发表.png",
@@ -509,7 +534,7 @@
       "bytes": 396838,
       "contentType": "image/png",
       "key": "legacy/v1/026b422466862cca1d32ca93ba8971b9c0cc67dd8321a7003f2ff21576dd181d.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/026b422466862cca1d32ca93ba8971b9c0cc67dd8321a7003f2ff21576dd181d.png",
       "references": [
         {
           "locale": "zh",
@@ -521,7 +546,8 @@
           "path": "$.论文列表[1].证明图片[0]",
           "sourceUrl": "/images/legacy/论文/PureMathematics发表.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:32.331Z"
     },
     {
       "sourcePath": "public/images/legacy/项目/科创共同体-校级结题.png",
@@ -529,7 +555,7 @@
       "bytes": 6811548,
       "contentType": "image/png",
       "key": "legacy/v1/07205ac72125f7802830cdc51ef0e2875d079bc2d959689b438d412e2c6a5775.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/07205ac72125f7802830cdc51ef0e2875d079bc2d959689b438d412e2c6a5775.png",
       "references": [
         {
           "locale": "zh",
@@ -541,7 +567,8 @@
           "path": "$.作品列表[1].证明图片[0]",
           "sourceUrl": "/images/legacy/项目/科创共同体-校级结题.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:34.591Z"
     },
     {
       "sourcePath": "public/images/legacy/项目/银行信用评分-市级结题.png",
@@ -549,7 +576,7 @@
       "bytes": 6646086,
       "contentType": "image/png",
       "key": "legacy/v1/c846af553d6dd7c6fc9f39c85df87b393bc2b00e853c91383708f1a81386550b.png",
-      "expectedPublicUrl": null,
+      "expectedPublicUrl": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/c846af553d6dd7c6fc9f39c85df87b393bc2b00e853c91383708f1a81386550b.png",
       "references": [
         {
           "locale": "zh",
@@ -561,7 +588,8 @@
           "path": "$.作品列表[0].证明图片[0]",
           "sourceUrl": "/images/legacy/项目/银行信用评分-市级结题.png"
         }
-      ]
+      ],
+      "verifiedAt": "2026-07-13T04:33:36.482Z"
     }
   ]
 }
