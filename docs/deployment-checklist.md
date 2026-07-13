@@ -18,7 +18,8 @@ This project reuses ShipAny's existing better-auth, database, storage, and chat 
 
 ## Storage
 
-- Existing Cloudflare R2 endpoint, bucket, access key, secret key, and public URL variables used by the current storage adapter.
+- Existing Cloudflare R2 endpoint, bucket, access key, secret key, upload path, and public URL variables used by the current storage adapter: `r2_access_key`, `r2_secret_key`, `r2_bucket_name`, `r2_upload_path`, `r2_endpoint`, and `r2_domain`.
+- The currently approved public migration domain is `https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev`. Configure it as the existing `r2_domain`; do not add a separate media client or URL builder.
 - Verify resource icon/screenshot uploads in the target environment after deployment.
 
 ## AI and Assistant

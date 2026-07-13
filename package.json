@@ -32,6 +32,8 @@
     "seed:platform": "tsx scripts/seed-platform-content.ts",
     "seed:legacy-profile": "tsx scripts/seed-legacy-profile.ts",
     "seed:legacy-posts": "tsx scripts/seed-legacy-posts.ts",
+    "media:manifest": "tsx scripts/generate-legacy-media-manifest.ts",
+    "media:migrate": "tsx scripts/migrate-legacy-media.ts",
     "auth:generate": "tsx scripts/with-env.ts npx @better-auth/cli generate --config=src/core/auth/index.ts",
     "rbac:init": "tsx scripts/with-env.ts npx tsx scripts/init-rbac.ts",
     "rbac:assign": "tsx scripts/with-env.ts npx tsx scripts/assign-role.ts",
