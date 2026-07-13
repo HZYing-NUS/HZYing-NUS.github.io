@@ -26,6 +26,7 @@ export default async function AddCollectionPage({ params }: { params: Promise<{ 
       button: { title: locale === 'zh' ? '创建专题' : 'Create collection' },
       handler: async (formData: FormData) => {
         'use server';
+        await requirePermission({ code: PERMISSIONS.POSTS_WRITE, redirectUrl: '/admin/no-permission', locale });
         const { values, tagIds, resourceIds } = getCollectionValues(formData);
         await createCollection({ id: getUuid(), ...values }, tagIds, resourceIds);
         redirect(`/${locale}/admin/collections`);

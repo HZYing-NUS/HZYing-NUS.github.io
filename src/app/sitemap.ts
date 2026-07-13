@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 import { envConfigs } from '@/config';
+import { searchPublishedPosts } from '@/shared/models/post';
 import { getPublishedCollections } from '@/shared/models/collection';
 import { getPublishedResources } from '@/shared/models/resource';
 
@@ -8,9 +11,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = ['zh', 'en'];
   const routes = ['', '/resources', '/collections', '/blog', '/about', '/submit'];
   const now = new Date();
-  const [resources, collections] = await Promise.all([
+  const [resources, collections, posts] = await Promise.all([
     getPublishedResources({ locale: envConfigs.locale }),
     getPublishedCollections(envConfigs.locale),
+    searchPublishedPosts({ locale: envConfigs.locale, limit: 500 }),
   ]);
 
   return locales.flatMap((locale) => {
@@ -33,6 +37,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     }));
-    return [...staticEntries, ...resourceEntries, ...collectionEntries];
+    const postEntries = posts.map((post) => ({
+      url: `${envConfigs.app_url}${prefix}/blog/${post.slug}`,
+      lastModified: post.publishedAt || now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }));
+    return [...staticEntries, ...resourceEntries, ...collectionEntries, ...postEntries];
   });
 }

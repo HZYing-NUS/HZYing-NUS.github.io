@@ -3,9 +3,26 @@ import { streamText } from 'ai';
 import { NextRequest } from 'next/server';
 
 import { getAllConfigs } from '@/shared/models/config';
+import { getSignUser } from '@/shared/models/user';
+import { enforceFixedWindowRateLimit, enforceMinIntervalRateLimit } from '@/shared/lib/rate-limit';
 import { retrieveAssistantSources } from '@/shared/services/resource-assistant';
 
 export async function POST(request: NextRequest) {
+  const user = await getSignUser();
+  const fixedWindowResponse = await enforceFixedWindowRateLimit(request, {
+    keyPrefix: 'resource-assistant',
+    key: user ? `resource-assistant:user:${user.id}` : undefined,
+    limit: 12,
+    windowSeconds: 60,
+  });
+  if (fixedWindowResponse) return fixedWindowResponse;
+
+  const intervalResponse = enforceMinIntervalRateLimit(request, {
+    keyPrefix: 'resource-assistant-interval',
+    intervalMs: 1200,
+  });
+  if (intervalResponse) return intervalResponse;
+
   const body = await request.json();
   const question = String(body.question || '').trim();
   const locale = body.locale === 'en' ? 'en' : 'zh';

@@ -55,6 +55,7 @@ export default async function EditResourcePage({
       handler: async (formData: FormData) => {
         'use server';
 
+        await requirePermission({ code: PERMISSIONS.POSTS_WRITE, redirectUrl: '/admin/no-permission', locale });
         const { values, tagIds } = getResourceValues(formData);
         await updateResource(id, values, tagIds);
         redirect(`/${locale}/admin/resources`);

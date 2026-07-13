@@ -48,6 +48,7 @@ export default async function AddResourcePage({
       handler: async (formData: FormData) => {
         'use server';
 
+        await requirePermission({ code: PERMISSIONS.POSTS_WRITE, redirectUrl: '/admin/no-permission', locale });
         const { values, tagIds } = getResourceValues(formData);
         await createResource({ id: getUuid(), ...values }, tagIds);
         redirect(`/${locale}/admin/resources`);

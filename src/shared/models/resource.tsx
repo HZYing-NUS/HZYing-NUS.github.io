@@ -240,15 +240,23 @@ export async function getPublishedResourceBySlug(slug: string, locale: string) {
 }
 
 export async function getPublicResourceFilters(locale: string) {
-  const [stages, categories, tags] = await Promise.all([
-    db().select().from(stage).orderBy(asc(stage.sortOrder), asc(stage.nameZh)),
-    db().select().from(category).orderBy(asc(category.nameZh)),
-    db().select().from(tag).orderBy(asc(tag.nameZh)),
+  const publishedRows = (await db()
+    .select({ stageId: resource.stageId, categoryId: resource.categoryId, id: resource.id })
+    .from(resource)
+    .where(eq(resource.status, 'published'))) as { stageId: string | null; categoryId: string | null; id: string }[];
+  const resourceIds = publishedRows.map((row) => row.id);
+  const stageIds: string[] = Array.from(new Set(publishedRows.map((row) => row.stageId).filter((id): id is string => Boolean(id))));
+  const categoryIds: string[] = Array.from(new Set(publishedRows.map((row) => row.categoryId).filter((id): id is string => Boolean(id))));
+  const [stages, categories, tagRows] = await Promise.all([
+    stageIds.length ? db().select().from(stage).where(inArray(stage.id, stageIds)).orderBy(asc(stage.sortOrder), asc(stage.nameZh)) : [],
+    categoryIds.length ? db().select().from(category).where(inArray(category.id, categoryIds)).orderBy(asc(category.nameZh)) : [],
+    resourceIds.length ? db().select({ id: tag.id, nameZh: tag.nameZh, nameEn: tag.nameEn }).from(resourceTag).innerJoin(tag, eq(resourceTag.tagId, tag.id)).where(inArray(resourceTag.resourceId, resourceIds)) : [],
   ]);
+  const uniqueTags = new Map((tagRows as { id: string; nameZh: string; nameEn: string | null }[]).map((item) => [item.id, item]));
   return {
     stages: (stages as (typeof stage.$inferSelect)[]).map((item) => ({ id: item.id, name: localeText(locale, item.nameZh, item.nameEn) })),
     categories: (categories as (typeof category.$inferSelect)[]).map((item) => ({ id: item.id, name: localeText(locale, item.nameZh, item.nameEn) })),
-    tags: (tags as (typeof tag.$inferSelect)[]).map((item) => ({ id: item.id, name: localeText(locale, item.nameZh, item.nameEn) })),
+    tags: Array.from(uniqueTags.values()).sort((a, b) => a.nameZh.localeCompare(b.nameZh)).map((item) => ({ id: item.id, name: localeText(locale, item.nameZh, item.nameEn) })),
   };
 }
 

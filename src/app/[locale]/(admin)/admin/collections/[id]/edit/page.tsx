@@ -31,6 +31,7 @@ export default async function EditCollectionPage({
       button: { title: locale === 'zh' ? '保存变更' : 'Save changes' },
       handler: async (formData: FormData) => {
         'use server';
+        await requirePermission({ code: PERMISSIONS.POSTS_WRITE, redirectUrl: '/admin/no-permission', locale });
         const { values, tagIds, resourceIds } = getCollectionValues(formData);
         await updateCollection(id, values, tagIds, resourceIds);
         redirect(`/${locale}/admin/collections`);

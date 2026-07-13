@@ -17,8 +17,14 @@ type MinIntervalOptions = {
 
 type Store = Map<string, number>;
 
+type FixedWindowOptions = {
+  limit: number;
+  windowSeconds: number;
+  keyPrefix?: string;
+  key?: string;
+};
+
 declare global {
-  // eslint-disable-next-line no-var
   var __minIntervalRateLimitStore: Store | undefined;
 }
 
@@ -77,22 +83,63 @@ export function enforceMinIntervalRateLimit(
         1,
         Math.ceil((intervalMs - delta) / 1000)
       );
-      return Response.json(
-        {
-          error: 'too_many_requests',
-          message: `Please retry after ${retryAfterSeconds}s.`,
-        },
-        {
-          status: 429,
-          headers: {
-            'cache-control': 'no-store',
-            'retry-after': String(retryAfterSeconds),
-          },
-        }
-      );
+      return rateLimitResponse(retryAfterSeconds);
     }
   }
 
   store.set(key, now);
   return null;
+}
+
+export async function enforceFixedWindowRateLimit(
+  request: Request,
+  opts: FixedWindowOptions
+): Promise<Response | null> {
+  const limit = Math.max(1, Number(opts.limit) || 1);
+  const windowSeconds = Math.max(1, Number(opts.windowSeconds) || 60);
+  const key = opts.key || buildKey(request, { intervalMs: 0, keyPrefix: opts.keyPrefix || 'fixed-window' });
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (url && token) {
+    try {
+      const response = await fetch(`${url}/pipeline`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify([
+          ['INCR', key],
+          ['EXPIRE', key, String(windowSeconds), 'NX'],
+        ]),
+      });
+      const result = await response.json();
+      const count = Number(result?.[0]?.result);
+      if (Number.isFinite(count)) {
+        return count > limit ? rateLimitResponse(windowSeconds) : null;
+      }
+    } catch {
+      // The in-memory fallback keeps the endpoint usable if optional Redis is unavailable.
+    }
+  }
+
+  const store = getStore();
+  const bucketKey = `${key}|${Math.floor(Date.now() / (windowSeconds * 1000))}`;
+  const count = (store.get(bucketKey) || 0) + 1;
+  store.set(bucketKey, count);
+  return count > limit ? rateLimitResponse(windowSeconds) : null;
+}
+
+function rateLimitResponse(retryAfterSeconds: number) {
+  return Response.json(
+    {
+      error: 'too_many_requests',
+      message: `Please retry after ${retryAfterSeconds}s.`,
+    },
+    {
+      status: 429,
+      headers: {
+        'cache-control': 'no-store',
+        'retry-after': String(retryAfterSeconds),
+      },
+    }
+  );
 }

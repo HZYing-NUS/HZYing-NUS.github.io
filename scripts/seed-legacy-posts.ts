@@ -8,14 +8,14 @@ import { legacyPosts } from '../src/config/seed/legacy-content';
 
 const args = new Set(process.argv.slice(2));
 const envFile = [...args].find((arg) => arg.startsWith('--env='))?.replace('--env=', '');
-const authorId = [...args].find((arg) => arg.startsWith('--author-id='))?.replace('--author-id=', '');
+const authorEmail = [...args].find((arg) => arg.startsWith('--author-email='))?.replace('--author-email=', '').trim().toLowerCase();
 const apply = args.has('--apply');
 const dryRun = args.has('--dry-run') || !apply;
 
-if (!envFile || !authorId) {
-  throw new Error('Usage: tsx scripts/seed-legacy-posts.ts --env=<file> --author-id=<user-id> --dry-run');
+if (!envFile || !authorEmail) {
+  throw new Error('Usage: tsx scripts/seed-legacy-posts.ts --env=<file> --author-email=<existing-user-email> --dry-run');
 }
-const confirmedAuthorId = authorId!;
+const confirmedAuthorEmail = authorEmail!;
 config({ path: envFile, override: true });
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required.');
 if (apply && process.env.CONFIRM_LEGACY_POSTS_SEED !== '1') {
@@ -27,8 +27,11 @@ const db = drizzle(client);
 
 async function main() {
   try {
-    const [author] = await db.select({ id: user.id }).from(user).where(eq(user.id, confirmedAuthorId)).limit(1);
-    if (!author) throw new Error('The supplied author ID does not exist. No posts were written.');
+    const authors = await db.select({ id: user.id }).from(user).where(eq(user.email, confirmedAuthorEmail)).limit(2);
+    if (authors.length !== 1) {
+      throw new Error('Expected exactly one existing user for --author-email. No posts were written.');
+    }
+    const authorId = authors[0].id;
 
     const bySlug = new Map<string, Array<(typeof legacyPosts)[number]>>();
     for (const item of legacyPosts) {
@@ -53,7 +56,7 @@ async function main() {
       if (!dryRun) {
         await db.insert(post).values({
           id: `legacy:post:${slug}`,
-          userId: confirmedAuthorId,
+          userId: authorId,
           slug,
           type: 'article',
           title: primary.title,

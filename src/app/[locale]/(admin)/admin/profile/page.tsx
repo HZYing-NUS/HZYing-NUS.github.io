@@ -18,6 +18,7 @@ export default async function AdminProfilePage({ params }: { params: Promise<{ l
 
   async function save(formData: FormData) {
     'use server';
+    await requirePermission({ code: PERMISSIONS.POSTS_WRITE, redirectUrl: '/admin/no-permission', locale });
     const raw = String(formData.get('content') || '');
     let parsed: Record<string, unknown>;
     try {

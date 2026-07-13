@@ -1,7 +1,7 @@
 import { and, asc, count, desc, eq } from 'drizzle-orm';
 
 import { db } from '@/core/db';
-import { resource, submission } from '@/config/db/schema';
+import { collection, post, resource, submission } from '@/config/db/schema';
 import { getUuid } from '@/shared/lib/hash';
 
 export const submissionTypes = [
@@ -144,5 +144,88 @@ export async function convertResourceSubmission(id: string) {
       .where(eq(submission.id, id));
 
     return { resourceId, slug };
+  });
+}
+
+export async function convertCollectionSubmission(id: string) {
+  return db().transaction(async (tx: any) => {
+    const [item] = await tx
+      .select()
+      .from(submission)
+      .where(and(eq(submission.id, id), eq(submission.type, 'collection')))
+      .limit(1);
+    if (!item) throw new Error('Collection submission not found');
+    if (item.convertedContentId) throw new Error('Submission has already been converted');
+
+    const baseSlug = slugify(item.title);
+    let slug = baseSlug;
+    let suffix = 2;
+    while ((await tx.select({ id: collection.id }).from(collection).where(eq(collection.slug, slug)).limit(1))[0]) {
+      slug = `${baseSlug}-${suffix}`;
+      suffix += 1;
+    }
+
+    const collectionId = getUuid();
+    await tx.insert(collection).values({
+      id: collectionId,
+      slug,
+      titleZh: item.title,
+      titleEn: item.title,
+      summaryZh: item.description || null,
+      summaryEn: item.description || null,
+      status: 'draft',
+      allowAiCitation: false,
+    });
+    await tx.update(submission).set({
+      status: 'converted',
+      convertedContentType: 'collection',
+      convertedContentId: collectionId,
+    }).where(eq(submission.id, id));
+
+    return { collectionId, slug };
+  });
+}
+
+export async function convertArticleSubmission(id: string, adminUserId: string) {
+  return db().transaction(async (tx: any) => {
+    const [item] = await tx
+      .select()
+      .from(submission)
+      .where(and(eq(submission.id, id), eq(submission.type, 'article')))
+      .limit(1);
+    if (!item) throw new Error('Article submission not found');
+    if (item.convertedContentId) throw new Error('Submission has already been converted');
+
+    const baseSlug = slugify(item.title);
+    let slug = baseSlug;
+    let suffix = 2;
+    while ((await tx.select({ id: post.id }).from(post).where(eq(post.slug, slug)).limit(1))[0]) {
+      slug = `${baseSlug}-${suffix}`;
+      suffix += 1;
+    }
+
+    const postId = getUuid();
+    await tx.insert(post).values({
+      id: postId,
+      userId: adminUserId,
+      slug,
+      type: 'article',
+      title: item.title,
+      description: item.description || null,
+      content: item.description || null,
+      summaryZh: item.description || null,
+      summaryEn: item.description || null,
+      contentZh: item.description || null,
+      contentEn: item.description || null,
+      status: 'draft',
+      allowAiCitation: false,
+    });
+    await tx.update(submission).set({
+      status: 'converted',
+      convertedContentType: 'post',
+      convertedContentId: postId,
+    }).where(eq(submission.id, id));
+
+    return { postId, slug };
   });
 }
