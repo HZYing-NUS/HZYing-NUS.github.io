@@ -170,10 +170,9 @@
     "typescript": "^5",
     "wrangler": "^4.34.0"
   },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.2.2",
-      "@types/react-dom": "19.2.2"
-    }
+  "packageManager": "pnpm@10.28.2",
+  "overrides": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2"
   }
 }
