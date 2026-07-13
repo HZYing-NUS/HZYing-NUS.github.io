@@ -1,13 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
@@ -31,22 +30,22 @@ export function CertificateViewer({
   const hasMultipleImages = images.length > 1;
   const currentImage = images[currentIndex];
 
-  useEffect(() => {
-    if (!open) {
-      setCurrentIndex(0);
-    }
-  }, [open]);
-
   if (!currentImage) {
     return null;
   }
 
   const previousLabel = isChinese ? '上一张证书' : 'Previous certificate';
   const nextLabel = isChinese ? '下一张证书' : 'Next certificate';
-  const closeLabel = isChinese ? '关闭证书查看器' : 'Close certificate viewer';
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      setCurrentIndex(0);
+    }
+  }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="h-auto px-0 text-sm" size="sm" variant="link">
           {isChinese
@@ -62,11 +61,6 @@ export function CertificateViewer({
               {isChinese ? '证明材料' : 'Supporting document'}
             </DialogDescription>
           </div>
-          <DialogClose asChild>
-            <Button aria-label={closeLabel} className="shrink-0" size="icon" variant="ghost">
-              <X className="size-4" />
-            </Button>
-          </DialogClose>
         </div>
 
         <div className="relative flex min-h-0 flex-1 items-center justify-center bg-muted/35 px-4 py-5 sm:px-12 sm:py-7">

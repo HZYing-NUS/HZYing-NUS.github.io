@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Github, Mail, MapPin, ExternalLink } from 'lucide-react';
 
+import { AboutSectionNav } from './about-section-nav';
 import { CertificateViewer } from './certificate-viewer';
 import { legacyProfileContent } from '@/config/seed/legacy-content';
 import { getPublishedProfile } from '@/shared/models/profile';
@@ -29,6 +30,14 @@ function pickImages(value: unknown): string[] {
   return Array.isArray(value)
     ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
     : [];
+}
+
+function pickRecordText(record: ContentRecord, locale: string, ...keys: string[]): string {
+  for (const key of keys) {
+    const value = pickText(record[key], locale);
+    if (value) return value;
+  }
+  return '';
 }
 
 function splitParagraphs(text: string): string[] {
@@ -79,16 +88,18 @@ function sortByTime(items: ContentRecord[], locale: string): ContentRecord[] {
 }
 
 function Section({
+  id,
   eyebrow,
   title,
   children,
 }: {
+  id: string;
   eyebrow: string;
   title: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="scroll-mt-24 border-t border-border/70 py-14 sm:py-20">
+    <section className="scroll-mt-24 border-t border-border/70 py-14 sm:py-20" id={id}>
       <div className="mb-9 grid gap-2 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-8">
         <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">{eyebrow}</p>
         <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
@@ -105,11 +116,11 @@ function ProfileRecord({
   item: ContentRecord;
   locale: string;
 }) {
-  const title = pickText(item['标题'], locale);
+  const title = pickRecordText(item, locale, '标题', '学校', '单位', '项目', '论文标题', '赛事');
   const period = pickText(item['时间'], locale);
-  const organization = pickText(item['单位'], locale);
-  const role = pickText(item['职位'], locale);
-  const description = pickText(item['描述'], locale);
+  const organization = pickRecordText(item, locale, '单位', '学校', '期刊', '赛事');
+  const role = pickRecordText(item, locale, '职位', '学位', '作者身份');
+  const description = pickRecordText(item, locale, '描述', '摘要', '职责与成果');
   const link = typeof item['链接'] === 'string' ? item['链接'] : '';
   const images = pickImages(item['证明图片']);
 
@@ -155,10 +166,12 @@ function AwardRecord({
   item: ContentRecord;
   locale: string;
 }) {
-  const title = pickText(item['标题'], locale);
+  const title = pickRecordText(item, locale, '标题', '奖项', '赛事');
   const period = pickText(item['时间'], locale);
-  const organization = pickText(item['单位'], locale);
-  const description = pickText(item['描述'], locale);
+  const organization = pickRecordText(item, locale, '单位', '主办方', '赛事');
+  const level = pickText(item['级别'], locale);
+  const rank = pickText(item['名次'], locale);
+  const description = pickRecordText(item, locale, '描述', '说明');
   const images = pickImages(item['证明图片']);
 
   return (
@@ -167,6 +180,12 @@ function AwardRecord({
       <div>
         <h3 className="font-medium leading-snug">{title}</h3>
         {organization ? <p className="mt-1 text-sm text-muted-foreground">{organization}</p> : null}
+        {level || rank ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {level ? <span className="border border-border px-2 py-1 text-xs text-muted-foreground">{level}</span> : null}
+            {rank ? <span className="border border-border px-2 py-1 text-xs font-medium">{rank}</span> : null}
+          </div>
+        ) : null}
         {description ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p> : null}
         {images.length > 0 ? <div className="mt-3"><CertificateViewer images={images} locale={locale} title={title} /></div> : null}
       </div>
@@ -181,9 +200,10 @@ export default async function AboutPage({
 }) {
   const { locale } = await params;
   const profile = await getPublishedProfile(locale);
-  const content = (profile.content && typeof profile.content === 'object'
-    ? profile.content
-    : legacyProfileContent) as ContentRecord;
+  const publishedContent = profile.content && typeof profile.content === 'object'
+    ? profile.content as ContentRecord
+    : {};
+  const content = { ...legacyProfileContent, ...publishedContent } as ContentRecord;
   const isChinese = locale === 'zh';
 
   const avatar = typeof content['头像图片'] === 'string' ? content['头像图片'] : '';
@@ -193,7 +213,7 @@ export default async function AboutPage({
   const wechatId = pickText(content['微信号文字'], locale);
   const officialQr = typeof content['公众号二维码图片'] === 'string' ? content['公众号二维码图片'] : '';
   const officialName = pickText(content['公众号文字'], locale);
-  const bio = pickText(content['个人介绍'], locale);
+  const bio = pickRecordText(content, locale, '自我介绍', '个人介绍');
   const education = Array.isArray(content['教育列表']) ? sortByTime(content['教育列表'] as ContentRecord[], locale) : [];
   const projects = Array.isArray(content['作品列表']) ? sortByTime(content['作品列表'] as ContentRecord[], locale) : [];
   const papers = Array.isArray(content['论文列表']) ? sortByTime(content['论文列表'] as ContentRecord[], locale) : [];
@@ -206,6 +226,16 @@ export default async function AboutPage({
     groups[category].push(item);
     return groups;
   }, {});
+  const hasContact = Boolean(email || github || wechatQr || officialQr);
+  const sectionNavItems = [
+    bio ? { id: 'introduction', label: isChinese ? '简介' : 'Introduction' } : null,
+    education.length > 0 ? { id: 'education', label: isChinese ? '教育' : 'Education' } : null,
+    experiences.length > 0 ? { id: 'experience', label: isChinese ? '经历' : 'Experience' } : null,
+    projects.length > 0 ? { id: 'projects', label: isChinese ? '项目' : 'Projects' } : null,
+    papers.length > 0 ? { id: 'research', label: isChinese ? '论文' : 'Research' } : null,
+    Object.keys(awardsByCategory).length > 0 ? { id: 'recognition', label: isChinese ? '奖项' : 'Recognition' } : null,
+    hasContact ? { id: 'contact', label: isChinese ? '联系' : 'Contact' } : null,
+  ].filter((item): item is { id: string; label: string } => item !== null);
 
   return (
     <main className="bg-background text-foreground">
@@ -249,8 +279,17 @@ export default async function AboutPage({
           </div>
         </section>
 
+        <div className="mb-8 lg:hidden">
+          <AboutSectionNav label={isChinese ? '页面导航' : 'On this page'} items={sectionNavItems} />
+        </div>
+
+        <div className="lg:grid lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-8">
+          <aside className="hidden lg:block">
+            <AboutSectionNav label={isChinese ? '页面导航' : 'On this page'} items={sectionNavItems} />
+          </aside>
+          <div>
         {bio ? (
-          <Section eyebrow={isChinese ? '简介' : 'Introduction'} title={isChinese ? '正在做的事' : 'What I am working on'}>
+          <Section id="introduction" eyebrow={isChinese ? '简介' : 'Introduction'} title={isChinese ? '正在做的事' : 'What I am working on'}>
             <div className="max-w-3xl space-y-5 text-base leading-8 text-muted-foreground">
               {splitParagraphs(bio).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             </div>
@@ -258,7 +297,7 @@ export default async function AboutPage({
         ) : null}
 
         {education.length > 0 ? (
-          <Section eyebrow={isChinese ? '教育' : 'Education'} title={isChinese ? '读过的书' : 'Academic foundation'}>
+          <Section id="education" eyebrow={isChinese ? '教育' : 'Education'} title={isChinese ? '读过的书' : 'Academic foundation'}>
             <div className="border-l border-border/70 pl-5 sm:pl-7">
               {education.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
             </div>
@@ -266,7 +305,7 @@ export default async function AboutPage({
         ) : null}
 
         {experiences.length > 0 ? (
-          <Section eyebrow={isChinese ? '经历' : 'Experience'} title={isChinese ? '做过的事' : 'Work and practice'}>
+          <Section id="experience" eyebrow={isChinese ? '经历' : 'Experience'} title={isChinese ? '做过的事' : 'Work and practice'}>
             <div className="border-l border-border/70 pl-5 sm:pl-7">
               {experiences.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
             </div>
@@ -274,7 +313,7 @@ export default async function AboutPage({
         ) : null}
 
         {projects.length > 0 ? (
-          <Section eyebrow={isChinese ? '项目' : 'Projects'} title={isChinese ? '做出的产品' : 'Products I built'}>
+          <Section id="projects" eyebrow={isChinese ? '项目' : 'Projects'} title={isChinese ? '做出的产品' : 'Products I built'}>
             <div className="border-l border-border/70 pl-5 sm:pl-7">
               {projects.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
             </div>
@@ -282,7 +321,7 @@ export default async function AboutPage({
         ) : null}
 
         {papers.length > 0 ? (
-          <Section eyebrow={isChinese ? '论文' : 'Research'} title={isChinese ? '写过的论文' : 'Research and writing'}>
+          <Section id="research" eyebrow={isChinese ? '论文' : 'Research'} title={isChinese ? '写过的论文' : 'Research and writing'}>
             <div className="border-l border-border/70 pl-5 sm:pl-7">
               {papers.map((item, index) => <ProfileRecord item={item} key={`${pickText(item['标题'], locale)}-${index}`} locale={locale} />)}
             </div>
@@ -290,7 +329,7 @@ export default async function AboutPage({
         ) : null}
 
         {Object.keys(awardsByCategory).length > 0 ? (
-          <Section eyebrow={isChinese ? '奖项' : 'Recognition'} title={isChinese ? '获得的认可' : 'Recognition received'}>
+          <Section id="recognition" eyebrow={isChinese ? '奖项' : 'Recognition'} title={isChinese ? '获得的认可' : 'Recognition received'}>
             <div className="space-y-10">
               {Object.entries(awardsByCategory).map(([category, records]) => (
                 <div key={category}>
@@ -302,8 +341,8 @@ export default async function AboutPage({
           </Section>
         ) : null}
 
-        {(email || github || wechatQr || officialQr) ? (
-          <Section eyebrow={isChinese ? '联系' : 'Contact'} title={isChinese ? '保持联系' : 'Keep in touch'}>
+        {hasContact ? (
+          <Section id="contact" eyebrow={isChinese ? '联系' : 'Contact'} title={isChinese ? '保持联系' : 'Keep in touch'}>
             <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
               <div className="space-y-5">
                 <p className="max-w-xl text-base leading-8 text-muted-foreground">
@@ -324,6 +363,8 @@ export default async function AboutPage({
             </div>
           </Section>
         ) : null}
+          </div>
+        </div>
       </div>
     </main>
   );
