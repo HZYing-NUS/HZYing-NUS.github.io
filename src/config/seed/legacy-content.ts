@@ -1,9 +1,9 @@
 export const legacyProfileContent = {
-  "头像图片": "/images/legacy/头像.jpeg",
+  "头像图片": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/804731957925cc5e0c81c0508a6f0ad6bbd5042a924ce86a5e9e25802413b38a.jpeg",
   "邮箱": "huangziying622@gmail.com",
   "GitHub": "https://github.com/HZYing-NUS",
-  "微信二维码图片": "/images/legacy/微信二维码.png",
-  "公众号二维码图片": "/images/legacy/公众号二维码.png",
+  "微信二维码图片": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/0d4dd9648543376acb43078d657151be4a820c21dfc336298e7e7ff180b83d8c.png",
+  "公众号二维码图片": "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/e8889b5fdafa2bdd948bf1e25052b64d556bc775f940d4288fda58323cc105d6.png",
   "名字": {
     "zh": "黄梓颖",
     "en": "Ziying Huang"
@@ -17,7 +17,7 @@ export const legacyProfileContent = {
     "en": "I’m Ziying Huang, a systems science founder building global web products with AI-assisted coding."
   },
   "自我介绍": {
-    "zh": "\n👋 我是黄梓颖 (Ziying Huang)\n\n欢迎来到我的数字主页。我是一名具备实战商业经验的 AI 开发者与独立创造者。从传统跨境供应链到前沿的 AI Web 产品开发，我始终对「用技术解决真实需求并走向全球」充满热情。目前的目标是使用 AI 打造一家「一人公司」。\n\n🎓 梦的起点：系统思维与技术狂热的交汇\n\n我的学术脉络跨越了上海理工大学（管理科学专业）与新加坡国立大学的学习经历。管理科学的学科背景为我建立了扎实的运筹统筹能力和数据分析基础，让我习惯以系统化、全局的视角去拆解商业链路；而在新加坡国立大学的求学时光，则进一步拓宽了我的视野，并彻底激活了我对前沿技术的狂热。\n\n我深信自己骨子里是一名纯粹的「极客」——对新技术充满纯粹的好奇，渴望探究事物运转的本质，并极度沉迷于用极客工具构建属于自己的系统。\n\n🚢 走向旷野：从校园到全球贸易的实战\n\n毕业之际，我选择了直接迈向真实的商业世界。2025 年下半年，我先独立操盘了一个私域电商项目（累计 GMV 接近 22 万人民币），把从选品、内容运营到成交转化的整条链路自己跑通；紧接着在 2025 年底，于杭州和义乌这两大核心商贸枢纽创办了自己的外贸公司，把战场从私域线上搬到了线下供应链。\n\n在此期间，我跑通了从前端采购、团队协作、跨国资金结算到仓储物流交付的全链路商业闭环（外贸阶段累计 GMV 接近 60 万人民币）。这段从 0 到 1 的实战经历，极大锤炼了我的执行力与商业敏锐度，也让我深刻理解了全球化贸易中真实的客户痛点与效率瓶颈。\n\n2026 年初，这段线下供应链的实战告一段落，沉淀下来的商业嗅觉与跨境经验，正成为我下一阶段全身心投入 AI 出海的底层燃料。\n\n💻 现在的我：用 AI 赋能，构建出海 Web 产品\n\n目前，我的核心主线是利用 AI 编程独立开发 Web 产品并向全球市场发布（出海）。\n\n结合此前的出海商业嗅觉，我正深度践行「Agentic Engineering」。依托 Claude Code、Codex 等极客开发环境，并结合 n8n、skill 等搭建了高效的自动化工作流，致力于开发下一代数字服务（例如构建独立的 AI Agent 系统）。我正在将全栈 AI 赋能与跨境商业经验深度融合，创造出具有全球视野的创新数字产品。\n\n🛠 我的技能树与特质\n\n技术与工具驱动：重度自动化与工具爱好者。习惯使用 Obsidian 构建个人知识库，熟练运用各种 AI 智能体框架来提升开发效率与内容生产力。\n\n全球化商业嗅觉：熟悉出海生态，能够敏锐捕捉海外市场趋势（常驻 Toolify 等 Web 数据分析工具）。在实操中积累了丰富的跨国协作与去中心化支付网络应用经验。\n\n破局与跨界能力：极强的自我驱动力与创业精神。从「重度依赖线下供应链的外贸业务」跨越到「纯数字化的 AI 软件开发」，我习惯在不确定性中快速学习、试错迭代，并始终以交付结果为导向。\n    ",
+    "zh": "\n我是黄梓颖（Ziying Huang），一名在南京工作的出海产品创造者。\n\n我毕业于上海理工大学管理科学专业，并在新加坡国立大学交换项目中完成软件分析与设计、Web 应用开发两个模块。管理科学训练了我拆解复杂问题、理解系统约束的习惯，也让我始终相信：真正有效的产品和工作流，不是堆更多工具，而是让人重新获得清晰的判断与行动秩序。\n\n🎓 毕业后，我没有直接进入传统职场，而是先后做过私域电商和跨境贸易。独立操盘私域电商项目，累计 GMV 接近 22 万元；随后在杭州和义乌创办外贸公司，跑通过采购、协作、跨国结算、仓储物流到交付的全链路，累计 GMV 接近 60 万元。我在真实商业链路里跑过，也见过很多“功能能跑，但系统跑不下去”的时刻。\n\n这些经历让我越来越在意一件事：做产品，不能只盯着功能本身。一个东西能不能长期运行，用户是否真的用得顺手，它会怎样进入真实的协作、社区与社会环境，往往比“能不能做出来”更重要。\n\n🚢 我在新加坡国立大学学习时，导师曾反复提醒我们：把基本功练成本能，把脑力留给判断；大学是一个可以安全犯错的地方，不要让工具替你跳过学习；变化不是威胁，而是新的学习机会。这些话后来慢慢变成了我做产品和生活的底层原则。\n\n💻 所以现在，我关注的不只是 AI 能生成什么，而是人如何在 AI 时代做出更好的判断。AI 会放大能力，也会放大混乱。方向对了，它能把有效动作放大很多倍；方向错了，它也会认真地把错误执行很多遍。正如现在，我专注于用 AI 编程打造面向海外用户的 Web 产品。我关心的不是做一个看起来很聪明的功能，而是找到那些被复杂工作流、信息过载和工具碎片化困住的人，做出能让他们反复使用、持续积累、愿意付费的产品。\n\n🧭 我的长期方向很简单：不被工具异化，也不被焦虑驯服。把功能之上的判断留给自己，把系统搭得更清晰一点，把变化变成下一次创造的起点。\n    ",
     "en": "\n👋 I'm Ziying Huang (黄梓颖)\n\nWelcome to my digital home. I'm an AI developer and indie maker with hands-on commercial experience — from traditional cross-border supply chains to AI-powered web products. I'm driven by one idea: using technology to solve real needs and take them global. My current goal is to build a one-person company powered by AI.\n\n🎓 Where it began: systems thinking meets a hacker's curiosity\n\nMy academic path runs through the University of Shanghai for Science and Technology (Management Science) and the National University of Singapore. Management Science gave me a solid foundation in operations and data analysis, and trained me to break down business pipelines with a systems-level view. My time at NUS broadened that lens further and fully unleashed my obsession with frontier technology.\n\nAt my core, I'm a hacker — endlessly curious about how things work, and addicted to building my own systems with the sharpest tools available.\n\n🚢 Into the wild: from campus to global trade\n\nRight after graduation, I went straight into the real commercial world. In the second half of 2025, I first solo-operated a private-domain e-commerce project (cumulative GMV approaching ¥220K RMB), running sourcing, content operations, and conversion end-to-end on my own. Right after that, in late 2025, I founded my own cross-border trade company across Hangzhou and Yiwu — two of the most important trading hubs in China — moving the battleground from private-domain online to offline supply chains.\n\nAlong the way, I ran the full commercial loop end-to-end: sourcing, team coordination, cross-border settlement, warehousing, and logistics (cumulative GMV approaching ¥600K RMB during the trade phase). That zero-to-one experience sharpened my execution and commercial instincts, and gave me a deep first-hand understanding of customer pain points and efficiency bottlenecks in global trade.\n\nIn early 2026, this offline supply-chain chapter wrapped, and the commercial instincts and cross-border lessons it left behind are exactly the fuel for what I'm pouring myself into next: shipping AI products to global markets.\n\n💻 Where I am now: shipping global web products with AI\n\nMy main focus today is building web products independently with AI-assisted development and shipping them to global markets.\n\nCombining what I've learned from going global commercially, I'm deep into \"Agentic Engineering\" — building with Claude Code, Codex, n8n, and skills to wire up high-leverage automation workflows for the next generation of digital services (think standalone AI Agent systems). I'm fusing full-stack AI capabilities with cross-border commercial experience to ship innovative digital products with a global mindset.\n\n🛠 My toolkit and how I work\n\nTooling-first builder: heavy on automation. I use Obsidian as my second brain and lean on a range of AI agent frameworks to compound my output across engineering and content.\n\nGlobal commercial instinct: at home in the going-global ecosystem, with a sharp eye on overseas market trends (Toolify and similar analytics tools are part of my daily rotation). Hands-on experience with cross-border collaboration and decentralized payment networks.\n\nCross-domain operator: high self-drive and a founder's mindset. Going from offline-heavy cross-border trade to fully digital AI software, I've learned to move fast through uncertainty, iterate through trial and error, and stay relentlessly outcome-driven.\n    "
   },
   "微信号文字": {
@@ -47,8 +47,8 @@ export const legacyProfileContent = {
         "en": "Core courses: AI Foundations, Deep Learning, Systems Modeling & Simulation, MIS, Operations Research (90+ in most). Thesis on evolutionary-game-based collaborative R&D strategies scored 95, ranked first in the department."
       },
       "证明图片": [
-        "/images/legacy/教育/上理工-毕业证书.png",
-        "/images/legacy/教育/上理工-学位证书.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/fbd04d5042bb7e8ea657dc82ad40cceb441b2630077ce96bad6ae0ef0a1b04d5.png",
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/2655b8dc8582472089e9bf9da5a89c587a2331a677f14b4092cb640f28e4a964.png"
       ]
     },
     {
@@ -69,8 +69,8 @@ export const legacyProfileContent = {
         "en": "Completed two core modules during the exchange: Software Analysis & Design, and Web Application Development. Earned NUS-ISS certificates in Digital Solutions Development (Design) and (Web Application)."
       },
       "证明图片": [
-        "/images/legacy/教育/NUS-数字解决方案开发-设计.png",
-        "/images/legacy/教育/NUS-数字解决方案开发-Web应用.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/f1f1818b9e1e6909308146e15fbd08df108075e0522a5b2ab23e41abffc75f57.png",
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/d4c243655f4ae188144eb18a8d01ea0b6ccf7996a8ae3ba2c599e294baf06ad2.png"
       ]
     }
   ],
@@ -94,7 +94,7 @@ export const legacyProfileContent = {
       },
       "链接": "",
       "证明图片": [
-        "/images/legacy/项目/银行信用评分-市级结题.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/c846af553d6dd7c6fc9f39c85df87b393bc2b00e853c91383708f1a81386550b.png"
       ]
     },
     {
@@ -116,7 +116,7 @@ export const legacyProfileContent = {
       },
       "链接": "",
       "证明图片": [
-        "/images/legacy/项目/科创共同体-校级结题.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/07205ac72125f7802830cdc51ef0e2875d079bc2d959689b438d412e2c6a5775.png"
       ]
     }
   ],
@@ -144,7 +144,7 @@ export const legacyProfileContent = {
       },
       "链接": "https://www.hanspub.org/journal/paperinformation?paperid=110711",
       "证明图片": [
-        "/images/legacy/论文/OperationsResearch发表.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/55af0572e657dbd741bd4beb231a7ec1b9f7230338539de2cdddf5947ea5699c.png"
       ]
     },
     {
@@ -170,7 +170,7 @@ export const legacyProfileContent = {
       },
       "链接": "https://www.hanspub.org/journal/paperinformation?paperid=83863",
       "证明图片": [
-        "/images/legacy/论文/PureMathematics发表.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/026b422466862cca1d32ca93ba8971b9c0cc67dd8321a7003f2ff21576dd181d.png"
       ]
     }
   ],
@@ -234,7 +234,7 @@ export const legacyProfileContent = {
       },
       "链接": "",
       "证明图片": [
-        "/images/legacy/经历/中国商飞-实习证明.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/49129bb3798839ba2d5faa51ed9c3f15671e862c94c2ba40b3724de45c6d684f.png"
       ]
     }
   ],
@@ -261,7 +261,7 @@ export const legacyProfileContent = {
         "en": "Shanghai Grand Prize · Sole Trophy Award in Track · Team Leader"
       },
       "证明图片": [
-        "/images/legacy/奖项/金融智能工程-上海市特等奖.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/fe2b1511ca8d161ef8761e3a50f609b308b3a0fd76ca06db3defd962ac920594.png"
       ]
     },
     {
@@ -286,7 +286,7 @@ export const legacyProfileContent = {
         "en": "Shanghai 1st Prize · Team Leader"
       },
       "证明图片": [
-        "/images/legacy/奖项/市场调查与分析大赛-上海市一等奖.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/994071c62ea19b06e4c9449329a0fb05f5a5b3e853b7a8b9c0604ab2ecc9c14e.png"
       ]
     },
     {
@@ -311,7 +311,7 @@ export const legacyProfileContent = {
         "en": "National 3rd Prize · Individual"
       },
       "证明图片": [
-        "/images/legacy/奖项/大学生数学竞赛-全国三等奖.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/a7a5efe032b4fe397303e82fc40d7ac7aa3e5be3b0cc228bed62f372ae3d19cb.png"
       ]
     },
     {
@@ -336,7 +336,7 @@ export const legacyProfileContent = {
         "en": "Shanghai 3rd Prize · Core Team Member"
       },
       "证明图片": [
-        "/images/legacy/奖项/数学建模竞赛-上海市三等奖.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/9a3c8c7b12a35514dff411269fa3ccb34c64f748f673cc83e13321a9a4e25d55.png"
       ]
     },
     {
@@ -361,8 +361,8 @@ export const legacyProfileContent = {
         "en": "National 2nd Prize · Shanghai 1st Prize · Core Team Member"
       },
       "证明图片": [
-        "/images/legacy/奖项/商业精英挑战赛-国际贸易-全国二等奖.png",
-        "/images/legacy/奖项/商业精英挑战赛-国际贸易-上海市一等奖.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/4114683265c34253af1203bf8c0eba36a9a5997bd13fd82e925adeab35fb1baf.png",
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/80d9a8d88207e1176f6f90475c9683f6f079003100fedfa2c61f1c5d97b0101b.png"
       ]
     },
     {
@@ -387,7 +387,7 @@ export const legacyProfileContent = {
         "en": "Shanghai 3rd Prize · Individual"
       },
       "证明图片": [
-        "/images/legacy/奖项/大数据分析竞赛-上海市三等奖.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/06631ba6f3303a950d89ac58d9cd295403447d47311f4729fba496705c8b1176.png"
       ]
     },
     {
@@ -408,7 +408,7 @@ export const legacyProfileContent = {
         "en": "Senior Certification"
       },
       "证明图片": [
-        "/images/legacy/奖项/HarmonyOS-高级认证.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/70df83a03dacd20cdb7e879c4fcad633ba585e277f5cb81ac8d6676f1e12ac69.png"
       ]
     },
     {
@@ -429,7 +429,7 @@ export const legacyProfileContent = {
         "en": "Junior Certification"
       },
       "证明图片": [
-        "/images/legacy/奖项/北京大数据协会-数据分析师初级.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/a3171399802b778623105379d21754431418f9d0510ac6ecdc9d74c622a4db1a.png"
       ]
     },
     {
@@ -450,7 +450,7 @@ export const legacyProfileContent = {
         "en": "Completion Certificate"
       },
       "证明图片": [
-        "/images/legacy/奖项/复旦大学-国际胜任力培训.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/de6f6c0a10ac497c1ee542cad7db1a17c8def7632fc9e100c02d416ae333d7a8.png"
       ]
     },
     {
@@ -471,7 +471,7 @@ export const legacyProfileContent = {
         "en": "University Honor"
       },
       "证明图片": [
-        "/images/legacy/奖项/上理工-优秀学生-2023-2024.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/c63765399abccc1d8cf49c68f79e69d0cb236cbb50455b6e5cc1b8e7a4e0b7ea.png"
       ]
     },
     {
@@ -492,7 +492,7 @@ export const legacyProfileContent = {
         "en": "University Scholarship"
       },
       "证明图片": [
-        "/images/legacy/奖项/上理工-学习优秀二等奖学金-2024-2025.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/7f9f860d455d5779ab63b9c66a246fa9f0430f3de560cf1e8d0e29d6d6911f11.png"
       ]
     },
     {
@@ -513,7 +513,7 @@ export const legacyProfileContent = {
         "en": "University Scholarship"
       },
       "证明图片": [
-        "/images/legacy/奖项/上理工-学习优秀三等奖学金-2023-2024.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/bec5eb4e95b68e6d035a908c5c65446e10763273566cc9be3e191a9c4b0fe2f7.png"
       ]
     },
     {
@@ -534,7 +534,7 @@ export const legacyProfileContent = {
         "en": "University Scholarship"
       },
       "证明图片": [
-        "/images/legacy/奖项/上理工-社会工作专项奖学金-2022-2023.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/1f01437d65c93119560e2c9d76aa5d88cca71448d1a767ef1bda4b655d61207b.png"
       ]
     },
     {
@@ -555,8 +555,8 @@ export const legacyProfileContent = {
         "en": "Municipal & College Honor"
       },
       "证明图片": [
-        "/images/legacy/奖项/疫情防控-青年志愿者.png",
-        "/images/legacy/奖项/管理学院-优秀志愿者.png"
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/fa065d62efc912f5ff4ad1b2f1124b1271adfd80858077380def4a042aaefc2c.png",
+        "https://pub-76e1325c4f664cfaaa119aa80aa619e0.r2.dev/uploads/legacy/v1/6adcc4a3b9ec8823e581fd931e8e0d8097df063680cd3239955ade0a41a9d88a.png"
       ]
     }
   ]
