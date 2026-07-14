@@ -19,7 +19,7 @@
           "icon": "Box"
         },
         {
-          "title": "Collections",
+          "title": "Action guides",
           "url": "/collections",
           "icon": "Layers"
         },
@@ -99,7 +99,7 @@
               "target": "_self"
             },
             {
-              "title": "Collections",
+              "title": "Action guides",
               "url": "/collections",
               "target": "_self"
             },

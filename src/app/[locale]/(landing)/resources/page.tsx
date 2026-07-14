@@ -56,8 +56,8 @@ export default async function ResourcesPage({
         </h1>
         <p className="text-muted-foreground mt-6 text-lg">
           {isZh
-            ? '按建站流程整理参考网站、工具、插件、Skill、MCP、Starter、组件库、模型榜单和服务商。'
-            : 'A workflow-based library for websites, tools, plugins, Skills, MCPs, Starters, UI kits, model rankings, and services.'}
+            ? '从独立工具、服务和模板中，选择适合当前阶段的一项来解决具体问题。'
+            : 'Choose an independent tool, service, or template that solves the problem at your current stage.'}
         </p>
       </section>
 
@@ -87,7 +87,7 @@ export default async function ResourcesPage({
               <div className="mt-5 flex flex-wrap gap-2">
                 {resource.tags.map((item) => <span key={item.id} className="text-muted-foreground rounded-full border px-3 py-1 text-xs">{item.name}</span>)}
               </div>
-              <Link href={`/${locale}/resources/${resource.slug}`} className="text-primary mt-6 inline-flex text-sm font-medium">{isZh ? '查看资源详情' : 'View resource details'}</Link>
+              <Link href={`/${locale}/resources/${resource.slug}`} className="text-primary mt-6 inline-flex text-sm font-medium">{isZh ? '查看资源' : 'View resource'}</Link>
             </article>
           ))}
         </section>

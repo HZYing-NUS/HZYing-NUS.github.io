@@ -19,7 +19,7 @@
           "icon": "Box"
         },
         {
-          "title": "专题",
+          "title": "行动专题",
           "url": "/collections",
           "icon": "Layers"
         },
@@ -99,7 +99,7 @@
               "target": "_self"
             },
             {
-              "title": "专题",
+              "title": "行动专题",
               "url": "/collections",
               "target": "_self"
             },

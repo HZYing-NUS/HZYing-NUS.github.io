@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -26,9 +25,11 @@ export function CertificateViewer({
 }: CertificateViewerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [open, setOpen] = useState(false);
+  const [failedImage, setFailedImage] = useState<string | null>(null);
   const isChinese = locale === 'zh';
   const hasMultipleImages = images.length > 1;
   const currentImage = images[currentIndex];
+  const imageFailed = failedImage === currentImage;
 
   if (!currentImage) {
     return null;
@@ -64,14 +65,23 @@ export function CertificateViewer({
         </div>
 
         <div className="relative flex min-h-0 flex-1 items-center justify-center bg-muted/35 px-4 py-5 sm:px-12 sm:py-7">
-          <Image
-            alt={`${title} ${isChinese ? '证书' : 'certificate'} ${currentIndex + 1}`}
-            className="max-h-[calc(100dvh-14rem)] w-auto max-w-full object-contain"
-            height={1600}
-            priority={open}
-            src={currentImage}
-            width={1200}
-          />
+          {!imageFailed ? <div aria-hidden="true" className="absolute inset-4 animate-pulse rounded-sm bg-muted sm:inset-7" /> : null}
+          <div className="relative h-[calc(100dvh-14rem)] min-h-0 w-full">
+            {imageFailed ? (
+              <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
+                {isChinese ? '资料图片暂时无法加载。' : 'This credential image is temporarily unavailable.'}
+              </div>
+            ) : (
+              // The dialog renders only after user intent; direct loading avoids the optimizer's failed response for R2 originals.
+              <img
+                alt={`${title} ${isChinese ? '证书' : 'certificate'} ${currentIndex + 1}`}
+                className="h-full w-full object-contain"
+                decoding="async"
+                onError={() => setFailedImage(currentImage)}
+                src={currentImage}
+              />
+            )}
+          </div>
 
           {hasMultipleImages ? (
             <>
@@ -79,7 +89,10 @@ export function CertificateViewer({
                 aria-label={previousLabel}
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/90 shadow-sm sm:left-4"
                 disabled={currentIndex === 0}
-                onClick={() => setCurrentIndex((index) => index - 1)}
+                onClick={() => {
+                  setFailedImage(null);
+                  setCurrentIndex((index) => index - 1);
+                }}
                 size="icon"
                 variant="outline"
               >
@@ -89,7 +102,10 @@ export function CertificateViewer({
                 aria-label={nextLabel}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/90 shadow-sm sm:right-4"
                 disabled={currentIndex === images.length - 1}
-                onClick={() => setCurrentIndex((index) => index + 1)}
+                onClick={() => {
+                  setFailedImage(null);
+                  setCurrentIndex((index) => index + 1);
+                }}
                 size="icon"
                 variant="outline"
               >
