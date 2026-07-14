@@ -30,12 +30,14 @@ export async function POST(req: Request) {
       model,
       webSearch,
       reasoning,
+      skill,
     }: {
       chatId: string;
       message: UIMessage;
       model: string;
       webSearch: boolean;
       reasoning?: boolean;
+      skill?: string;
     } = await req.json();
 
     if (!chatId || !model) {
@@ -76,6 +78,7 @@ export async function POST(req: Request) {
       model,
       webSearch,
       reasoning,
+      skill,
     };
 
     const provider = 'openrouter';

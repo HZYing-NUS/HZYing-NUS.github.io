@@ -24,6 +24,24 @@ type ChatListItem = {
   provider?: string | null;
 };
 
+function formatModelName(model: string | null | undefined) {
+  if (!model) {
+    return null;
+  }
+
+  if (model.includes('deepseek')) {
+    return 'DeepSeek';
+  }
+  if (model.includes('claude')) {
+    return 'Claude Code';
+  }
+  if (model.includes('kimi')) {
+    return 'Kimi';
+  }
+
+  return model;
+}
+
 type ChatListResponse = {
   list: ChatListItem[];
   total: number;
@@ -245,12 +263,12 @@ export function ChatHistory() {
         {chats.map((chat) => (
           <li key={chat.id}>
             <Card className="hover:border-primary/60 p-0 transition-colors">
-              <CardContent className="p-6">
+              <CardContent className="p-5 sm:p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex flex-col gap-2">
+                  <div className="min-w-0 flex-1 space-y-2">
                     <Link
                       href={`/chat/${chat.id}`}
-                      className="hover:text-primary text-base font-medium transition-colors hover:underline"
+                      className="hover:text-primary block truncate text-base font-medium transition-colors hover:underline"
                     >
                       {chat.title?.trim() || t('untitled')}
                     </Link>
@@ -258,15 +276,14 @@ export function ChatHistory() {
                       <span>{moment(chat.createdAt).fromNow()}</span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-start gap-2 text-left sm:items-end sm:text-right">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {chat.model && (
-                        <Badge variant="outline" className="">
-                          {chat.model}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+                  {formatModelName(chat.model) ? (
+                    <Badge
+                      variant="outline"
+                      className="w-fit shrink-0 font-normal"
+                    >
+                      {formatModelName(chat.model)}
+                    </Badge>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
