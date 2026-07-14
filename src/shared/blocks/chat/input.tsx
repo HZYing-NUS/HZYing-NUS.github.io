@@ -65,7 +65,7 @@ export function ChatInput({
 
   const selectedModel = getChatModel(lockedModel || model);
   const selectedSkill = getChatSkill(lockedSkill || skill);
-  const availableCredits = user?.credits ?? 0;
+  const availableCredits = user?.credits?.remainingCredits ?? 0;
   const isInsufficient = Boolean(
     user && availableCredits < selectedModel.creditCost
   );

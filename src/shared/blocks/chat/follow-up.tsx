@@ -1,6 +1,6 @@
 'use client';
 
-import { UseChatHelpers } from '@ai-sdk/react';
+import { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 
 import { useChatContext } from '@/shared/contexts/chat';
 
@@ -9,7 +9,7 @@ import { ChatInput } from './input';
 export function FollowUp({
   chatInstance,
 }: {
-  chatInstance: Pick<UseChatHelpers, 'sendMessage' | 'status' | 'error'>;
+  chatInstance: Pick<UseChatHelpers<UIMessage>, 'sendMessage' | 'status' | 'error'>;
 }) {
   const { chat } = useChatContext();
 
@@ -17,7 +17,7 @@ export function FollowUp({
     <ChatInput
       handleSubmit={async (message, body) => {
         await chatInstance.sendMessage(
-          { text: message.text },
+          { text: message.text ?? '' },
           { body: { chatId: chat?.id, ...body } }
         );
       }}

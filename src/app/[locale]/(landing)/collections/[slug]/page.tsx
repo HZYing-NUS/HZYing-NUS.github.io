@@ -4,8 +4,6 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { ArrowRight, CheckCircle2, Circle, ListChecks, Target } from 'lucide-react';
 
-import { ArrowRight, CheckCircle2, Circle, ListChecks, Target } from 'lucide-react';
-
 import { envConfigs } from '@/config';
 import { getPublishedCollectionBySlug } from '@/shared/models/collection';
 
