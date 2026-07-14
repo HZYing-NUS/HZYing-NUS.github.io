@@ -152,6 +152,7 @@ function ProfileRecord({
   const organization = pickRecordText(
     item,
     locale,
+    '公司',
     '单位',
     '学校',
     '期刊',
@@ -256,16 +257,10 @@ function AwardRecord({
       <p className="text-muted-foreground text-sm tabular-nums">{period}</p>
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap items-center gap-2">
           <h3 className="leading-snug font-medium">{title}</h3>
           {tag ? (
-            <span className="border-border text-muted-foreground border px-2 py-0.5 text-xs font-medium">
-              {tag}
-            </span>
-          ) : null}
-        </div>
-          {tag ? (
-            <span className="border-border text-muted-foreground border px-2 py-0.5 text-xs font-medium">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-700/15 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
+              <span aria-hidden="true" className="size-1 rounded-full bg-emerald-600 dark:bg-emerald-300" />
               {tag}
             </span>
           ) : null}
@@ -276,12 +271,12 @@ function AwardRecord({
         {level || rank ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {level ? (
-              <span className="border-border border px-2 py-1 text-xs font-semibold">
+              <span className="border-border/70 bg-muted/60 text-foreground inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold">
                 {level}
               </span>
             ) : null}
             {rank ? (
-              <span className="border-border border px-2 py-1 text-xs font-medium">
+              <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border border-dashed px-2.5 py-1 text-xs font-medium">
                 {rank}
               </span>
             ) : null}
@@ -392,7 +387,7 @@ export default async function AboutPage({
           <div className="flex items-start gap-5 sm:block">
             {avatar ? (
               <Image
-                alt={profile.title}
+                alt={profile.title || (locale === 'zh' ? '黄梓颖的头像' : "Ziying Huang's portrait")}
                 className="border-border size-20 rounded-full border object-cover sm:size-32"
                 height={320}
                 priority
