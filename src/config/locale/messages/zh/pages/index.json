@@ -7,7 +7,6 @@
       "benefits",
       "usage",
       "features",
-      "stats",
       "testimonials",
       "faq",
       "cta"
@@ -15,105 +14,75 @@
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "AI Web SaaS 一站式出海资源平台",
-        "highlight_text": "一站式",
-        "description": "把需求发现、产品设计、前端实现、AI 模型、部署上线、SEO 和增长工具按创业流程整理成可搜索、可投稿、可引用的资源库。",
+        "title": "建站工具，该用哪个，这里告诉你",
+        "highlight_text": "该用哪个",
+        "description": "需求、设计、开发、上线、推广，每一步该用什么工具、模板和服务，一次说清。看不懂就直接问 AI。",
         "announcement": {
           "badge": "持续更新",
-          "title": "从梓颖个人站升级为资源平台",
+          "title": "从零到上线，帮你少走弯路",
           "url": "/about"
         },
-        "tip": "资源、专题、文章、投稿和 AI 助手持续更新。",
+        "tip": "工具、模板、服务和实战经验持续补充中。",
         "buttons": [
           {
-            "title": "浏览资源库",
+            "title": "浏览建站步骤",
             "icon": "Box",
             "url": "/resources",
             "target": "_self",
             "variant": "default"
           },
           {
-            "title": "阅读文章",
-            "icon": "BookOpenText",
-            "url": "/blog",
+            "title": "直接问 AI",
+            "icon": "RiMessage2Line",
+            "url": "/assistant",
             "target": "_self",
             "variant": "outline"
           }
         ],
-        "show_avatars": true,
-        "avatars_tip": "持续收纳 AI Web SaaS 建站与出海资源",
+        "show_avatars": false,
+        "avatars_tip": "陪很多新手把网站从想法做到上线",
         "show_award": false,
-        "image": {
-          "src": "/imgs/features/admin.png",
-          "alt": "hero",
-          "width": 1200,
-          "height": 800
-        },
-        "image_invert": {
-          "src": "/imgs/features/admin-dark.png",
-          "alt": "hero",
-          "width": 1200,
-          "height": 800
-        },
         "background_image": {
           "src": "/imgs/bg/tree.jpg",
           "alt": "hero"
         }
       },
       "logos": {
-        "title": "平台围绕这些建站环节组织资源",
+        "id": "logos",
+        "title": "搭一个网站，大概要走这几步",
         "items": [
           {
-            "title": "需求发现",
-            "image": {
-              "src": "/imgs/logos/nextjs.svg",
-              "alt": "Demand"
-            }
+            "title": "想清楚做什么",
+            "icon": "RiCompass3Line"
           },
           {
-            "title": "产品设计",
-            "image": {
-              "src": "/imgs/logos/react.svg",
-              "alt": "Design"
-            }
+            "title": "设计长什么样",
+            "icon": "RiPaletteLine"
           },
           {
-            "title": "前端开发",
-            "image": {
-              "src": "/imgs/logos/tailwindcss.svg",
-              "alt": "Frontend"
-            }
+            "title": "把网站做出来",
+            "icon": "RiCodeSSlashLine"
           },
           {
-            "title": "AI 模型",
-            "image": {
-              "src": "/imgs/logos/shadcn.svg",
-              "alt": "AI Models"
-            }
+            "title": "接入 AI 能力",
+            "icon": "RiRobot2Line"
           },
           {
-            "title": "部署增长",
-            "image": {
-              "src": "/imgs/logos/vercel.svg",
-              "alt": "Launch"
-            }
+            "title": "上线和推广",
+            "icon": "RiRocketLine"
           }
         ]
       },
       "introduce": {
         "block": "features-list",
         "id": "introduce",
-        "title": "这个平台解决什么问题？",
-        "label": "平台定位",
-        "description": "它不是替代第三方工具，而是把工具、模板、组件、MCP、Skill、模型榜单和服务商放回 AI Web SaaS 创业流程中。",
-        "image": {
-          "src": "/imgs/features/landing-page.png",
-          "alt": "introduce"
-        },
+        "title": "为什么不自己一个个去搜？",
+        "label": "这里帮你做的事",
+        "description": "网上的工具、模板、教程太多太散，光是挑选就够头疼。我们把它们按「搭站要走的步骤」理好，你不用再对着一堆链接发愁。",
         "items": [
           {
-            "title": "资源按流程组织",
-            "description": "从灵感发现到上线增长，避免收藏夹和聊天记录里的资源散落。",
+            "title": "按步骤找，不用瞎搜",
+            "description": "从有想法到上线推广，每一步该看什么，都归好了类，照着走就行。",
             "icon": "RiCompass3Line",
             "image": {
               "src": "/imgs/features/1.png",
@@ -121,8 +90,8 @@
             }
           },
           {
-            "title": "专题可以直接复用",
-            "description": "用合集串起 Landing Page、Claude Code、SEO、模型选择等具体任务。",
+            "title": "现成的清单，照抄就能用",
+            "description": "「做个人博客」「做落地页」这类常见需求，我们打包好一整套推荐，拿来就能开始。",
             "icon": "RiStackLine",
             "image": {
               "src": "/imgs/features/2.png",
@@ -130,8 +99,8 @@
             }
           },
           {
-            "title": "文章沉淀实战经验",
-            "description": "迁移旧博客，并继续沉淀产品、开发、AI 编程和出海复盘。",
+            "title": "真人踩过的坑，写成了文章",
+            "description": "不只是列工具，还有实际做下来的经验和教训，帮你避开常见的坑。",
             "icon": "RiArticleLine",
             "image": {
               "src": "/imgs/features/3.png",
@@ -139,8 +108,8 @@
             }
           },
           {
-            "title": "AI 回答带来源",
-            "description": "资源助手只基于站内可引用内容回答，找不到来源就明确说明。",
+            "title": "AI 回答有出处，不瞎编",
+            "description": "问 AI 时，它只根据站内真实内容回答，并给出处；答不上来会直说，不糊弄你。",
             "icon": "RiRobot2Line",
             "image": {
               "src": "/imgs/features/4.png",
@@ -153,44 +122,32 @@
       "benefits": {
         "block": "features-accordion",
         "id": "benefits",
-        "title": "为什么从个人站升级为资源平台",
-        "label": "迁移目标",
-        "description": "旧站擅长展示梓颖是谁，新站要进一步承载长期资源收纳、内容管理和站内检索。",
+        "title": "我们帮你省掉的三件麻烦事",
+        "label": "对你有什么用",
+        "description": "新手搭站最容易卡在「不知道用什么、不知道好不好、不知道怎么问」这三件事上，这里一次帮你解决。",
         "items": [
           {
-            "title": "从展示到可管理",
-            "description": "资源、文章、专题、投稿进入数据库和后台，不再每次改文件部署。",
-            "icon": "RiDatabase2Line",
-            "image": {
-              "src": "/imgs/features/user-billing.png",
-              "alt": "benefits"
-            }
+            "title": "不用再纠结「到底该用哪个」",
+            "description": "同类工具我们只推靠谱的几个，并写清楚各自适合谁，省掉你反复比价踩雷的时间。",
+            "icon": "RiDatabase2Line"
           },
           {
-            "title": "从链接到场景",
-            "description": "每个资源都有推荐理由、使用阶段、标签、价格类型和适用场景。",
-            "icon": "RiMap2Line",
-            "image": {
-              "src": "/imgs/features/admin-settings.png",
-              "alt": "benefits"
-            }
+            "title": "每个推荐都告诉你「为什么」",
+            "description": "不是干巴巴甩个链接，而是标清楚它用在哪一步、适合什么场景、大概多少钱。",
+            "icon": "RiMap2Line"
           },
           {
-            "title": "从聊天到可信问答",
-            "description": "AI 助手从资源库、文章和关于我检索来源，不再维护手写资料库。",
-            "icon": "RiVerifiedBadgeLine",
-            "image": {
-              "src": "/imgs/features/landing-page.png",
-              "alt": "benefits"
-            }
+            "title": "有问题随时问，答案有依据",
+            "description": "不知道从哪下手，直接问 AI 助手，它基于站内内容回答并附来源，比到处搜靠谱。",
+            "icon": "RiVerifiedBadgeLine"
           }
         ]
       },
       "usage": {
         "block": "features-step",
         "id": "usage",
-        "title": "按 AI Web SaaS 创业流程使用",
-        "description": "先从任务目标出发，再找到资源、文章和专题。",
+        "title": "跟着做：从想法到上线的四步",
+        "description": "不知道从哪开始？按这四步走，每一步该用什么这里都帮你备好了。",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "usage"
@@ -199,32 +156,32 @@
         "text_align": "center",
         "items": [
           {
-            "title": "发现需求",
-            "description": "查看需求发现网站、竞品、榜单和用户反馈渠道。",
+            "title": "第一步：想清楚做什么",
+            "description": "先弄明白你要做个什么站、给谁用。这里帮你找灵感、看别人怎么做的。",
             "image": {
               "src": "/imgs/features/5.png",
               "alt": "usage"
             }
           },
           {
-            "title": "设计与开发",
-            "description": "收纳 Landing Page、UI 模板、组件库、Starter、Skill 和 MCP。",
+            "title": "第二步：设计和搭建",
+            "description": "挑现成的 UI 模板和组件库，不用从零画界面，配合 AI 编程工具，不会写太多代码也能搭出来。",
             "image": {
               "src": "/imgs/features/6.png",
               "alt": "usage"
             }
           },
           {
-            "title": "模型与基础设施",
-            "description": "比较模型、数据库、登录、支付、部署、域名、邮箱和分析服务。",
+            "title": "第三步：接功能和 AI",
+            "description": "要登录、要存数据（数据库）、要收款、要接 AI 模型？该用哪些服务，这里帮你比好了。",
             "image": {
               "src": "/imgs/features/7.png",
               "alt": "usage"
             }
           },
           {
-            "title": "SEO 与增长",
-            "description": "整理关键词研究、目录站、数据分析、内容分发和增长工具。",
+            "title": "第四步：上线和推广",
+            "description": "把网站部署上线，再做 SEO（让别人在百度、谷歌能搜到你），需要的工具都给你理好了。",
             "image": {
               "src": "/imgs/features/8.png",
               "alt": "usage"
@@ -235,146 +192,137 @@
       },
       "features": {
         "id": "features",
-        "title": "V1 核心能力",
-        "description": "先做资源平台闭环，再逐步增强社区和高级 RAG。",
+        "title": "你在这里能拿到什么",
+        "description": "顶部导航栏的几个入口，就是你会用到的全部功能：",
         "items": [
           {
             "title": "资源库",
-            "description": "网站、工具、插件、Skill、MCP、Starter、UI 模板、模型榜单和服务商。",
+            "description": "网站、工具、插件、UI 模板、组件库、Starter 脚手架、AI 模型，按用途分好类，挑着用。",
             "icon": "RiBox3Line"
           },
           {
-            "title": "专题 / 合集",
-            "description": "围绕任务目标组合资源和文章，形成可直接使用的清单。",
+            "title": "行动专题",
+            "description": "围绕一个具体目标（比如做个落地页），把该用的东西打包成一份现成清单。",
             "icon": "RiFoldersLine"
           },
           {
-            "title": "独立文章",
-            "description": "迁移旧博客，并支持后续原创教程、复盘和经验总结。",
+            "title": "文章",
+            "description": "真实做项目的经验、教程和复盘，不只列工具，还告诉你怎么少踩坑。",
             "icon": "RiArticleLine"
           },
           {
             "title": "投稿建议",
-            "description": "登录用户提交资源推荐、纠错、补充信息、文章建议和专题建议。",
+            "description": "发现好东西或者哪里写错了？登录后就能推荐资源、纠错或提建议。",
             "icon": "RiSendPlaneLine"
           },
           {
-            "title": "后台管理",
-            "description": "管理员管理资源、文章、专题、标签、分类、发布状态和 AI 引用开关。",
-            "icon": "RiDashboardLine"
+            "title": "关于我",
+            "description": "看看这个站背后是谁、做过什么，以及为什么想帮新手把建站这件事讲清楚。",
+            "icon": "RiUser3Line"
           },
           {
-            "title": "AI 资源助手",
-            "description": "基于站内来源回答建站、设计、开发、上线、SEO、增长和模型选择问题。",
+            "title": "AI 助手",
+            "description": "搭站、设计、开发、上线、推广、选 AI 模型，有问题直接问它，答案带出处。",
             "icon": "RiRobot2Line"
           }
         ]
       },
       "stats": {
         "id": "stats",
-        "title": "当前迁移范围",
-        "description": "先完整承接旧站，再扩展资源平台。",
+        "title": "现在已经有什么",
+        "description": "内容还在持续补充，先把最常用的备齐。",
         "items": [
           {
-            "title": "10",
-            "description": "篇旧博客"
+            "title": "5",
+            "description": "个建站步骤全覆盖"
           },
           {
-            "title": "4",
-            "description": "类核心内容"
+            "title": "免费",
+            "description": "浏览 · 问 AI 都免费"
           },
           {
-            "title": "双语",
-            "description": "中文 / English"
+            "title": "中英",
+            "description": "双语都能看"
           }
         ],
         "className": "bg-muted"
       },
       "testimonials": {
         "id": "testimonials",
-        "title": "后续会收纳的资源方向",
-        "description": "这些不是用户评价，而是平台 V1 的资源收纳重点。",
+        "title": "常见的几类需求，这里都能帮上忙",
+        "description": "不管你想做哪种网站，都能在这里找到对应的工具和思路。",
         "items": [
           {
-            "title": "需求发现与竞品研究",
-            "description": "收录 Product Hunt、目录站、MRR 观察、关键词工具和用户反馈渠道。",
-            "name": "需求发现与竞品研究",
-            "role": "资源方向",
-            "image": {
-              "src": "/imgs/avatars/1.png",
-              "alt": "需求发现与竞品研究"
-            }
+            "title": "先看别人怎么做的",
+            "description": "找灵感、看同类产品和市场需求：Product Hunt、榜单、关键词工具该去哪些地方看，帮你找齐。",
+            "name": "找灵感 · 看竞品",
+            "role": "常见需求",
+            "icon": "RiSearchEyeLine"
           },
           {
-            "title": "Claude Code 与 AI 编程",
-            "description": "整理 Skill、MCP、Agent、Starter、提示词和开发工作流。",
-            "name": "Claude Code 与 AI 编程",
-            "role": "资源方向",
-            "image": {
-              "src": "/imgs/avatars/1.png",
-              "alt": "Claude Code 与 AI 编程"
-            }
+            "title": "用 AI 帮你写代码",
+            "description": "不会写代码也能上手，教你用 Claude Code 这类 AI 编程工具，把网站一步步做出来。",
+            "name": "AI 编程 · 少写代码",
+            "role": "常见需求",
+            "icon": "RiRobot2Line"
           },
           {
-            "title": "部署、SEO 与增长",
-            "description": "沉淀 Vercel、Neon、域名邮箱、分析、SEO、内容分发和增长工具。",
-            "name": "部署、SEO 与增长",
-            "role": "资源方向",
-            "image": {
-              "src": "/imgs/avatars/1.png",
-              "alt": "部署、SEO 与增长"
-            }
+            "title": "上线后让更多人看到",
+            "description": "部署上线、做 SEO 让人搜到你、做推广引流，Vercel、域名邮箱、分析工具都帮你整理好了。",
+            "name": "上线 · 推广 · 引流",
+            "role": "常见需求",
+            "icon": "RiRocketLine"
           }
         ]
       },
       "faq": {
         "id": "faq",
-        "title": "关于这个资源平台的常见问题",
-        "description": "V1 先做内容平台闭环，不做付费订阅和完整社区。",
+        "title": "新手常问的几个问题",
+        "description": "怕自己搞不定？下面这些先看看。",
         "items": [
           {
-            "title": "这个站和原个人站是什么关系？",
-            "description": "新站会完整迁移旧个人站的关于我、文章、图片和 AI 入口，同时把核心定位升级为 AI Web SaaS 一站式出海资源平台。"
+            "title": "我完全不会写代码，能用吗？",
+            "description": "能。这里就是为不太懂技术的人准备的，会告诉你每一步用什么，很多环节还能借助 AI 工具，不用你自己从零写代码。"
           },
           {
-            "title": "如何使用这个资源平台？",
-            "description": "从资源库按建站阶段筛选工具，再通过专题将多项资源组合成可执行的工作流；文章和关于我提供真实项目经验作为补充。"
+            "title": "我该怎么开始？",
+            "description": "如果你有明确目标，直接翻「工具和模板库」按步骤找；如果还没想好，就用 AI 助手把你的想法说给它听，它会告诉你大概需要什么。"
           },
           {
-            "title": "V1 会做支付和积分吗？",
-            "description": "不会。SPEC 明确 V1 隐藏 Pricing、支付、订阅、Credits 和积分系统，只保留资源平台需要的能力。"
+            "title": "这里的东西要花钱吗？",
+            "description": "浏览资源、看文章、问 AI 都是免费的。至于推荐的工具本身，我们会标清楚哪些免费、哪些收费，你自己按需选。"
           },
           {
-            "title": "AI 助手会怎么回答？",
-            "description": "AI 助手只基于站内允许引用的资源、专题、文章和关于我内容回答，并提供来源；没有来源时会明确说明。"
+            "title": "AI 助手靠谱吗，会不会瞎编？",
+            "description": "它只根据站内真实内容回答，并给出参考来源；如果站里没有相关内容，它会直接说找不到，而不是编一个答案给你。"
           }
         ]
       },
       "cta": {
         "id": "cta",
-        "title": "开始浏览 AI Web SaaS 出海资源",
-        "description": "资源库、专题、文章和关于我会按 SPEC 分阶段迁移完成。",
+        "title": "现在就开始，搭出你的第一个网站",
+        "description": "不知道从哪下手？浏览建站步骤，或者直接把你的想法告诉 AI 助手。",
         "buttons": [
           {
-            "title": "进入资源库",
+            "title": "浏览建站步骤",
             "url": "/resources",
-            "target": "_blank",
+            "target": "_self",
             "icon": "Zap"
           },
           {
-            "title": "关于梓颖",
-            "url": "/about",
-            "target": "_blank",
+            "title": "直接问 AI",
+            "url": "/assistant",
+            "target": "_self",
             "variant": "outline",
-            "icon": "BookOpenText"
+            "icon": "RiMessage2Line"
           }
         ],
         "className": "bg-muted"
       },
       "subscribe": {
         "id": "subscribe",
-        "title": "订阅平台更新",
-        "description": "获取新增资源、专题整理和 AI Web SaaS 实战笔记。",
+        "title": "订阅更新",
+        "description": "有新的工具、模板和实战经验，第一时间通知你。",
         "submit": {
           "input": {
             "placeholder": "输入邮箱"

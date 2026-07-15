@@ -7,7 +7,6 @@
       "benefits",
       "usage",
       "features",
-      "stats",
       "testimonials",
       "faq",
       "cta"
@@ -15,46 +14,34 @@
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "One-stop AI Web SaaS resource platform",
-        "highlight_text": "One-stop",
-        "description": "A searchable, manageable resource map for idea discovery, product design, frontend work, AI models, deployment, SEO, and growth.",
+        "title": "The right tool for every step of building a site",
+        "highlight_text": "right tool",
+        "description": "Idea, design, build, launch, and growth — which tool, template, or service to use at each step, in plain language. Stuck? Just ask the AI.",
         "announcement": {
           "badge": "Continuously updated",
-          "title": "Upgrading Ziying’s personal site into a resource platform",
+          "title": "From zero to launch, without the guesswork",
           "url": "/about"
         },
-        "tip": "Legacy content migrates first; submissions and the source-grounded assistant follow.",
+        "tip": "Tools, templates, services, and hands-on notes are added continuously.",
         "buttons": [
           {
-            "title": "Browse Resources",
+            "title": "Browse the steps",
             "icon": "Box",
             "url": "/resources",
             "target": "_self",
             "variant": "default"
           },
           {
-            "title": "Read Articles",
-            "icon": "BookOpenText",
-            "url": "/blog",
+            "title": "Ask the AI",
+            "icon": "RiMessage2Line",
+            "url": "/assistant",
             "target": "_self",
             "variant": "outline"
           }
         ],
-        "show_avatars": true,
-        "avatars_tip": "Continuously collecting AI Web SaaS building and go-to-market resources",
+        "show_avatars": false,
+        "avatars_tip": "Helping beginners take a website from idea to launch",
         "show_award": false,
-        "image": {
-          "src": "/imgs/features/admin.png",
-          "alt": "hero",
-          "width": 1200,
-          "height": 800
-        },
-        "image_invert": {
-          "src": "/imgs/features/admin-dark.png",
-          "alt": "hero",
-          "width": 1200,
-          "height": 800
-        },
         "background_image": {
           "src": "/imgs/bg/tree.jpg",
           "alt": "hero"
@@ -62,59 +49,40 @@
       },
       "logos": {
         "id": "logos",
-        "title": "Resources are organized around these building stages",
+        "title": "Building a website usually goes through these steps",
         "items": [
           {
-            "title": "Demand",
-            "image": {
-              "src": "/imgs/logos/nextjs.svg",
-              "alt": "Demand"
-            }
+            "title": "Figure out what to build",
+            "icon": "RiCompass3Line"
           },
           {
-            "title": "Design",
-            "image": {
-              "src": "/imgs/logos/react.svg",
-              "alt": "Design"
-            }
+            "title": "Design how it looks",
+            "icon": "RiPaletteLine"
           },
           {
-            "title": "Frontend",
-            "image": {
-              "src": "/imgs/logos/tailwindcss.svg",
-              "alt": "Frontend"
-            }
+            "title": "Build it",
+            "icon": "RiCodeSSlashLine"
           },
           {
-            "title": "AI Models",
-            "image": {
-              "src": "/imgs/logos/shadcn.svg",
-              "alt": "AI Models"
-            }
+            "title": "Add AI",
+            "icon": "RiRobot2Line"
           },
           {
-            "title": "Launch",
-            "image": {
-              "src": "/imgs/logos/vercel.svg",
-              "alt": "Launch"
-            }
+            "title": "Launch and grow",
+            "icon": "RiRocketLine"
           }
         ]
       },
       "introduce": {
         "block": "features-list",
         "id": "introduce",
-        "title": "What problem does this platform solve?",
-        "label": "Positioning",
-        "description": "It does not replace third-party tools. It organizes tools, templates, components, MCPs, Skills, model rankings, and services around the AI Web SaaS building process.",
-        "image": {
-          "src": "/imgs/features/landing-page.png",
-          "alt": "introduce"
-        },
+        "title": "Why dig through endless search results yourself?",
+        "label": "What we do for you",
+        "description": "There are too many tools, templates, and tutorials out there, and just picking is exhausting. We sort them by the steps of building a site, so you're not left staring at a pile of links.",
         "items": [
           {
-            "title": "Process-based resources",
-            "description": "From idea discovery to launch and growth, resources no longer stay scattered in bookmarks and chats.",
+            "title": "Find by step, not by guessing",
+            "description": "From first idea to launch and growth, what to look at in each step is grouped and ready to follow.",
             "icon": "RiCompass3Line",
             "image": {
               "src": "/imgs/features/1.png",
@@ -122,8 +90,8 @@
             }
           },
           {
-            "title": "Reusable collections",
-            "description": "Collections connect resources for Landing Pages, Claude Code, SEO, model choice, and other tasks.",
+            "title": "Ready-made lists you can copy",
+            "description": "Common goals like a personal blog or a landing page come as a full packaged set you can start from right away.",
             "icon": "RiStackLine",
             "image": {
               "src": "/imgs/features/2.png",
@@ -131,8 +99,8 @@
             }
           },
           {
-            "title": "Practical articles",
-            "description": "Legacy posts migrate in, with more product, development, AI coding, and go-to-market notes later.",
+            "title": "Real lessons, written down",
+            "description": "Not just a list of tools, but hands-on experience and mistakes, so you can avoid the common traps.",
             "icon": "RiArticleLine",
             "image": {
               "src": "/imgs/features/3.png",
@@ -140,8 +108,8 @@
             }
           },
           {
-            "title": "Source-backed answers",
-            "description": "The assistant answers only from citeable site content and says so when no source is found.",
+            "title": "AI answers with sources, no made-up facts",
+            "description": "The assistant answers only from real site content and gives sources. If it can't find one, it says so.",
             "icon": "RiRobot2Line",
             "image": {
               "src": "/imgs/features/4.png",
@@ -154,44 +122,32 @@
       "benefits": {
         "block": "features-accordion",
         "id": "benefits",
-        "title": "Why upgrade the personal site",
-        "label": "Migration goals",
-        "description": "The old site explains who Ziying is. The new site also supports long-term resource collection, content operations, and search.",
+        "title": "Three headaches we take off your plate",
+        "label": "What you get",
+        "description": "Beginners usually get stuck on three things: not knowing what to use, whether it's any good, and how to even ask. We handle all three.",
         "items": [
           {
-            "title": "From display to management",
-            "description": "Resources, articles, collections, and submissions move into the database and admin.",
-            "icon": "RiDatabase2Line",
-            "image": {
-              "src": "/imgs/features/user-billing.png",
-              "alt": "benefits"
-            }
+            "title": "No more agonizing over which one to pick",
+            "description": "For each type of tool we recommend only a few reliable options and explain who each one suits, saving you endless comparison.",
+            "icon": "RiDatabase2Line"
           },
           {
-            "title": "From links to scenarios",
-            "description": "Each resource has rationale, stage, tags, pricing type, and usage scenarios.",
-            "icon": "RiMap2Line",
-            "image": {
-              "src": "/imgs/features/admin-settings.png",
-              "alt": "benefits"
-            }
+            "title": "Every pick comes with a why",
+            "description": "Not a bare link, but a clear note on which step it is for, what it suits, and roughly how much it costs.",
+            "icon": "RiMap2Line"
           },
           {
-            "title": "From chat to trusted Q&A",
-            "description": "The assistant retrieves from resources, articles, and profile content instead of a hardcoded profile.",
-            "icon": "RiVerifiedBadgeLine",
-            "image": {
-              "src": "/imgs/features/landing-page.png",
-              "alt": "benefits"
-            }
+            "title": "Ask anytime, answers you can trust",
+            "description": "Not sure where to start? Just ask the AI assistant. It answers from site content with sources, more reliable than searching around.",
+            "icon": "RiVerifiedBadgeLine"
           }
         ]
       },
       "usage": {
         "block": "features-step",
         "id": "usage",
-        "title": "Use it by AI Web SaaS workflow",
-        "description": "Start from the task, then find resources, articles, and collections.",
+        "title": "Follow along: from idea to launch in four steps",
+        "description": "Not sure where to start? Follow these four steps — what to use at each one is ready for you here.",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "usage"
@@ -200,32 +156,32 @@
         "text_align": "center",
         "items": [
           {
-            "title": "Discover demand",
-            "description": "Browse demand discovery sites, competitors, rankings, and feedback channels.",
+            "title": "Step 1: Figure out what to build",
+            "description": "First get clear on what kind of site you want and who it's for. We help you find ideas and see how others did it.",
             "image": {
               "src": "/imgs/features/5.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Design and build",
-            "description": "Collect Landing Pages, UI templates, component kits, Starters, Skills, and MCPs.",
+            "title": "Step 2: Design and build",
+            "description": "Pick ready-made UI templates and component kits instead of designing from scratch; paired with AI coding tools, you can build it with little code.",
             "image": {
               "src": "/imgs/features/6.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Models and infrastructure",
-            "description": "Compare models, databases, auth, payments, deployment, domains, email, and analytics.",
+            "title": "Step 3: Add features and AI",
+            "description": "Need login, data storage (a database), payments, or an AI model? We have compared the services so you know which to use.",
             "image": {
               "src": "/imgs/features/7.png",
               "alt": "usage"
             }
           },
           {
-            "title": "SEO and growth",
-            "description": "Organize keyword research, directories, analytics, distribution, and growth tools.",
+            "title": "Step 4: Launch and grow",
+            "description": "Deploy your site, then do SEO (so people can find you on Google) — the tools you need are all sorted here.",
             "image": {
               "src": "/imgs/features/8.png",
               "alt": "usage"
@@ -236,146 +192,137 @@
       },
       "features": {
         "id": "features",
-        "title": "V1 core capabilities",
-        "description": "Build the resource platform loop first, then improve community and advanced RAG later.",
+        "title": "What you get here",
+        "description": "The entries in the top nav are all the features you'll use:",
         "items": [
           {
-            "title": "Resource library",
-            "description": "Websites, tools, plugins, Skills, MCPs, Starters, UI templates, model rankings, and services.",
+            "title": "Resources",
+            "description": "Websites, tools, plugins, UI templates, component kits, Starter boilerplates, and AI models, sorted by purpose.",
             "icon": "RiBox3Line"
           },
           {
             "title": "Collections",
-            "description": "Task-based lists that combine resources and articles into reusable playbooks.",
+            "description": "Around one specific goal, like a landing page, the things you need are packaged into a ready-made list.",
             "icon": "RiFoldersLine"
           },
           {
             "title": "Articles",
-            "description": "Legacy blog migration plus future tutorials, retrospectives, and experience notes.",
+            "description": "Real project experience, tutorials, and retrospectives — not just a tool list, but how to avoid the pitfalls.",
             "icon": "RiArticleLine"
           },
           {
-            "title": "Submissions",
-            "description": "Logged-in users can suggest resources, corrections, supplements, articles, and collections.",
+            "title": "Submit",
+            "description": "Found something great or spotted a mistake? Sign in to suggest resources, fixes, or ideas.",
             "icon": "RiSendPlaneLine"
           },
           {
-            "title": "Admin dashboard",
-            "description": "Admins manage resources, posts, collections, tags, categories, status, and AI citation flags.",
-            "icon": "RiDashboardLine"
+            "title": "About",
+            "description": "See who is behind this site, what they've built, and why they want to make website-building clear for beginners.",
+            "icon": "RiUser3Line"
           },
           {
-            "title": "AI resource assistant",
-            "description": "Answers questions about building, design, development, launch, SEO, growth, and model choice from site sources.",
+            "title": "AI assistant",
+            "description": "Building, design, development, launch, growth, choosing an AI model — just ask, and answers come with sources.",
             "icon": "RiRobot2Line"
           }
         ]
       },
       "stats": {
         "id": "stats",
-        "title": "Current migration scope",
-        "description": "Preserve the old site first, then grow into the resource platform.",
+        "title": "What is here already",
+        "description": "Content keeps growing; the most-used essentials come first.",
         "items": [
           {
-            "title": "10",
-            "description": "legacy posts"
+            "title": "5",
+            "description": "building steps covered"
           },
           {
-            "title": "4",
-            "description": "core content types"
+            "title": "Free",
+            "description": "browse & ask, all free"
           },
           {
-            "title": "Bilingual",
-            "description": "中文 / English"
+            "title": "EN / 中文",
+            "description": "available in both"
           }
         ],
         "className": "bg-muted"
       },
       "testimonials": {
         "id": "testimonials",
-        "title": "Resource directions to collect next",
-        "description": "These are V1 collection priorities, not user testimonials.",
+        "title": "A few common needs we can help with",
+        "description": "Whatever kind of site you want to build, you can find the right tools and approach here.",
         "items": [
           {
-            "title": "Demand and competitor research",
-            "description": "Product Hunt, directories, MRR tracking, keyword tools, and feedback channels.",
-            "name": "Demand and competitor research",
-            "role": "Resource direction",
-            "image": {
-              "src": "/imgs/avatars/1.png",
-              "alt": "Demand and competitor research"
-            }
+            "title": "See how others did it first",
+            "description": "Find ideas, similar products, and market demand: where to look on Product Hunt, rankings, and keyword tools, gathered for you.",
+            "name": "Ideas · Competitors",
+            "role": "Common need",
+            "icon": "RiSearchEyeLine"
           },
           {
-            "title": "Claude Code and AI coding",
-            "description": "Skills, MCPs, Agents, Starters, prompts, and development workflows.",
-            "name": "Claude Code and AI coding",
-            "role": "Resource direction",
-            "image": {
-              "src": "/imgs/avatars/1.png",
-              "alt": "Claude Code and AI coding"
-            }
+            "title": "Let AI write the code",
+            "description": "You can get going even without coding. Learn to use AI coding tools like Claude Code to build your site step by step.",
+            "name": "AI coding · Less code",
+            "role": "Common need",
+            "icon": "RiRobot2Line"
           },
           {
-            "title": "Deployment, SEO, and growth",
-            "description": "Vercel, Neon, domains, email, analytics, SEO, content distribution, and growth tools.",
-            "name": "Deployment, SEO, and growth",
-            "role": "Resource direction",
-            "image": {
-              "src": "/imgs/avatars/1.png",
-              "alt": "Deployment, SEO, and growth"
-            }
+            "title": "Get seen after launch",
+            "description": "Deploy your site, do SEO so people can find you, and promote it — Vercel, domains, email, and analytics are all organized.",
+            "name": "Launch · Promote · Traffic",
+            "role": "Common need",
+            "icon": "RiRocketLine"
           }
         ]
       },
       "faq": {
         "id": "faq",
-        "title": "Common questions about the platform",
-        "description": "V1 focuses on the content platform loop, not paid subscriptions or a full community.",
+        "title": "Questions beginners often ask",
+        "description": "Worried you can't pull it off? Read these first.",
         "items": [
           {
-            "title": "How is this related to the old personal site?",
-            "description": "The new site preserves the old about page, posts, images, and AI entry while upgrading the core positioning into a one-stop AI Web SaaS resource platform."
+            "title": "I can't code at all — can I still use this?",
+            "description": "Yes. This is made for people who aren't very technical. It tells you what to use at each step, and many parts can be done with AI tools, so you don't have to write code from scratch."
           },
           {
-            "title": "How should I use this resource platform?",
-            "description": "Filter the library by product-building stage, use collections to assemble practical workflows, and use articles and the profile page for first-hand context."
+            "title": "How do I get started?",
+            "description": "If you have a clear goal, browse the tools and templates by step. If you're not sure yet, tell the AI assistant your idea and it will tell you roughly what you need."
           },
           {
-            "title": "Will V1 include payments or credits?",
-            "description": "No. The SPEC says V1 hides Pricing, payments, subscriptions, Credits, and points, keeping only the capabilities needed by the resource platform."
+            "title": "Does any of this cost money?",
+            "description": "Browsing resources, reading articles, and asking the AI are all free. For the recommended tools themselves, we mark which are free and which are paid, so you choose as needed."
           },
           {
-            "title": "How will the AI assistant answer?",
-            "description": "It answers from site resources, collections, articles, and profile content that allow citation, with source links. If no source is found, it says so."
+            "title": "Is the AI assistant reliable, or does it make things up?",
+            "description": "It answers only from real site content and gives sources. If nothing relevant exists on the site, it simply says it can't find it, rather than inventing an answer."
           }
         ]
       },
       "cta": {
         "id": "cta",
-        "title": "Start browsing AI Web SaaS resources",
-        "description": "Resources, collections, articles, and the about page will be migrated in phases following the SPEC.",
+        "title": "Start now and build your first website",
+        "description": "Not sure where to begin? Browse the steps, or just tell the AI assistant your idea.",
         "buttons": [
           {
-            "title": "Open Resources",
+            "title": "Browse the steps",
             "url": "/resources",
-            "target": "_blank",
+            "target": "_self",
             "icon": "Zap"
           },
           {
-            "title": "About Ziying",
-            "url": "/about",
-            "target": "_blank",
+            "title": "Ask the AI",
+            "url": "/assistant",
+            "target": "_self",
             "variant": "outline",
-            "icon": "BookOpenText"
+            "icon": "RiMessage2Line"
           }
         ],
         "className": "bg-muted"
       },
       "subscribe": {
         "id": "subscribe",
-        "title": "Follow platform updates",
-        "description": "Get newly added resources, collections, and practical AI Web SaaS notes.",
+        "title": "Get updates",
+        "description": "Be the first to know when new tools, templates, and hands-on notes are added.",
         "submit": {
           "input": {
             "placeholder": "Enter your email"

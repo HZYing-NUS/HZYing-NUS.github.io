@@ -24,6 +24,8 @@ export function FeaturesAccordion({
 }) {
   const [activeItem, setActiveItem] = useState<string>('item-1');
 
+  const hasImages = section.items?.some((item) => item.image?.src);
+
   const images: any = {};
   section.items?.forEach((item, idx) => {
     images[`item-${idx + 1}`] = {
@@ -55,7 +57,12 @@ export function FeaturesAccordion({
         </ScrollAnimation>
 
         {/* grid: clamp min-w-0 and fix px padding/breakpoints */}
-        <div className="grid min-w-0 gap-12 sm:px-6 md:grid-cols-2 lg:gap-20 lg:px-0">
+        <div
+          className={cn(
+            'grid min-w-0 gap-12 sm:px-6 lg:gap-20 lg:px-0',
+            hasImages ? 'md:grid-cols-2' : 'mx-auto max-w-3xl'
+          )}
+        >
           <ScrollAnimation delay={0.1} direction="left">
             <Accordion
               type="single"
@@ -79,35 +86,37 @@ export function FeaturesAccordion({
             </Accordion>
           </ScrollAnimation>
 
-          <ScrollAnimation delay={0.2} direction="right">
-            {/* min-w-0/flex-shrink to prevent overflow */}
-            <div className="bg-background relative flex min-w-0 flex-shrink overflow-hidden rounded-3xl border p-2">
-              <div className="absolute inset-0 right-0 ml-auto w-15 border-l bg-[repeating-linear-gradient(-45deg,var(--color-border),var(--color-border)_1px,transparent_1px,transparent_8px)]"></div>
-              <div className="bg-background relative aspect-76/59 w-full min-w-0 rounded-2xl sm:w-[calc(3/4*100%+3rem)]">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`${activeItem}-id`}
-                    initial={{ opacity: 0, y: 6, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                    transition={{ duration: 0.2 }}
-                    className="size-full overflow-hidden rounded-2xl border shadow-md"
-                  >
-                    <LazyImage
-                      src={images[activeItem].image}
-                      className="size-full object-cover object-left-top dark:mix-blend-lighten"
-                      alt={images[activeItem].alt}
-                    />
-                  </motion.div>
-                </AnimatePresence>
+          {hasImages && (
+            <ScrollAnimation delay={0.2} direction="right">
+              {/* min-w-0/flex-shrink to prevent overflow */}
+              <div className="bg-background relative flex min-w-0 flex-shrink overflow-hidden rounded-3xl border p-2">
+                <div className="absolute inset-0 right-0 ml-auto w-15 border-l bg-[repeating-linear-gradient(-45deg,var(--color-border),var(--color-border)_1px,transparent_1px,transparent_8px)]"></div>
+                <div className="bg-background relative aspect-76/59 w-full min-w-0 rounded-2xl sm:w-[calc(3/4*100%+3rem)]">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`${activeItem}-id`}
+                      initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                      transition={{ duration: 0.2 }}
+                      className="size-full overflow-hidden rounded-2xl border shadow-md"
+                    >
+                      <LazyImage
+                        src={images[activeItem].image}
+                        className="size-full object-cover object-left-top dark:mix-blend-lighten"
+                        alt={images[activeItem].alt}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+                <BorderBeam
+                  duration={6}
+                  size={200}
+                  className="from-transparent via-yellow-700 to-transparent dark:via-white/50"
+                />
               </div>
-              <BorderBeam
-                duration={6}
-                size={200}
-                className="from-transparent via-yellow-700 to-transparent dark:via-white/50"
-              />
-            </div>
-          </ScrollAnimation>
+            </ScrollAnimation>
+          )}
         </div>
       </div>
     </section>

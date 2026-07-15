@@ -25,15 +25,17 @@ export function FeaturesList({
     >
       <div className="container overflow-x-hidden">
         <div className="flex flex-wrap items-center gap-8 pb-12 md:gap-24">
-          <ScrollAnimation direction="left">
-            <div className="mx-auto w-full max-w-[500px] flex-shrink-0 md:mx-0">
-              <LazyImage
-                src={section.image?.src ?? ''}
-                alt={section.image?.alt ?? ''}
-                className="h-auto w-full rounded-lg object-cover"
-              />
-            </div>
-          </ScrollAnimation>
+          {section.image?.src && (
+            <ScrollAnimation direction="left">
+              <div className="mx-auto w-full max-w-[500px] flex-shrink-0 md:mx-0">
+                <LazyImage
+                  src={section.image.src}
+                  alt={section.image?.alt ?? ''}
+                  className="h-auto w-full rounded-lg object-cover"
+                />
+              </div>
+            </ScrollAnimation>
+          )}
           <div className="w-full min-w-0 flex-1">
             <ScrollAnimation delay={0.1}>
               <h2 className="text-foreground text-4xl font-semibold text-balance break-words">

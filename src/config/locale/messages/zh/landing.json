@@ -72,14 +72,14 @@
     "show_theme": true,
     "show_locale": true,
     "topbanner": {
-      "text": "面向 AI Web SaaS 创业者的一站式出海资源平台，持续更新中。"
+      "text": "新手搭网站不知道用什么？每一步该用啥，这里帮你理好了。"
     }
   },
   "footer": {
     "id": "footer",
     "brand": {
       "title": "WebTools",
-      "description": "面向 AI Web SaaS 创业者的一站式出海资源平台，系统整理建站、设计、开发、模型、部署、SEO 和增长资源。",
+      "description": "帮新手快速搞清楚：搭一个网站每一步该用什么工具、模板和服务。从想法到上线，少走弯路。",
       "logo": {
         "src": "/logo.png",
         "alt": "WebTools",

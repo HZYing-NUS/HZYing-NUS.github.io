@@ -72,14 +72,14 @@
     "show_theme": true,
     "show_locale": true,
     "topbanner": {
-      "text": "New resources, collections, and field notes are published continuously."
+      "text": "New to building websites? What to use at each step is sorted for you here."
     }
   },
   "footer": {
     "id": "footer",
     "brand": {
       "title": "WebTools",
-      "description": "A one-stop resource platform for AI Web SaaS founders, covering building, design, development, models, deployment, SEO, and growth.",
+      "description": "Helping beginners quickly figure out what tool, template, and service to use at each step of building a website — from idea to launch, without the detours.",
       "logo": {
         "src": "/logo.png",
         "alt": "WebTools",
