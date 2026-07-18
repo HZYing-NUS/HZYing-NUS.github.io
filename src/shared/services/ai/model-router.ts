@@ -11,6 +11,24 @@ export type ResolvedAiModel = NonNullable<
   Awaited<ReturnType<typeof findModelConfiguration>>
 >;
 
+export type ReasoningEffort = 'high' | 'medium' | 'low';
+
+export function isReasoningEnabledForModel(publicId: string) {
+  if (process.env.AI_REASONING_ENABLED !== 'true') return false;
+
+  const enabledModels = (process.env.AI_REASONING_MODEL_IDS || '')
+    .split(',')
+    .map((modelId) => modelId.trim())
+    .filter(Boolean);
+
+  return enabledModels.includes(publicId);
+}
+
+export function getReasoningEffort(): ReasoningEffort {
+  const effort = process.env.AI_REASONING_EFFORT;
+  return effort === 'high' || effort === 'low' ? effort : 'medium';
+}
+
 export async function resolveAiModel(
   publicId: string,
   channel: 'primary' | 'fallback' = 'primary'

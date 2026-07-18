@@ -37,6 +37,8 @@ import { buildAiContext } from '@/shared/services/ai/context';
 import {
   createPriceSnapshot,
   getFallbackAvailability,
+  getReasoningEffort,
+  isReasoningEnabledForModel,
   resolveAiModel,
 } from '@/shared/services/ai/model-router';
 import {
@@ -181,12 +183,6 @@ export async function POST(req: Request) {
       return Response.json({ message: 'UNAUTHORIZED' }, { status: 401 });
     userId = user.id;
     await assertAiAccess(user.id);
-    if (body.reasoning) {
-      return Response.json(
-        { message: 'REASONING_NOT_AVAILABLE' },
-        { status: 400 }
-      );
-    }
     const rateLimit = await enforceFixedWindowRateLimit(req, {
       keyPrefix: 'ai-chat',
       key: `ai-chat:user:${user.id}`,
@@ -263,6 +259,15 @@ export async function POST(req: Request) {
       ? await resolveAiModel(chat.model, 'fallback')
       : primaryResolved;
     modelConfiguration = resolved.configuration;
+    if (
+      body.reasoning &&
+      !isReasoningEnabledForModel(modelConfiguration.publicId)
+    ) {
+      return Response.json(
+        { message: 'REASONING_NOT_AVAILABLE' },
+        { status: 400 }
+      );
+    }
     const requestMessage = fallbackSourceMessage
       ? {
           ...body.message,
@@ -645,6 +650,13 @@ export async function POST(req: Request) {
             system: context.system,
             messages: convertToModelMessages(historyMessages),
             maxOutputTokens: modelConfiguration!.maxOutputTokens,
+            providerOptions: body.reasoning
+              ? {
+                  openrouter: {
+                    reasoning: { effort: getReasoningEffort() },
+                  },
+                }
+              : undefined,
             abortSignal,
             onChunk: async ({ chunk }) => {
               if (chunk.type !== 'text-delta') return;

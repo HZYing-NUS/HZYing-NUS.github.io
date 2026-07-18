@@ -7,7 +7,10 @@ import { getRemainingCredits } from '@/shared/models/credit';
 import { findProjectById } from '@/shared/models/project';
 import { findPublishedSkill } from '@/shared/models/skill';
 import { getUserInfo } from '@/shared/models/user';
-import { resolveAiModel } from '@/shared/services/ai/model-router';
+import {
+  isReasoningEnabledForModel,
+  resolveAiModel,
+} from '@/shared/services/ai/model-router';
 import {
   getAiPricingSettings,
   requireWebSearchPricing,
@@ -22,6 +25,7 @@ export async function POST(req: Request) {
         projectId?: string;
         skill?: string;
         webSearch?: boolean;
+        reasoning?: boolean;
         hasAttachments?: boolean;
       };
     };
@@ -52,6 +56,12 @@ export async function POST(req: Request) {
     }
 
     const resolved = await resolveAiModel(body.model);
+    if (
+      body.reasoning &&
+      !isReasoningEnabledForModel(resolved.configuration.publicId)
+    ) {
+      return respErr('REASONING_NOT_AVAILABLE');
+    }
     let skillVersionId: string | undefined;
     if (body.skill && body.skill !== 'general') {
       if (body.skill !== 'product-idea-diagnosis') {
@@ -72,7 +82,10 @@ export async function POST(req: Request) {
       provider: resolved.configuration.providerCode,
       title: text?.substring(0, 100) || project!.name,
       parts: '',
-      metadata: JSON.stringify({ pendingMessageId }),
+      metadata: JSON.stringify({
+        pendingMessageId,
+        pendingReasoning: Boolean(body.reasoning),
+      }),
       content: text ? JSON.stringify({ text }) : null,
       projectId: body.projectId,
       skillVersionId,

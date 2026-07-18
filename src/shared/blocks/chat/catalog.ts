@@ -1,10 +1,10 @@
-import { BotIcon, BrainCircuitIcon } from 'lucide-react';
+import { BotIcon, RouteIcon } from 'lucide-react';
 
 export type ChatModelOption = {
   id: string;
   label: string;
   description: string;
-  icon: typeof BrainCircuitIcon;
+  icon: typeof RouteIcon;
 };
 
 export type ChatSkillOption = {
@@ -17,17 +17,17 @@ export type ChatSkillOption = {
 export const chatModels: ChatModelOption[] = [
   {
     id: 'auto',
-    label: '自动选择',
-    description: '由 WebTools 选择默认模型',
-    icon: BrainCircuitIcon,
+    label: 'Auto',
+    description: '',
+    icon: RouteIcon,
   },
 ];
 
 export const chatSkills: ChatSkillOption[] = [
   {
     id: 'general',
-    label: '通用助手',
-    description: '适合日常提问、写作和分析',
+    label: 'General chat',
+    description: '',
     icon: BotIcon,
   },
 ];

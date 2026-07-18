@@ -87,6 +87,7 @@ export function ChatBox({
               ? 'product-idea-diagnosis'
               : 'general',
             webSearch: Boolean(initialChat.webSearchEnabled),
+            reasoning: Boolean(initialChat.metadata?.pendingReasoning),
             locale,
             fileIds,
           },

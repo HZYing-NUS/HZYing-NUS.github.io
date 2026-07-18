@@ -11,6 +11,7 @@
     "r2": "Cloudflare R2",
     "s3": "AWS S3",
     "openrouter": "OpenRouter",
+    "webtools_ai": "WebTools AI",
     "replicate": "Replicate",
     "fal": "Fal",
     "google_analytics": "谷歌分析",

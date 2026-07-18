@@ -3,9 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 import {
+  BotIcon,
   BrainCircuitIcon,
   CircleDollarSignIcon,
+  CpuIcon,
   Globe2Icon,
+  RouteIcon,
   SparklesIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -46,6 +49,7 @@ type PublicModel = {
   id: string;
   name: string;
   description?: string | null;
+  supportsReasoning?: boolean;
 };
 
 type PublicSkill = {
@@ -92,7 +96,11 @@ export function ChatInput({
   const { user, isCheckSign, setIsShowSignModal, setIsShowPaymentModal } =
     useAppContext();
   const generalSkill = useMemo(
-    () => ({ ...chatSkills[0], label: t('general') }),
+    () => ({
+      ...chatSkills[0],
+      label: t('general'),
+      description: t('general_description'),
+    }),
     [t]
   );
   const [models, setModels] = useState<PublicModel[]>([]);
@@ -115,8 +123,6 @@ export function ChatInput({
   const [skillCatalogLoaded, setSkillCatalogLoaded] = useState(false);
   const [estimate, setEstimate] = useState<number | null>(null);
   const [estimating, setEstimating] = useState(false);
-  const reasoningAvailable = false;
-
   const dynamicModels = useMemo(
     () =>
       models.length
@@ -125,6 +131,7 @@ export function ChatInput({
             id: item.id,
             name: item.label,
             description: item.description,
+            supportsReasoning: false,
           })),
     [models]
   );
@@ -132,6 +139,7 @@ export function ChatInput({
     dynamicModels.find((item) => item.id === (lockedModel || model)) ||
     dynamicModels[0];
   const selectedModel = getChatModel(lockedModel || model);
+  const reasoningAvailable = Boolean(selectedDynamicModel?.supportsReasoning);
   const selectedSkill =
     skills.find((item) => item.id === (lockedSkill || skill)) ||
     (lockedSkill === 'product-idea-diagnosis'
@@ -150,10 +158,24 @@ export function ChatInput({
     fetch('/api/ai/models')
       .then((r) => r.json())
       .then(
-        (payload: { models?: PublicModel[]; webSearchAvailable?: boolean }) => {
+        (payload: {
+          defaultModel?: { id: string; name: string } | null;
+          models?: PublicModel[];
+          webSearchAvailable?: boolean;
+        }) => {
           setModels(
             (payload.models || []).map((item) =>
-              item.id === 'auto' ? { ...item, name: t('auto_model') } : item
+              item.id === 'auto'
+                ? {
+                    ...item,
+                    name: payload.defaultModel?.name
+                      ? t('auto_model_with_name', {
+                          model: payload.defaultModel.name,
+                        })
+                      : t('auto_model'),
+                    description: t('auto_model_description'),
+                  }
+                : item
             )
           );
           setWebSearchAvailable(Boolean(payload.webSearchAvailable));
@@ -298,44 +320,8 @@ export function ChatInput({
   return (
     <div className="w-full">
       <>
-        <div className="border-border/70 bg-card/85 mb-3 flex flex-col gap-3 rounded-xl border px-4 py-3 shadow-[0_14px_40px_-32px_rgba(62,48,31,0.75)] backdrop-blur sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-md">
-              <selectedModel.icon className="size-4" />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium">
-                {selectedDynamicModel?.name || selectedModel.label}
-              </p>
-              <p className="text-muted-foreground truncate text-xs">
-                {selectedDynamicModel?.description || selectedModel.description}{' '}
-                · {selectedSkill.label}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-2 sm:justify-end">
-            <Badge variant="secondary" className="gap-1 font-normal">
-              <CircleDollarSignIcon className="size-3" />
-              {t('usage')}
-            </Badge>
-            <Badge variant="outline" className="gap-1 font-normal">
-              {estimating
-                ? t('estimating')
-                : estimate
-                  ? t('estimate', { credits: estimate })
-                  : '—'}
-            </Badge>
-            {user ? (
-              <Badge variant="outline" className="gap-1 font-normal">
-                <SparklesIcon className="size-3" />
-                {availableCredits} Credit
-              </Badge>
-            ) : null}
-          </div>
-        </div>
-
         {isInsufficient ? (
-          <div className="border-destructive/30 bg-destructive/5 mb-3 flex flex-col gap-3 border px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="border-destructive/25 bg-destructive/5 mb-3 flex flex-col gap-3 rounded-xl border px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
             <p className="text-muted-foreground">{t('insufficient')}</p>
             <Button
               variant="outline"
@@ -393,7 +379,7 @@ export function ChatInput({
               // The parent keeps the draft when a request fails.
             }
           }}
-          className="border-border/80 bg-card/95 overflow-hidden rounded-2xl border shadow-[0_24px_70px_-42px_rgba(62,48,31,0.9)] backdrop-blur"
+          className="border-border/80 bg-card/95 overflow-hidden rounded-[1.35rem] border shadow-[0_28px_80px_-48px_rgba(62,48,31,0.95)] backdrop-blur"
           globalDrop={Boolean(user)}
           multiple
         >
@@ -411,29 +397,53 @@ export function ChatInput({
             />
           </PromptInputBody>
           <PromptInputFooter className="border-t px-3 py-2">
-            <PromptInputTools className="min-w-0 flex-wrap gap-1">
+            <PromptInputTools className="min-w-0 flex-wrap gap-1.5">
               <PromptInputSelect
                 disabled={Boolean(lockedModel)}
-                onValueChange={setModel}
+                onValueChange={(nextModel) => {
+                  setModel(nextModel);
+                  if (
+                    !dynamicModels.find((item) => item.id === nextModel)
+                      ?.supportsReasoning
+                  ) {
+                    setReasoning(false);
+                  }
+                }}
                 value={lockedModel || model}
               >
-                <PromptInputSelectTrigger className="max-w-40 rounded-lg px-2.5">
+                <PromptInputSelectTrigger
+                  aria-label={t('model_label')}
+                  className="border-border/70 bg-muted/45 hover:bg-muted max-w-64 rounded-lg border px-2.5"
+                >
                   <PromptInputSelectValue>
-                    {selectedDynamicModel?.name || selectedModel.label}
+                    <span className="flex min-w-0 items-center gap-2">
+                      {selectedDynamicModel?.id === 'auto' ? (
+                        <RouteIcon className="text-primary size-3.5 shrink-0" />
+                      ) : (
+                        <CpuIcon className="text-primary size-3.5 shrink-0" />
+                      )}
+                      <span className="truncate">
+                        {selectedDynamicModel?.name || selectedModel.label}
+                      </span>
+                    </span>
                   </PromptInputSelectValue>
                 </PromptInputSelectTrigger>
                 <PromptInputSelectContent>
                   {dynamicModels.map((item) => (
                     <PromptInputSelectItem key={item.id} value={item.id}>
-                      <span className="flex min-w-48 items-center justify-between gap-4">
-                        <span>
+                      <span className="flex min-w-72 items-start gap-3 py-1">
+                        <span className="bg-primary/10 text-primary mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md">
+                          {item.id === 'auto' ? (
+                            <RouteIcon className="size-3.5" />
+                          ) : (
+                            <CpuIcon className="size-3.5" />
+                          )}
+                        </span>
+                        <span className="min-w-0 flex-1">
                           <span className="block font-medium">{item.name}</span>
                           <span className="text-muted-foreground block text-xs">
-                            {item.description}
+                            {item.description || t('model_description')}
                           </span>
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          {t('usage')}
                         </span>
                       </span>
                     </PromptInputSelectItem>
@@ -446,9 +456,15 @@ export function ChatInput({
                 onValueChange={setSkill}
                 value={lockedSkill || skill}
               >
-                <PromptInputSelectTrigger className="max-w-48 rounded-lg px-2.5">
+                <PromptInputSelectTrigger
+                  aria-label={t('skill_label')}
+                  className="border-border/70 bg-muted/45 hover:bg-muted max-w-48 rounded-lg border px-2.5"
+                >
                   <PromptInputSelectValue>
-                    {selectedSkill.label}
+                    <span className="flex min-w-0 items-center gap-2">
+                      <BotIcon className="text-muted-foreground size-3.5 shrink-0" />
+                      <span className="truncate">{selectedSkill.label}</span>
+                    </span>
                   </PromptInputSelectValue>
                 </PromptInputSelectTrigger>
                 <PromptInputSelectContent>
@@ -465,32 +481,40 @@ export function ChatInput({
                 </PromptInputSelectContent>
               </PromptInputSelect>
 
-              <div className="ml-1 flex items-center">
-                <Switch
-                  id="prompt-reasoning-switch"
-                  checked={reasoning}
-                  disabled={isDisabled || !reasoningAvailable}
-                  onCheckedChange={setReasoning}
-                />
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Label
-                      htmlFor="prompt-reasoning-switch"
-                      className="text-muted-foreground hover:text-foreground inline-flex cursor-pointer items-center rounded-md p-2 transition-colors"
-                    >
-                      <BrainCircuitIcon className="size-4" />
-                    </Label>
-                  </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>
-                    {reasoningAvailable
-                      ? t('reasoning')
-                      : t('reasoning_unavailable')}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="ml-1 flex items-center gap-2 rounded-lg px-2 py-1">
+                  <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
+                    <BrainCircuitIcon className="text-muted-foreground size-3.5" />
+                    <Label
+                      htmlFor="prompt-reasoning-switch"
+                      className="text-muted-foreground cursor-pointer text-xs"
+                    >
+                      {t('reasoning')}
+                    </Label>
+                    <Switch
+                      id="prompt-reasoning-switch"
+                      checked={reasoning}
+                      disabled={isDisabled || !reasoningAvailable}
+                      onCheckedChange={setReasoning}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={6}>
+                  {reasoningAvailable
+                    ? t('reasoning_available')
+                    : t('reasoning_unavailable')}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
+                    <Globe2Icon className="text-muted-foreground size-3.5" />
+                    <Label
+                      htmlFor="prompt-web-search-switch"
+                      className="text-muted-foreground cursor-pointer text-xs"
+                    >
+                      {t('web')}
+                    </Label>
                     <Switch
                       id="prompt-web-search-switch"
                       checked={lockedWebSearch ?? webSearch}
@@ -501,13 +525,6 @@ export function ChatInput({
                       }
                       onCheckedChange={setWebSearch}
                     />
-                    <Label
-                      htmlFor="prompt-web-search-switch"
-                      className="text-muted-foreground inline-flex items-center gap-1.5 text-xs"
-                    >
-                      <Globe2Icon className="size-3.5" />
-                      {t('web')}
-                    </Label>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent sideOffset={6}>
@@ -533,10 +550,30 @@ export function ChatInput({
                 </div>
               ) : null}
             </PromptInputTools>
-            <PromptInputSubmit
-              disabled={!input || isDisabled}
-              status={status}
-            />
+            <div className="ml-auto flex items-center gap-2">
+              {user ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      variant="outline"
+                      className="hidden gap-1 font-normal sm:inline-flex"
+                    >
+                      <CircleDollarSignIcon className="size-3" />
+                      {estimating
+                        ? t('estimating')
+                        : estimate
+                          ? t('estimate', { credits: estimate })
+                          : t('balance', { credits: availableCredits })}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent sideOffset={6}>{t('usage')}</TooltipContent>
+                </Tooltip>
+              ) : null}
+              <PromptInputSubmit
+                disabled={!input || isDisabled}
+                status={status}
+              />
+            </div>
           </PromptInputFooter>
         </PromptInput>
       </>

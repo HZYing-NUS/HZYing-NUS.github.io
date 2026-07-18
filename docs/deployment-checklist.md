@@ -24,10 +24,15 @@ This project reuses ShipAny's existing better-auth, database, storage, and chat 
 
 ## AI and Assistant
 
-- `AI_PROVIDER_API_KEY` and optional `AI_PROVIDER_BASE_URL` for the server-side model provider. Provider secrets are referenced by environment-variable name from the model catalog and are never returned by public APIs.
+- Store all AI secrets in the local environment file for the matching environment and in Vercel Project Settings > Environment Variables. Never prefix server secrets with `NEXT_PUBLIC_` and never commit real values.
+- `AI_PROVIDER_API_KEY` is the server-side key for the primary OpenRouter-compatible Provider. Set `AI_PROVIDER_BASE_URL=https://openrouter.ai/api/v1` for OpenRouter itself, or use the verified OpenAI-compatible base URL supplied by the selected gateway.
+- The seeded model catalog references `AI_PROVIDER_API_KEY` by environment-variable name. The actual Provider model IDs are configured in `/admin/ai-models`; the frontend only receives public model names and capabilities.
+- When using official OpenRouter, set each Provider Model ID to the exact model identifier shown by OpenRouter. The WebTools public IDs can remain stable, but placeholder or gateway-specific IDs such as `claude-sonnet-4-6` will not work unless the configured Provider recognizes them.
+- Changing `AI_PROVIDER_BASE_URL` after initialization does not rewrite the Provider row automatically. Update it in `/admin/ai-models` or rerun the idempotent assistant seed for that environment.
 - Optional `AI_FALLBACK_PROVIDER_API_KEY` and `AI_FALLBACK_PROVIDER_BASE_URL` for the separately confirmed fallback channel. The seeded fallback Provider is inactive until an administrator verifies and enables it.
-- Optional `TAVILY_API_KEY` for user-enabled web search. Without it, web-search requests fail before model invocation and the reservation is refunded.
-- Configure a verified positive `ai_web_search_cost_usd` value in the admin configuration before enabling web search. The public toggle stays disabled when either the API key or price is missing.
+- Extended thinking is opt-in and disabled by default. Set `AI_REASONING_ENABLED=true`, list only verified public model IDs in comma-separated `AI_REASONING_MODEL_IDS`, and set `AI_REASONING_EFFORT` to `low`, `medium`, or `high`. The OpenRouter-compatible Provider receives the corresponding reasoning option only for those models.
+- Configure `TAVILY_API_KEY` for user-enabled web search. Also save a verified positive `ai_web_search_cost_usd` in the `config` table and optionally set `ai_web_search_api_key_env=TAVILY_API_KEY` plus `ai_web_search_url=https://api.tavily.com/search`. The public toggle remains disabled when either the key or price is missing.
+- After changing any AI environment variable in Vercel, redeploy the affected Preview or Production environment. Environment changes do not update an already-running deployment.
 - Review the catalog with `pnpm seed:ai-assistant -- --env=<environment-file>`; write it with `CONFIRM_AI_ASSISTANT_SEED=1 pnpm seed:ai-assistant -- --env=<environment-file> --apply`.
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for multi-instance assistant rate limiting. Rotate the token before entering it in Vercel if it was shared outside the secret manager.
 - `AI_RATE_LIMIT_PER_MINUTE` and `AI_MAX_CONCURRENT_REQUESTS` control per-user request frequency and database-backed concurrent generation leases. Defaults are `12` and `2`.
