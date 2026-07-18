@@ -39,7 +39,8 @@ This project reuses ShipAny's existing better-auth, database, storage, and chat 
 - Configure a high-entropy `CRON_SECRET` in Vercel Production. Vercel sends it as `Authorization: Bearer <CRON_SECRET>` to the scheduled cleanup route.
 - `vercel.json` invokes `/api/cron/purge-deleted-content` daily at 03:17 UTC. Verify the cron appears in the Production deployment after release.
 - The worker permanently deletes projects and standalone chats whose 30-day `purgeAt` deadline has passed, including private R2 objects, parsed chunks, and other cascade-owned content.
-- `/api/cron/refund-expired-reservations` runs every ten minutes and refunds expired AI Credit reservations before content cleanup can consume the worker budget. Each run drains up to 1,000 reservations in batches.
+- Vercel Hobby invokes `/api/cron/refund-expired-reservations` daily at 03:47 UTC as a fallback and refunds up to 1,000 expired AI Credit reservations in batches.
+- If Production requires ten-minute refund recovery, configure an external scheduler to call `GET /api/cron/refund-expired-reservations` with `Authorization: Bearer <CRON_SECRET>`. Vercel Hobby does not support cron intervals shorter than one day.
 - R2 failures remain in `ai_file` as `cleanup_failed` with the error in `parse_error`; the next daily run retries them. Do not manually remove these rows before the object cleanup succeeds.
 - Credit reservations, usage ledgers, payment risk events, transactions, orders, and other financial or anti-fraud records are not deleted by this worker.
 - After deployment, call the route once with the Production cron bearer secret and confirm it returns HTTP 200. A missing or incorrect secret must return HTTP 401.

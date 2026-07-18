@@ -29,7 +29,7 @@
     },
     {
       "path": "/api/cron/refund-expired-reservations",
-      "schedule": "*/10 * * * *"
+      "schedule": "47 3 * * *"
     }
   ]
 }
