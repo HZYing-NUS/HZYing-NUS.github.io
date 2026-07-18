@@ -17,11 +17,7 @@ import { useChatContext } from '@/shared/contexts/chat';
 import { ChatInput } from './input';
 import { uploadChatAttachments } from './upload-attachments';
 
-export function ChatGenerator({
-  initiallyAuthenticated,
-}: {
-  initiallyAuthenticated: boolean;
-}) {
+export function ChatGenerator() {
   const router = useRouter();
   const locale = useLocale();
   const searchParams = useSearchParams();
@@ -159,7 +155,7 @@ export function ChatGenerator({
           />
         </div>
       </main>
-      {!initiallyAuthenticated && !user ? (
+      {!isCheckSign && !user ? (
         <section
           aria-modal="true"
           aria-labelledby="chat-auth-gate-title"
@@ -196,7 +192,7 @@ export function ChatGenerator({
           </div>
         </section>
       ) : null}
-      {initiallyAuthenticated && isCheckSign ? (
+      {isCheckSign ? (
         <div className="fixed inset-0 z-40 bg-[#ede8de]/45 backdrop-blur-sm md:left-[var(--sidebar-width)] dark:bg-black/45" />
       ) : null}
     </div>
