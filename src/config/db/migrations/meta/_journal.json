@@ -22,6 +22,13 @@
       "when": 1784317155576,
       "tag": "0002_short_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784372438067,
+      "tag": "0003_known_veda",
+      "breakpoints": true
     }
   ]
 }

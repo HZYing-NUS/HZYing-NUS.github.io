@@ -13,19 +13,18 @@ export type ResolvedAiModel = NonNullable<
 
 export type ReasoningEffort = 'high' | 'medium' | 'low';
 
-export function isReasoningEnabledForModel(publicId: string) {
-  if (process.env.AI_REASONING_ENABLED !== 'true') return false;
-
-  const enabledModels = (process.env.AI_REASONING_MODEL_IDS || '')
-    .split(',')
-    .map((modelId) => modelId.trim())
-    .filter(Boolean);
-
-  return enabledModels.includes(publicId);
+export function isReasoningEnabledForModel(model: {
+  supportsReasoning: boolean;
+}) {
+  return (
+    model.supportsReasoning && process.env.AI_REASONING_ENABLED !== 'false'
+  );
 }
 
-export function getReasoningEffort(): ReasoningEffort {
-  const effort = process.env.AI_REASONING_EFFORT;
+export function getReasoningEffort(model: {
+  reasoningEffort: string;
+}): ReasoningEffort {
+  const effort = model.reasoningEffort;
   return effort === 'high' || effort === 'low' ? effort : 'medium';
 }
 

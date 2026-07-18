@@ -24,7 +24,7 @@ export async function GET() {
         name: 'Auto',
         description: null,
         supportsReasoning: defaultModel
-          ? isReasoningEnabledForModel(defaultModel.publicId)
+          ? isReasoningEnabledForModel(defaultModel)
           : false,
       },
       ...models.map((model: (typeof models)[number]) => ({
@@ -36,7 +36,7 @@ export async function GET() {
         supportsVision: model.supportsVision,
         supportsTools: model.supportsTools,
         supportsStreaming: model.supportsStreaming,
-        supportsReasoning: isReasoningEnabledForModel(model.publicId),
+        supportsReasoning: isReasoningEnabledForModel(model),
         recommendationMode: model.recommendationMode,
       })),
     ],

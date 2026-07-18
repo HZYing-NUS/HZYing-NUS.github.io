@@ -623,6 +623,8 @@ export const aiModel = table(
     supportsVision: boolean('supports_vision').notNull().default(false),
     supportsTools: boolean('supports_tools').notNull().default(false),
     supportsStreaming: boolean('supports_streaming').notNull().default(true),
+    supportsReasoning: boolean('supports_reasoning').notNull().default(false),
+    reasoningEffort: text('reasoning_effort').notNull().default('medium'),
     enabled: boolean('enabled').notNull().default(true),
     recommendationMode: text('recommendation_mode'),
     sort: integer('sort').notNull().default(0),

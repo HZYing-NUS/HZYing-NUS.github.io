@@ -56,10 +56,7 @@ export async function POST(req: Request) {
     }
 
     const resolved = await resolveAiModel(body.model);
-    if (
-      body.reasoning &&
-      !isReasoningEnabledForModel(resolved.configuration.publicId)
-    ) {
+    if (body.reasoning && !isReasoningEnabledForModel(resolved.configuration)) {
       return respErr('REASONING_NOT_AVAILABLE');
     }
     let skillVersionId: string | undefined;

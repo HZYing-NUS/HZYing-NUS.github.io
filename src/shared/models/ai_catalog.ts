@@ -46,6 +46,8 @@ export type AdminAiModel = {
   supportsVision: boolean;
   supportsTools: boolean;
   supportsStreaming: boolean;
+  supportsReasoning: boolean;
+  reasoningEffort: string;
   enabled: boolean;
   recommendationMode: string | null;
   sort: number;
@@ -85,6 +87,8 @@ export type UpdateAiModel = Partial<
     | 'supportsVision'
     | 'supportsTools'
     | 'supportsStreaming'
+    | 'supportsReasoning'
+    | 'reasoningEffort'
     | 'enabled'
     | 'recommendationMode'
     | 'sort'
@@ -182,6 +186,8 @@ export async function getAdminAiModels(): Promise<AdminAiModel[]> {
       supportsVision: aiModel.supportsVision,
       supportsTools: aiModel.supportsTools,
       supportsStreaming: aiModel.supportsStreaming,
+      supportsReasoning: aiModel.supportsReasoning,
+      reasoningEffort: aiModel.reasoningEffort,
       enabled: aiModel.enabled,
       recommendationMode: aiModel.recommendationMode,
       sort: aiModel.sort,
@@ -214,6 +220,8 @@ export async function getEnabledModels() {
       supportsVision: aiModel.supportsVision,
       supportsTools: aiModel.supportsTools,
       supportsStreaming: aiModel.supportsStreaming,
+      supportsReasoning: aiModel.supportsReasoning,
+      reasoningEffort: aiModel.reasoningEffort,
       recommendationMode: aiModel.recommendationMode,
     })
     .from(aiModel)
@@ -245,6 +253,8 @@ export async function findModelConfiguration(publicId: string) {
       contextWindow: aiModel.contextWindow,
       maxOutputTokens: aiModel.maxOutputTokens,
       supportsVision: aiModel.supportsVision,
+      supportsReasoning: aiModel.supportsReasoning,
+      reasoningEffort: aiModel.reasoningEffort,
       providerId: aiProvider.id,
       providerCode: aiProvider.code,
       apiBaseUrl: aiProvider.apiBaseUrl,

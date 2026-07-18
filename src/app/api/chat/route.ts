@@ -259,10 +259,7 @@ export async function POST(req: Request) {
       ? await resolveAiModel(chat.model, 'fallback')
       : primaryResolved;
     modelConfiguration = resolved.configuration;
-    if (
-      body.reasoning &&
-      !isReasoningEnabledForModel(modelConfiguration.publicId)
-    ) {
+    if (body.reasoning && !isReasoningEnabledForModel(modelConfiguration)) {
       return Response.json(
         { message: 'REASONING_NOT_AVAILABLE' },
         { status: 400 }
@@ -653,7 +650,9 @@ export async function POST(req: Request) {
             providerOptions: body.reasoning
               ? {
                   openrouter: {
-                    reasoning: { effort: getReasoningEffort() },
+                    reasoning: {
+                      effort: getReasoningEffort(modelConfiguration!),
+                    },
                   },
                 }
               : undefined,

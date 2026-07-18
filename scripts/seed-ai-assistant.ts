@@ -124,6 +124,8 @@ async function seed() {
         maxOutputTokens: 8192,
         supportsStreaming: true,
         supportsVision,
+        supportsReasoning: false,
+        reasoningEffort: 'medium',
         enabled: true,
         sort,
       })

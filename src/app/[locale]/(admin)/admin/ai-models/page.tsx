@@ -133,6 +133,10 @@ export default async function AdminAiModelsPage({
     if (Number.isNaN(pricingEffectiveAt.getTime())) {
       throw new Error('Invalid pricing effective time');
     }
+    const reasoningEffort = requiredText(data, 'reasoningEffort');
+    if (!['low', 'medium', 'high'].includes(reasoningEffort)) {
+      throw new Error('Invalid reasoning effort');
+    }
     await updateAiModel(id, {
       visibleName: requiredText(data, 'visibleName'),
       description: optionalText(data, 'description'),
@@ -178,6 +182,8 @@ export default async function AdminAiModelsPage({
       supportsVision: data.get('supportsVision') === 'on',
       supportsTools: data.get('supportsTools') === 'on',
       supportsStreaming: data.get('supportsStreaming') === 'on',
+      supportsReasoning: data.get('supportsReasoning') === 'on',
+      reasoningEffort,
       enabled: data.get('enabled') === 'on',
       recommendationMode: optionalText(data, 'recommendationMode'),
       sort: requiredInteger(data, 'sort'),
@@ -305,6 +311,12 @@ export default async function AdminAiModelsPage({
                   </Badge>
                   {model.recommendationMode && (
                     <Badge variant="outline">{model.recommendationMode}</Badge>
+                  )}
+                  {model.supportsReasoning && (
+                    <Badge variant="outline">
+                      {isZh ? '深度思考' : 'Extended thinking'} ·{' '}
+                      {model.reasoningEffort}
+                    </Badge>
                   )}
                 </div>
                 <CardDescription>{model.publicId}</CardDescription>
@@ -515,6 +527,22 @@ export default async function AdminAiModelsPage({
                       placeholder="default / fast / quality"
                     />
                   </Field>
+                  <Field label={isZh ? '推理强度' : 'Reasoning effort'}>
+                    <select
+                      name="reasoningEffort"
+                      defaultValue={model.reasoningEffort}
+                      className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm"
+                    >
+                      <option value="low">low</option>
+                      <option value="medium">medium</option>
+                      <option value="high">high</option>
+                    </select>
+                    <p className="text-muted-foreground text-xs">
+                      {isZh
+                        ? '仅在确认 Provider 和模型支持 reasoning 后启用。'
+                        : 'Enable only after verifying reasoning support for this Provider model.'}
+                    </p>
+                  </Field>
                   <div className="flex flex-wrap items-end gap-5 pb-2">
                     <Check
                       name="fallbackIsSameModel"
@@ -542,6 +570,11 @@ export default async function AdminAiModelsPage({
                       name="supportsStreaming"
                       label={isZh ? '流式' : 'Streaming'}
                       checked={model.supportsStreaming}
+                    />
+                    <Check
+                      name="supportsReasoning"
+                      label={isZh ? '深度思考' : 'Extended thinking'}
+                      checked={model.supportsReasoning}
                     />
                   </div>
                   <div className="xl:col-span-4">
