@@ -1,9 +1,10 @@
+import { createHash } from 'node:crypto';
 import { headers } from 'next/headers';
-import { count, desc, eq, inArray } from 'drizzle-orm';
+import { and, count, desc, eq, inArray } from 'drizzle-orm';
 
 import { getAuth } from '@/core/auth';
 import { db } from '@/core/db';
-import { user } from '@/config/db/schema';
+import { account, user } from '@/config/db/schema';
 
 import { Permission, Role } from '../services/rbac';
 import { getRemainingCredits } from './credit';
@@ -97,7 +98,9 @@ export async function getSignUser() {
 }
 
 export async function isEmailVerified(email: string): Promise<boolean> {
-  const normalized = String(email || '').trim().toLowerCase();
+  const normalized = String(email || '')
+    .trim()
+    .toLowerCase();
   if (!normalized) return false;
 
   const [row] = await db()
@@ -107,6 +110,54 @@ export async function isEmailVerified(email: string): Promise<boolean> {
     .limit(1);
 
   return !!row?.emailVerified;
+}
+
+export async function isTrustedUser(userId: string) {
+  const [row] = await db()
+    .select({ emailVerified: user.emailVerified })
+    .from(user)
+    .where(eq(user.id, userId));
+  if (row?.emailVerified) return true;
+  const [socialAccount] = await db()
+    .select({ id: account.id })
+    .from(account)
+    .where(
+      and(
+        eq(account.userId, userId),
+        inArray(account.providerId, ['google', 'github'])
+      )
+    )
+    .limit(1);
+  return Boolean(socialAccount);
+}
+
+export async function getTrustedCreditIdentity(userId: string) {
+  const socialAccounts = await db()
+    .select({ providerId: account.providerId, accountId: account.accountId })
+    .from(account)
+    .where(
+      and(
+        eq(account.userId, userId),
+        inArray(account.providerId, ['google', 'github'])
+      )
+    );
+  const social = socialAccounts.sort(
+    (left: { providerId: string }, right: { providerId: string }) =>
+      left.providerId.localeCompare(right.providerId)
+  )[0];
+  if (social) {
+    return createHash('sha256')
+      .update(`${social.providerId}:${social.accountId}`)
+      .digest('hex');
+  }
+  const [verified] = await db()
+    .select({ email: user.email, emailVerified: user.emailVerified })
+    .from(user)
+    .where(eq(user.id, userId));
+  if (!verified?.emailVerified) return null;
+  return createHash('sha256')
+    .update(`email:${verified.email.trim().toLowerCase()}`)
+    .digest('hex');
 }
 
 export async function appendUserToResult(result: any) {

@@ -101,6 +101,21 @@
           "title": "AI Chats",
           "url": "/admin/chats",
           "icon": "MessageCircle"
+        },
+        {
+          "title": "Models & Providers",
+          "url": "/admin/ai-models",
+          "icon": "Bot"
+        },
+        {
+          "title": "Skill Management",
+          "url": "/admin/skills",
+          "icon": "Workflow"
+        },
+        {
+          "title": "Credit Management",
+          "url": "/admin/credits",
+          "icon": "Coins"
         }
       ]
     }

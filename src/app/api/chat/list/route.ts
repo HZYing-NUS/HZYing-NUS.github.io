@@ -1,10 +1,15 @@
 import { respData, respErr } from '@/shared/lib/resp';
-import { ChatStatus, getChats, getChatsCount } from '@/shared/models/chat';
+import {
+  ChatStatus,
+  getChats,
+  getChatsCount,
+  toPublicChat,
+} from '@/shared/models/chat';
 import { getUserInfo } from '@/shared/models/user';
 
 export async function POST(req: Request) {
   try {
-    let { page, limit } = await req.json();
+    let { page, limit, query } = await req.json();
     if (!page) {
       page = 1;
     }
@@ -22,14 +27,16 @@ export async function POST(req: Request) {
       status: ChatStatus.CREATED,
       page,
       limit,
+      query: typeof query === 'string' ? query.trim() : undefined,
     });
     const total = await getChatsCount({
       userId: user.id,
       status: ChatStatus.CREATED,
+      query: typeof query === 'string' ? query.trim() : undefined,
     });
 
     return respData({
-      list: chats,
+      list: chats.map(toPublicChat),
       total,
       page,
       limit,

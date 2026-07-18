@@ -24,9 +24,26 @@ This project reuses ShipAny's existing better-auth, database, storage, and chat 
 
 ## AI and Assistant
 
-- Existing OpenRouter/AI provider configuration used by `src/app/api/resource-assistant/route.ts`.
+- `AI_PROVIDER_API_KEY` and optional `AI_PROVIDER_BASE_URL` for the server-side model provider. Provider secrets are referenced by environment-variable name from the model catalog and are never returned by public APIs.
+- Optional `AI_FALLBACK_PROVIDER_API_KEY` and `AI_FALLBACK_PROVIDER_BASE_URL` for the separately confirmed fallback channel. The seeded fallback Provider is inactive until an administrator verifies and enables it.
+- Optional `TAVILY_API_KEY` for user-enabled web search. Without it, web-search requests fail before model invocation and the reservation is refunded.
+- Configure a verified positive `ai_web_search_cost_usd` value in the admin configuration before enabling web search. The public toggle stays disabled when either the API key or price is missing.
+- Review the catalog with `pnpm seed:ai-assistant -- --env=<environment-file>`; write it with `CONFIRM_AI_ASSISTANT_SEED=1 pnpm seed:ai-assistant -- --env=<environment-file> --apply`.
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for multi-instance assistant rate limiting. Rotate the token before entering it in Vercel if it was shared outside the secret manager.
+- `AI_RATE_LIMIT_PER_MINUTE` and `AI_MAX_CONCURRENT_REQUESTS` control per-user request frequency and database-backed concurrent generation leases. Defaults are `12` and `2`.
+- `AI_IMAGE_INPUT_TOKENS` is the conservative per-image estimation value used before provider capability and billing are verified. The default is `1200`; reconcile it against real provider usage before enabling vision.
 - Without Upstash variables, the assistant falls back to the existing single-instance in-memory fixed window limiter; this is suitable only for local development or low-volume Preview checks.
+
+## Data Retention Cleanup
+
+- Configure a high-entropy `CRON_SECRET` in Vercel Production. Vercel sends it as `Authorization: Bearer <CRON_SECRET>` to the scheduled cleanup route.
+- `vercel.json` invokes `/api/cron/purge-deleted-content` daily at 03:17 UTC. Verify the cron appears in the Production deployment after release.
+- The worker permanently deletes projects and standalone chats whose 30-day `purgeAt` deadline has passed, including private R2 objects, parsed chunks, and other cascade-owned content.
+- `/api/cron/refund-expired-reservations` runs every ten minutes and refunds expired AI Credit reservations before content cleanup can consume the worker budget. Each run drains up to 1,000 reservations in batches.
+- R2 failures remain in `ai_file` as `cleanup_failed` with the error in `parse_error`; the next daily run retries them. Do not manually remove these rows before the object cleanup succeeds.
+- Credit reservations, usage ledgers, payment risk events, transactions, orders, and other financial or anti-fraud records are not deleted by this worker.
+- After deployment, call the route once with the Production cron bearer secret and confirm it returns HTTP 200. A missing or incorrect secret must return HTTP 401.
+- Before applying migration `0002`, confirm there are no duplicate non-null `(transaction_id, payment_provider)` order pairs. The migration deliberately aborts instead of deleting or merging financial records.
 
 ## Content Migration
 

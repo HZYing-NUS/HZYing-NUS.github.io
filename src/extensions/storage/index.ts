@@ -56,6 +56,13 @@ export interface StorageProvider {
   // check if object exists (optional)
   exists?: (options: { key: string; bucket?: string }) => Promise<boolean>;
 
+  getObject?: (options: {
+    key: string;
+    bucket?: string;
+  }) => Promise<{ body: Uint8Array; contentType?: string }>;
+
+  deleteObject?: (options: { key: string; bucket?: string }) => Promise<void>;
+
   // get public url for key (optional)
   getPublicUrl?: (options: { key: string; bucket?: string }) => string;
 
@@ -133,6 +140,20 @@ export class StorageManager {
     const provider = this.ensureDefaultProvider();
     if (!provider.exists) return false;
     return provider.exists(options);
+  }
+
+  async getObject(options: { key: string; bucket?: string }) {
+    const provider = this.ensureDefaultProvider();
+    if (!provider.getObject)
+      throw new Error('Storage download is not supported');
+    return provider.getObject(options);
+  }
+
+  async deleteObject(options: { key: string; bucket?: string }) {
+    const provider = this.ensureDefaultProvider();
+    if (!provider.deleteObject)
+      throw new Error('Storage deletion is not supported');
+    return provider.deleteObject(options);
   }
 
   // get public url using default provider (if supported)

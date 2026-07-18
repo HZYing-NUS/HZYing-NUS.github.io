@@ -1,0 +1,4 @@
+interface:
+  display_name: "产品想法诊断"
+  short_description: "用结构化方法判断产品想法，并给出本周可执行的验证动作"
+  default_prompt: "请诊断我的产品想法，指出最危险的假设，并给出本周可以执行的验证动作。"

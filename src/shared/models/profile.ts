@@ -17,7 +17,13 @@ export async function getPublishedProfile(locale: string) {
   const [item] = await db()
     .select({ content: profileContent.content })
     .from(profileContent)
-    .where(and(eq(profileContent.locale, locale), eq(profileContent.status, 'published')))
+    .where(
+      and(
+        eq(profileContent.locale, locale),
+        eq(profileContent.status, 'published'),
+        eq(profileContent.allowAiCitation, true)
+      )
+    )
     .limit(1);
   return item?.content || null;
 }

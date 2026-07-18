@@ -6,6 +6,7 @@ import {
   findOrderByOrderNo,
   findOrderByTransactionId,
 } from '@/shared/models/order';
+import { handlePaymentRiskEvent } from '@/shared/models/payment_risk';
 import { findSubscriptionByProviderSubscriptionId } from '@/shared/models/subscription';
 import {
   getPaymentService,
@@ -51,7 +52,24 @@ export async function POST(
 
     // console.log('notify payment session', session);
 
-    if (eventType === PaymentEventType.CHECKOUT_SUCCESS) {
+    if (
+      eventType === PaymentEventType.PAYMENT_REFUNDED ||
+      eventType === PaymentEventType.PAYMENT_DISPUTED
+    ) {
+      const eventResult = event.eventResult as Record<string, any>;
+      const providerEventId = String(
+        eventResult.id || eventResult.eventId || eventResult.event_id || ''
+      );
+      if (!providerEventId) throw new Error('provider event id not found');
+      await handlePaymentRiskEvent({
+        provider,
+        providerEventId,
+        eventType,
+        orderNo: session.metadata?.order_no,
+        transactionId: session.paymentInfo?.transactionId,
+        payload: eventResult,
+      });
+    } else if (eventType === PaymentEventType.CHECKOUT_SUCCESS) {
       // one-time payment or subscription first payment
       const orderNo = session.metadata.order_no;
 
@@ -163,7 +181,9 @@ export async function POST(
         const orderNo = session.metadata?.order_no;
 
         if (!orderNo) {
-          console.log('one-time payment: order_no not found in metadata, skipping');
+          console.log(
+            'one-time payment: order_no not found in metadata, skipping'
+          );
           return Response.json({ message: 'success' });
         }
 

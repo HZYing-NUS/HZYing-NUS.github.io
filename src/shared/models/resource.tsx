@@ -197,7 +197,16 @@ export async function getPublishedResources({
     .from(resource)
     .leftJoin(stage, eq(resource.stageId, stage.id))
     .leftJoin(category, eq(resource.categoryId, category.id))
-    .where(publicResourceWhere({ query, resourceType, stageId, categoryId, pricingType }))
+    .where(
+      publicResourceWhere({
+        query,
+        resourceType,
+        stageId,
+        categoryId,
+        pricingType,
+        allowAiCitation,
+      })
+    )
     .orderBy(asc(resource.sortOrder), asc(resource.createdAt));
 
   const resourceIds = (rows as { resource: typeof resource.$inferSelect }[]).map((row) => row.resource.id);

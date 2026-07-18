@@ -231,6 +231,26 @@ export async function updateOrderInTransaction({
       credit: null,
     };
 
+    const [orderResult] = await tx
+      .update(order)
+      .set(updateOrder)
+      .where(
+        and(
+          eq(order.orderNo, orderNo),
+          updateOrder.status === OrderStatus.PAID
+            ? or(
+                eq(order.status, OrderStatus.CREATED),
+                eq(order.status, OrderStatus.PENDING)
+              )
+            : undefined
+        )
+      )
+      .returning();
+    if (!orderResult && updateOrder.status === OrderStatus.PAID) {
+      return result;
+    }
+    result.order = orderResult;
+
     // deal with subscription
     if (newSubscription) {
       let existingSubscription: any = null;
@@ -282,33 +302,6 @@ export async function updateOrderInTransaction({
 
       result.credit = existingCredit;
     }
-
-    // update order with optimistic lock
-    // only update if status is not PAID (prevent duplicate processing)
-    const [orderResult] = await tx
-      .update(order)
-      .set(updateOrder)
-      .where(
-        and(
-          eq(order.orderNo, orderNo),
-          // Only update if not already paid (optimistic lock)
-          updateOrder.status === OrderStatus.PAID
-            ? or(
-                eq(order.status, OrderStatus.CREATED),
-                eq(order.status, OrderStatus.PENDING)
-              )
-            : undefined
-        )
-      )
-      .returning();
-
-    // If no order was updated and we're trying to set status to PAID,
-    // it means the order was already processed
-    if (!orderResult && updateOrder.status === OrderStatus.PAID) {
-      console.log(`Order ${orderNo} already paid or not in CREATED status, skipping update`);
-    }
-
-    result.order = orderResult;
 
     return result;
   });
@@ -366,14 +359,30 @@ export async function updateSubscriptionInTransaction({
       }
 
       if (!existingOrder) {
-        // create order
         const [orderResult] = await tx
           .insert(order)
           .values(newOrder)
+          .onConflictDoNothing({
+            target: [order.transactionId, order.paymentProvider],
+          })
           .returning();
-
-        existingOrder = orderResult;
+        if (orderResult) {
+          existingOrder = orderResult;
+        } else if (newOrder.transactionId && newOrder.paymentProvider) {
+          const [concurrentOrder] = await tx
+            .select()
+            .from(order)
+            .where(
+              and(
+                eq(order.transactionId, newOrder.transactionId),
+                eq(order.paymentProvider, newOrder.paymentProvider)
+              )
+            );
+          existingOrder = concurrentOrder;
+        }
       }
+
+      if (!existingOrder) throw new Error('Renewal order conflict');
 
       result.order = existingOrder;
     }
@@ -395,10 +404,16 @@ export async function updateSubscriptionInTransaction({
         // create credit
         const [creditResult] = await tx
           .insert(credit)
-          .values(newCredit)
+          .values({ ...newCredit, orderNo: result.order?.orderNo })
+          .onConflictDoNothing({ target: credit.idempotencyKey })
           .returning();
-
         existingCredit = creditResult;
+        if (!existingCredit && newCredit.idempotencyKey) {
+          [existingCredit] = await tx
+            .select()
+            .from(credit)
+            .where(eq(credit.idempotencyKey, newCredit.idempotencyKey));
+        }
       }
 
       result.credit = existingCredit;

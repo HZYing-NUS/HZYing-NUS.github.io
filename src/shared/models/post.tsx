@@ -148,6 +148,7 @@ export async function searchPublishedPosts({ locale, query, limit = 20 }: { loca
     .where(and(
       eq(post.type, PostType.ARTICLE),
       eq(post.status, PostStatus.PUBLISHED),
+      eq(post.allowAiCitation, true),
       keyword ? or(
         ilike(post.title, `%${keyword}%`),
         ilike(post.description, `%${keyword}%`),

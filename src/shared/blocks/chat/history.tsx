@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { IconHistory } from '@tabler/icons-react';
+import { IconTrash } from '@tabler/icons-react';
 import moment from 'moment';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -12,6 +12,7 @@ import { Empty } from '@/shared/blocks/common/empty';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
 import { SidebarTrigger } from '@/shared/components/ui/sidebar';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useAppContext } from '@/shared/contexts/app';
@@ -21,26 +22,9 @@ type ChatListItem = {
   title?: string | null;
   createdAt?: string | Date | null;
   model?: string | null;
-  provider?: string | null;
 };
 
-function formatModelName(model: string | null | undefined) {
-  if (!model) {
-    return null;
-  }
-
-  if (model.includes('deepseek')) {
-    return 'DeepSeek';
-  }
-  if (model.includes('claude')) {
-    return 'Claude Code';
-  }
-  if (model.includes('kimi')) {
-    return 'Kimi';
-  }
-
-  return model;
-}
+type PublicModel = { id: string; name: string };
 
 type ChatListResponse = {
   list: ChatListItem[];
@@ -92,6 +76,8 @@ export function ChatHistory() {
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState(searchParams.get('query') || '');
+  const [modelNames, setModelNames] = useState<Record<string, string>>({});
 
   const totalPages = useMemo(() => {
     if (limit <= 0) {
@@ -148,7 +134,7 @@ export function ChatHistory() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ page, limit }),
+        body: JSON.stringify({ page, limit, query }),
       });
 
       if (!resp.ok) {
@@ -174,7 +160,7 @@ export function ChatHistory() {
     } finally {
       setLoading(false);
     }
-  }, [limit, page, t, user]);
+  }, [limit, page, query, t, user]);
 
   useEffect(() => {
     if (!user || isCheckSign) {
@@ -182,6 +168,19 @@ export function ChatHistory() {
     }
     fetchChats();
   }, [fetchChats, isCheckSign, user]);
+
+  useEffect(() => {
+    fetch('/api/ai/models')
+      .then((response) => response.json())
+      .then((payload: { models?: PublicModel[] }) => {
+        setModelNames(
+          Object.fromEntries(
+            (payload.models || []).map((model) => [model.id, model.name])
+          )
+        );
+      })
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (
@@ -197,6 +196,10 @@ export function ChatHistory() {
 
   const handleRetry = () => {
     fetchChats();
+  };
+  const deleteChat = async (id: string) => {
+    await fetch(`/api/chat/${id}`, { method: 'DELETE' });
+    await fetchChats();
   };
 
   const handleLimitSelect = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -276,14 +279,21 @@ export function ChatHistory() {
                       <span>{moment(chat.createdAt).fromNow()}</span>
                     </div>
                   </div>
-                  {formatModelName(chat.model) ? (
+                  {chat.model ? (
                     <Badge
                       variant="outline"
                       className="w-fit shrink-0 font-normal"
                     >
-                      {formatModelName(chat.model)}
+                      {modelNames[chat.model] || chat.model}
                     </Badge>
                   ) : null}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => deleteChat(chat.id)}
+                  >
+                    <IconTrash className="size-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -308,6 +318,20 @@ export function ChatHistory() {
             <h1 className="text-2xl font-semibold">{t('title')}</h1>
             <p className="text-muted-foreground text-sm">{t('description')}</p>
           </div>
+          <form
+            className="flex gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              fetchChats();
+            }}
+          >
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('title')}
+            />
+            <Button type="submit">{t('title')}</Button>
+          </form>
           <section className="">{renderContent()}</section>
           <div className="px-2 py-4">
             <Pagination page={page} total={total} limit={limit} />

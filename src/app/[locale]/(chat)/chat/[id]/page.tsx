@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { UIMessage } from 'ai';
 
@@ -16,7 +16,7 @@ export default function ChatPage() {
     null
   );
 
-  const fetchChat = async (chatId: string) => {
+  const fetchChat = useCallback(async (chatId: string) => {
     try {
       const resp = await fetch('/api/chat/info', {
         method: 'POST',
@@ -35,10 +35,13 @@ export default function ChatPage() {
         title: data.title,
         createdAt: data.createdAt,
         model: data.model,
-        provider: data.provider,
         parts: data.parts ? JSON.parse(data.parts) : [],
         metadata: data.metadata ? JSON.parse(data.metadata) : undefined,
         content: data.content ? JSON.parse(data.content) : undefined,
+        skillVersionId: data.skillVersionId,
+        webSearchEnabled: data.webSearchEnabled,
+        projectId: data.projectId,
+        projectSummary: data.projectSummary,
       } as Chat);
 
       if (data.id) {
@@ -47,7 +50,7 @@ export default function ChatPage() {
     } catch (e: any) {
       console.log('fetch chat failed:', e);
     }
-  };
+  }, []);
 
   const fetchMessages = async (chatId: string) => {
     try {
@@ -68,8 +71,33 @@ export default function ChatPage() {
         list.map((item: any) => ({
           id: item.id,
           role: item.role,
-          parts: item.parts ? JSON.parse(item.parts) : [],
-          metadata: item.metadata ? JSON.parse(item.metadata) : undefined,
+          metadata: {
+            sourceDetails: item.sourceDetails,
+            inputTokens: item.inputTokens,
+            outputTokens: item.outputTokens,
+            settledCredits: item.settledCredits,
+            errorReason: item.errorReason,
+            fallbackOffer: item.fallbackOffer,
+            fallbackConfirmedAt: item.fallbackConfirmedAt,
+          },
+          parts:
+            item.fallbackOffer &&
+            !item.fallbackConfirmedAt &&
+            !(item.parts ? JSON.parse(item.parts) : []).some(
+              (part: { type?: string }) =>
+                part.type === 'data-provider-fallback'
+            )
+              ? [
+                  ...(item.parts ? JSON.parse(item.parts) : []),
+                  {
+                    type: 'data-provider-fallback',
+                    id: `provider-fallback:${item.fallbackOffer.sourceMessageId}`,
+                    data: item.fallbackOffer,
+                  },
+                ]
+              : item.parts
+                ? JSON.parse(item.parts)
+                : [],
         })) as UIMessage[]
       );
     } catch (e: any) {
@@ -79,7 +107,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     fetchChat(params.id as string);
-  }, [params.id]);
+  }, [fetchChat, params.id]);
 
   return initialChat && initialMessages ? (
     <ChatBox initialChat={initialChat} initialMessages={initialMessages} />

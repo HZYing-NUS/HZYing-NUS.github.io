@@ -2,18 +2,15 @@
   "sidebar": {
     "header": {
       "brand": {
-        "title": "ShipAny Chat",
-        "logo": {
-          "src": "/logo.png",
-          "alt": "ShipAny Chat"
-        },
-        "url": "/chat"
+        "title": "WebTools",
+        "logo": { "src": "/logo.png", "alt": "WebTools" },
+        "url": "/"
       },
       "show_trigger": false
     },
     "buttons": [
       {
-        "title": "New Chat",
+        "title": "New chat",
         "icon": "Plus",
         "url": "/chat",
         "variant": "outline"
@@ -22,26 +19,36 @@
     "main_navs": [
       {
         "items": [
+          { "title": "Search chats", "icon": "Search", "url": "/chat/history" },
           {
-            "title": "History",
-            "icon": "History",
-            "url": "/chat/history"
+            "title": "Projects",
+            "icon": "FolderKanban",
+            "url": "/chat/projects"
+          },
+          { "title": "Skills", "icon": "Blocks", "url": "/chat/skills" },
+          {
+            "title": "Credit",
+            "icon": "CircleDollarSign",
+            "url": "/chat/credits"
+          },
+          {
+            "title": "Global memory",
+            "icon": "Brain",
+            "url": "/chat/memories"
+          },
+          {
+            "title": "Settings",
+            "icon": "Settings",
+            "url": "/settings/profile"
           }
         ]
       }
     ],
-    "bottom_nav": {
-      "items": []
-    },
+    "bottom_nav": { "items": [] },
     "user": {
       "nav": {
         "items": [
-          {
-            "title": "Profile",
-            "url": "/settings/profile",
-            "icon": "User",
-            "target": "_blank"
-          }
+          { "title": "Profile", "url": "/settings/profile", "icon": "User" }
         ]
       },
       "show_email": false,
@@ -51,71 +58,109 @@
     },
     "footer": {
       "nav": {
-        "items": [
-          {
-            "title": "Home",
-            "url": "/",
-            "icon": "Home",
-            "target": "_blank"
-          },
-          {
-            "title": "GitHub",
-            "url": "https://github.com/your-app-name",
-            "icon": "Github",
-            "target": "_blank"
-          },
-          {
-            "title": "Twitter",
-            "url": "https://twitter.com/your-app-name",
-            "icon": "RiTwitterXFill",
-            "target": "_blank"
-          },
-          {
-            "title": "Discord",
-            "url": "https://discord.gg/your-app-name",
-            "icon": "RiDiscordFill",
-            "target": "_blank"
-          },
-          {
-            "title": "Email",
-            "url": "mailto:support@your-domain.com",
-            "icon": "Mail",
-            "target": "_blank"
-          }
-        ]
+        "items": [{ "title": "Public site", "url": "/", "icon": "Home" }]
       },
       "show_theme": true,
-      "show_locale": false
+      "show_locale": true
     },
     "variant": "sidebar"
   },
   "library": {
-    "title": "Library",
-    "icon": "History",
-    "url": "/chat/history",
-    "more": "More",
+    "title": "Recent",
+    "more": "View all",
     "actions": {
-      "edit_title": "Edit Title",
+      "edit_title": "Edit title",
       "share": "Share",
       "delete": "Delete"
     }
   },
   "generator": {
-    "title": "What can I help you today?",
-    "input_placeholder": "You can ask me anything"
+    "eyebrow": "AI WORKSPACE",
+    "title": "Build your first Web product.",
+    "description": "Use WebTools knowledge, project progress, and capabilities you explicitly enable to find the next useful step.",
+    "input_placeholder": "Describe what you are building, or ask what to do next…",
+    "signin_title": "Enter your question first",
+    "signin_description": "Sign in when you submit. Your question and selections will be preserved. New users receive 10 Credit, valid for 30 days.",
+    "signin_action": "Sign in or register",
+    "signin_gate_title": "Sign in to use WebTools AI",
+    "signin_gate_description": "Please register or sign in before using AI features. Your chats, projects, files, Credit, and memories stay private to your account.",
+    "signin_gate_action": "Register or sign in",
+    "balance": "{credits} Credit",
+    "usage": "Settled by actual usage",
+    "insufficient": "Not enough Credit. You can still read chats, projects, and memories, but cannot start a model request.",
+    "recharge": "Go to Credit",
+    "estimate": "Est. {credits} Credit",
+    "estimating": "Estimating",
+    "web": "Web",
+    "reasoning": "Extended thinking",
+    "reasoning_unavailable": "Extended thinking is not connected to a verified model capability yet.",
+    "web_available": "Web search is available",
+    "web_unavailable": "Web search is not configured",
+    "files": "Files",
+    "general": "General chat",
+    "diagnosis": "Product idea diagnosis",
+    "diagnosis_description": "Evaluate demand, pricing, distribution, and the smallest viable product.",
+    "auto_model": "Auto"
   },
   "history": {
-    "title": "Chat history",
-    "description": "Review and revisit your previous conversations.",
-    "empty": "No conversations yet.",
-    "error": "Failed to load conversations.",
-    "retry": "Try again",
-    "signin": "Sign in to view your chat history.",
-    "summary": "Showing {from}-{to} of {total}",
+    "title": "Search chats",
+    "description": "Search your titles and message content, then resume a conversation.",
+    "empty": "No chats found.",
+    "error": "Failed to load chats.",
+    "retry": "Retry",
+    "signin": "Sign in to search chats.",
+    "summary": "Showing {from}–{to} of {total}",
     "perPage": "Per page",
     "prev": "Previous",
     "next": "Next",
-    "open": "Open chat",
-    "untitled": "Untitled conversation"
+    "open": "Open",
+    "untitled": "Untitled chat"
+  },
+  "workspace": {
+    "projects": "Projects",
+    "projects_description": "Keep conversations, files, and progress in one project.",
+    "new_project": "New project",
+    "trash": "Recycle bin",
+    "active": "Active",
+    "empty_projects": "No projects yet.",
+    "project_name": "Project name",
+    "project_description": "One-line description",
+    "target_audience": "Target audience",
+    "stage": "Current stage",
+    "technology": "Technology",
+    "confirmed_decisions": "Confirmed decisions",
+    "completed_items": "Completed items",
+    "current_problem": "Current problem",
+    "next_steps": "Next steps",
+    "important_conclusions": "Important conclusions",
+    "recent_progress": "Recent progress",
+    "save": "Save",
+    "delete": "Move to recycle bin",
+    "restore": "Restore",
+    "purge": "Delete permanently",
+    "new_chat": "Start a project chat",
+    "summary": "Project summary",
+    "chats": "Related chats",
+    "files": "Project files",
+    "memories": "Project memory",
+    "auto_memory": "Automatically extract project memory",
+    "upload": "Upload files",
+    "pdf_pending": "PDF parsing service is not configured",
+    "global_memory": "Global memory",
+    "global_description": "Only confirmed long-term preferences and stable context are stored.",
+    "new_memory": "Add memory",
+    "pending": "Pending confirmation",
+    "confirm": "Confirm",
+    "skills": "Skills",
+    "skills_description": "A Skill starts a new chat with the original question and project context.",
+    "skill_action": "Use product idea diagnosis",
+    "skill_unavailable": "The Skill is not published. Run the initialization script first.",
+    "credits": "Credit",
+    "credits_description": "Requests reserve Credit first, settle actual usage, then refund the difference.",
+    "balance": "Available balance",
+    "reservations": "Reservations",
+    "ledger": "Usage ledger",
+    "packages_pending": "Credit packages pending configuration",
+    "packages_contact": "Package sizes and prices are not finalized. No subscription or invented price will be shown."
   }
 }

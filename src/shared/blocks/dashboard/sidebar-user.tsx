@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useSyncExternalStore } from 'react';
 import { ChevronsUpDown, Loader2, LogOut, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -46,11 +46,11 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
   // one tap initialized
   const oneTapInitialized = useRef(false);
 
-  // This state will ensure rendering only happens after client hydration
-  const [hasMounted, setHasMounted] = useState(false);
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  const hasMounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
 
   const handleSignOut = async () => {
     await signOut();
@@ -72,7 +72,7 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
 
   useEffect(() => {
     fetchConfigs();
-  }, []);
+  }, [fetchConfigs]);
 
   // set is check sign
   useEffect(() => {
@@ -118,7 +118,7 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
     } else if (!sessionUser && currentUserId) {
       setUser(null);
     }
-  }, [hasMounted, session?.user?.id, authUser?.id, setUser, fetchUserInfo]);
+  }, [hasMounted, session?.user, authUser?.id, setUser, fetchUserInfo]);
 
   // If not mounted, render placeholder to avoid hydration mismatch
   if (!hasMounted) {

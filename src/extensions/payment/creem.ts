@@ -179,6 +179,13 @@ export class CreemProvider implements PaymentProvider {
         paymentSession = await this.buildPaymentSessionFromSubscription(
           event.object as any
         );
+      } else if (
+        eventType === PaymentEventType.PAYMENT_REFUNDED ||
+        eventType === PaymentEventType.PAYMENT_DISPUTED
+      ) {
+        paymentSession = this.buildPaymentSessionFromRiskEvent(
+          event.object as any
+        );
       }
 
       if (!paymentSession) {
@@ -308,14 +315,55 @@ export class CreemProvider implements PaymentProvider {
         return PaymentEventType.SUBSCRIBE_UPDATED;
       case 'subscription.canceled':
         return PaymentEventType.SUBSCRIBE_CANCELED;
+      case 'refund.created':
+        return PaymentEventType.PAYMENT_REFUNDED;
+      case 'dispute.created':
+        return PaymentEventType.PAYMENT_DISPUTED;
       default:
         // not handle other event type
         // subscription.expired
         // subscription.trialing
-        // refund.created
-        // dispute.created
         throw new Error(`Not handle creem event type: ${eventType}`);
     }
+  }
+
+  private buildPaymentSessionFromRiskEvent(eventObject: any): PaymentSession {
+    const transaction =
+      eventObject?.transaction ||
+      eventObject?.order ||
+      eventObject?.last_transaction ||
+      eventObject?.invoice?.order ||
+      eventObject?.refund?.transaction ||
+      eventObject?.dispute?.transaction;
+    const metadata =
+      eventObject?.metadata ||
+      eventObject?.checkout?.metadata ||
+      eventObject?.invoice?.metadata ||
+      transaction?.metadata ||
+      {};
+    const orderNo =
+      metadata?.order_no ||
+      eventObject?.order_no ||
+      eventObject?.checkout?.metadata?.order_no;
+    const transactionId =
+      eventObject?.transaction_id ||
+      transaction?.transaction ||
+      transaction?.id ||
+      eventObject?.invoice?.transaction_id;
+
+    return {
+      provider: this.name,
+      paymentInfo: {
+        transactionId: transactionId ? String(transactionId) : undefined,
+        paymentAmount: 0,
+        paymentCurrency: '',
+      },
+      paymentResult: eventObject,
+      metadata: {
+        ...metadata,
+        order_no: orderNo ? String(orderNo) : metadata?.order_no,
+      },
+    };
   }
 
   private mapCreemStatus(session: any): PaymentStatus {

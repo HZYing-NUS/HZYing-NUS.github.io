@@ -1,7 +1,10 @@
 import { PERMISSIONS } from '@/core/rbac';
 import { respData, respErr } from '@/shared/lib/resp';
-import { getRemainingCredits } from '@/shared/models/credit';
-import { getUserInfo } from '@/shared/models/user';
+import {
+  claimAndGrantNewUserCredits,
+  getRemainingCredits,
+} from '@/shared/models/credit';
+import { getTrustedCreditIdentity, getUserInfo } from '@/shared/models/user';
 import { hasPermission } from '@/shared/services/rbac';
 
 export async function POST(req: Request) {
@@ -14,6 +17,11 @@ export async function POST(req: Request) {
 
     // check if user is admin
     const isAdmin = await hasPermission(user.id, PERMISSIONS.ADMIN_ACCESS);
+
+    const identityHash = await getTrustedCreditIdentity(user.id);
+    if (identityHash) {
+      await claimAndGrantNewUserCredits({ user, identityHash });
+    }
 
     // get remaining credits
     const remainingCredits = await getRemainingCredits(user.id);

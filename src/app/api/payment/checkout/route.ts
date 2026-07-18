@@ -41,6 +41,10 @@ export async function POST(req: Request) {
       return respErr('pricing item not found');
     }
 
+    if (pricingItem.interval !== PaymentInterval.ONE_TIME) {
+      return respErr('V1 only supports one-time Credit purchases');
+    }
+
     if (!pricingItem.product_id && !pricingItem.amount) {
       return respErr('invalid pricing item');
     }
@@ -61,6 +65,9 @@ export async function POST(req: Request) {
     }
     if (!paymentProviderName) {
       return respErr('no payment provider configured');
+    }
+    if (paymentProviderName !== 'creem') {
+      return respErr('V1 Credit checkout only supports Creem');
     }
 
     // Validate payment provider against allowed providers

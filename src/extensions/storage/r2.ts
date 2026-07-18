@@ -86,6 +86,39 @@ export class R2Provider implements StorageProvider {
     }
   };
 
+  private async signedFetch(key: string, method: string, bucket?: string) {
+    const uploadBucket = bucket || this.configs.bucket;
+    const uploadPath = this.getUploadPath();
+    const url = `${this.getEndpoint()}/${uploadBucket}/${uploadPath}/${key}`;
+    const { AwsClient } = await import('aws4fetch');
+    const client = new AwsClient({
+      accessKeyId: this.configs.accessKeyId,
+      secretAccessKey: this.configs.secretAccessKey,
+      region: this.configs.region || 'auto',
+    });
+    return client.fetch(new Request(url, { method }));
+  }
+
+  getObject = async (options: { key: string; bucket?: string }) => {
+    const response = await this.signedFetch(options.key, 'GET', options.bucket);
+    if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+    return {
+      body: new Uint8Array(await response.arrayBuffer()),
+      contentType: response.headers.get('content-type') || undefined,
+    };
+  };
+
+  deleteObject = async (options: { key: string; bucket?: string }) => {
+    const response = await this.signedFetch(
+      options.key,
+      'DELETE',
+      options.bucket
+    );
+    if (!response.ok && response.status !== 404) {
+      throw new Error(`Deletion failed: ${response.status}`);
+    }
+  };
+
   async uploadFile(
     options: StorageUploadOptions
   ): Promise<StorageUploadResult> {

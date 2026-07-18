@@ -2,18 +2,15 @@
   "sidebar": {
     "header": {
       "brand": {
-        "title": "ShipAny Chat",
-        "logo": {
-          "src": "/logo.png",
-          "alt": "ShipAny Chat"
-        },
-        "url": "/chat"
+        "title": "WebTools",
+        "logo": { "src": "/logo.png", "alt": "WebTools" },
+        "url": "/"
       },
       "show_trigger": false
     },
     "buttons": [
       {
-        "title": "新建对话",
+        "title": "新建聊天",
         "icon": "Plus",
         "url": "/chat",
         "variant": "outline"
@@ -22,26 +19,28 @@
     "main_navs": [
       {
         "items": [
+          { "title": "搜索聊天", "icon": "Search", "url": "/chat/history" },
           {
-            "title": "历史对话",
-            "icon": "History",
-            "url": "/chat/history"
-          }
+            "title": "项目库",
+            "icon": "FolderKanban",
+            "url": "/chat/projects"
+          },
+          { "title": "Skills", "icon": "Blocks", "url": "/chat/skills" },
+          {
+            "title": "Credit",
+            "icon": "CircleDollarSign",
+            "url": "/chat/credits"
+          },
+          { "title": "全局记忆", "icon": "Brain", "url": "/chat/memories" },
+          { "title": "设置", "icon": "Settings", "url": "/settings/profile" }
         ]
       }
     ],
-    "bottom_nav": {
-      "items": []
-    },
+    "bottom_nav": { "items": [] },
     "user": {
       "nav": {
         "items": [
-          {
-            "title": "个人资料",
-            "url": "/settings/profile",
-            "icon": "User",
-            "target": "_blank"
-          }
+          { "title": "个人资料", "url": "/settings/profile", "icon": "User" }
         ]
       },
       "show_email": false,
@@ -51,71 +50,105 @@
     },
     "footer": {
       "nav": {
-        "items": [
-          {
-            "title": "首页",
-            "url": "/",
-            "icon": "Home",
-            "target": "_blank"
-          },
-          {
-            "title": "GitHub",
-            "url": "https://github.com/your-app-name",
-            "icon": "Github",
-            "target": "_blank"
-          },
-          {
-            "title": "推特",
-            "url": "https://twitter.com/your-app-name",
-            "icon": "RiTwitterXFill",
-            "target": "_blank"
-          },
-          {
-            "title": "Discord",
-            "url": "https://discord.gg/your-app-name",
-            "icon": "RiDiscordFill",
-            "target": "_blank"
-          },
-          {
-            "title": "邮箱",
-            "url": "mailto:support@your-domain.com",
-            "icon": "Mail",
-            "target": "_blank"
-          }
-        ]
+        "items": [{ "title": "返回公开网站", "url": "/", "icon": "Home" }]
       },
       "show_theme": true,
-      "show_locale": false
+      "show_locale": true
     },
     "variant": "sidebar"
   },
   "library": {
-    "title": "历史对话",
-    "icon": "History",
-    "url": "/chat/history",
-    "more": "更多",
-    "actions": {
-      "edit_title": "编辑标题",
-      "share": "分享",
-      "delete": "删除"
-    }
+    "title": "最近",
+    "more": "查看全部",
+    "actions": { "edit_title": "编辑标题", "share": "分享", "delete": "删除" }
   },
   "generator": {
-    "title": "今天有什么可以帮到你？",
-    "input_placeholder": "你可以问我任何问题"
+    "eyebrow": "AI 工作区",
+    "title": "把你的第一个 Web 产品做出来。",
+    "description": "结合 WebTools 站内知识、项目进度和你主动开启的能力，找到当前最值得做的下一步。",
+    "input_placeholder": "描述你正在做的产品，或直接问下一步该做什么……",
+    "signin_title": "可以先输入问题",
+    "signin_description": "提交时登录，问题和当前选择会保留。新用户获得 10 Credit，有效期 30 天。",
+    "signin_action": "登录或注册",
+    "signin_gate_title": "登录后使用 WebTools AI",
+    "signin_gate_description": "请注册并登录，以便使用 AI 功能。你的对话、项目、文件、Credit 与记忆仅保存在自己的账户中。",
+    "signin_gate_action": "注册或登录",
+    "balance": "{credits} Credit",
+    "usage": "按实际用量结算",
+    "insufficient": "Credit 余额不足。历史、项目与记忆仍可查看，但不能发起新请求。",
+    "recharge": "前往充值",
+    "estimate": "预计 {credits} Credit",
+    "estimating": "正在估算",
+    "web": "联网",
+    "reasoning": "深度思考",
+    "reasoning_unavailable": "深度思考尚未接入经过验证的模型能力。",
+    "web_available": "联网搜索已可用",
+    "web_unavailable": "联网搜索尚未配置",
+    "files": "文件",
+    "general": "普通对话",
+    "diagnosis": "产品想法诊断",
+    "diagnosis_description": "诊断需求、定价、分发路径与最小可行产品。",
+    "auto_model": "自动选择"
   },
   "history": {
-    "title": "历史对话",
-    "description": "查看你之前的对话。",
-    "empty": "暂无对话记录。",
-    "error": "加载对话列表失败。",
+    "title": "搜索聊天",
+    "description": "按标题或消息内容查找并继续自己的对话。",
+    "empty": "没有找到聊天。",
+    "error": "加载聊天失败。",
     "retry": "重试",
-    "signin": "登录后可查看历史对话。",
-    "summary": "正在显示第 {from}-{to} 条，共 {total} 条",
+    "signin": "登录后可搜索聊天。",
+    "summary": "显示第 {from}—{to} 条，共 {total} 条",
     "perPage": "每页",
     "prev": "上一页",
     "next": "下一页",
-    "open": "进入对话",
-    "untitled": "未命名对话"
+    "open": "打开",
+    "untitled": "未命名聊天"
+  },
+  "workspace": {
+    "projects": "项目库",
+    "projects_description": "把多轮聊天、文件和进度放进同一个项目。",
+    "new_project": "新建项目",
+    "trash": "回收站",
+    "active": "进行中",
+    "empty_projects": "还没有项目。",
+    "project_name": "项目名称",
+    "project_description": "一句话介绍",
+    "target_audience": "目标用户",
+    "stage": "当前阶段",
+    "technology": "技术方案",
+    "confirmed_decisions": "已确认决策",
+    "completed_items": "已完成事项",
+    "current_problem": "当前问题",
+    "next_steps": "下一步待办",
+    "important_conclusions": "重要结论",
+    "recent_progress": "最近进展",
+    "save": "保存",
+    "delete": "移入回收站",
+    "restore": "恢复",
+    "purge": "永久删除",
+    "new_chat": "在项目中开始新聊天",
+    "summary": "项目摘要",
+    "chats": "相关聊天",
+    "files": "项目文件",
+    "memories": "项目记忆",
+    "auto_memory": "自动提炼项目记忆",
+    "upload": "上传文件",
+    "pdf_pending": "PDF 解析服务待配置",
+    "global_memory": "全局记忆",
+    "global_description": "只保存经你确认的长期偏好和稳定背景。",
+    "new_memory": "新增记忆",
+    "pending": "待确认",
+    "confirm": "确认写入",
+    "skills": "Skills",
+    "skills_description": "Skill 会创建一条新对话，并携带原问题和项目背景。",
+    "skill_action": "使用产品想法诊断",
+    "skill_unavailable": "Skill 尚未发布，请先运行初始化脚本。",
+    "credits": "Credit",
+    "credits_description": "AI 请求先冻结，结束后按实际用量结算并退回差额。",
+    "balance": "可用余额",
+    "reservations": "冻结记录",
+    "ledger": "实际用量",
+    "packages_pending": "充值包待配置",
+    "packages_contact": "正式包数量与价格尚未确定。配置完成前不会创建订阅或虚构价格。"
   }
 }

@@ -9,8 +9,25 @@ export interface Chat {
   title: string;
   createdAt: Date;
   model: string;
-  provider: string;
   parts: any;
-  metadata: any;
+  metadata?: any;
   content: any;
+  skillVersionId?: string | null;
+  skillDisabledAt?: Date | string | null;
+  webSearchEnabled?: boolean;
+  projectId?: string | null;
+  projectSummary?: {
+    name: string;
+    description?: string | null;
+    stage?: string | null;
+    completedItems?: string | null;
+    currentProblem?: string | null;
+    nextSteps?: string | null;
+    recentMemories?: Array<{
+      id: string;
+      content: string;
+      sourceChatId?: string | null;
+      sourceMessageId?: string | null;
+    }>;
+  } | null;
 }

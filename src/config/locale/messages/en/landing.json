@@ -40,7 +40,7 @@
         },
         {
           "title": "AI Assistant",
-          "url": "/assistant",
+          "url": "/chat",
           "icon": "RiMessage2Line"
         }
       ]

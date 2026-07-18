@@ -101,6 +101,21 @@
           "title": "AI 对话",
           "url": "/admin/chats",
           "icon": "MessageCircle"
+        },
+        {
+          "title": "模型与 Provider",
+          "url": "/admin/ai-models",
+          "icon": "Bot"
+        },
+        {
+          "title": "Skill 管理",
+          "url": "/admin/skills",
+          "icon": "Workflow"
+        },
+        {
+          "title": "Credit 管理",
+          "url": "/admin/credits",
+          "icon": "Coins"
         }
       ]
     }

@@ -141,7 +141,10 @@ export async function handleCheckoutSuccess({
   }
 
   // Only process orders in CREATED or PENDING status
-  if (order.status !== OrderStatus.CREATED && order.status !== OrderStatus.PENDING) {
+  if (
+    order.status !== OrderStatus.CREATED &&
+    order.status !== OrderStatus.PENDING
+  ) {
     console.log(`Order ${orderNo} status is ${order.status}, not processing`);
     return;
   }
@@ -240,6 +243,7 @@ export async function handleCheckoutSuccess({
             : CreditTransactionScene.PAYMENT,
         credits: credits,
         remainingCredits: credits,
+        idempotencyKey: `payment-order:${order.orderNo}`,
         description: `Grant credit`,
         expiresAt: expiresAt,
         status: CreditStatus.ACTIVE,
@@ -377,6 +381,7 @@ export async function handlePaymentSuccess({
             : CreditTransactionScene.PAYMENT,
         credits: credits,
         remainingCredits: credits,
+        idempotencyKey: `payment-order:${order.orderNo}`,
         description: `Grant credit`,
         expiresAt: expiresAt,
         status: CreditStatus.ACTIVE,
@@ -411,6 +416,9 @@ export async function handleSubscriptionRenewal({
   }
   if (session.subscriptionId !== subscription.subscriptionId) {
     throw new Error('subscription id mismatch');
+  }
+  if (!session.paymentInfo?.transactionId) {
+    throw new Error('renewal transaction id is required');
   }
 
   const subscriptionInfo = session.subscriptionInfo;
@@ -499,6 +507,7 @@ export async function handleSubscriptionRenewal({
             : CreditTransactionScene.PAYMENT,
         credits: credits,
         remainingCredits: credits,
+        idempotencyKey: `payment-renewal:${order.paymentProvider}:${order.transactionId}`,
         description: `Grant credit`,
         expiresAt: expiresAt,
         status: CreditStatus.ACTIVE,

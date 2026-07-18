@@ -1,62 +1,87 @@
 import { generateId } from 'ai';
 
 import { respData, respErr } from '@/shared/lib/resp';
-import { ChatStatus, createChat, NewChat } from '@/shared/models/chat';
+import { ChatStatus, createChat, toPublicChat } from '@/shared/models/chat';
+import { getAllConfigs } from '@/shared/models/config';
+import { getRemainingCredits } from '@/shared/models/credit';
+import { findProjectById } from '@/shared/models/project';
+import { findPublishedSkill } from '@/shared/models/skill';
 import { getUserInfo } from '@/shared/models/user';
+import { resolveAiModel } from '@/shared/services/ai/model-router';
+import {
+  getAiPricingSettings,
+  requireWebSearchPricing,
+} from '@/shared/services/ai/pricing';
 
 export async function POST(req: Request) {
   try {
-    const { message, body } = await req.json();
-    if (!message || !message.text) {
-      throw new Error('message is required');
-    }
-    if (!body || !body.model) {
-      throw new Error('please select a model');
-    }
+    const { message, body } = (await req.json()) as {
+      message?: { text?: string };
+      body?: {
+        model?: string;
+        projectId?: string;
+        skill?: string;
+        webSearch?: boolean;
+        hasAttachments?: boolean;
+      };
+    };
+    const text = message?.text?.trim();
+    if (!body?.model) return respErr('MODEL_REQUIRED');
 
     const user = await getUserInfo();
-    if (!user) {
-      throw new Error('no auth, please sign in');
+    if (!user) return respErr('UNAUTHORIZED');
+    if (body.webSearch) {
+      const [pricingSettings, configs] = await Promise.all([
+        getAiPricingSettings(),
+        getAllConfigs(),
+      ]);
+      requireWebSearchPricing(pricingSettings);
+      const webSearchApiKeyEnv =
+        configs.ai_web_search_api_key_env || 'TAVILY_API_KEY';
+      if (!process.env[webSearchApiKeyEnv]) {
+        return respErr('WEB_SEARCH_NOT_CONFIGURED');
+      }
+    }
+    const project = body?.projectId
+      ? await findProjectById(body.projectId, user.id)
+      : undefined;
+    if (!text && !project && !body?.hasAttachments)
+      return respErr('MESSAGE_REQUIRED');
+    if (text && (await getRemainingCredits(user.id)) < 1) {
+      return respErr('INSUFFICIENT_CREDITS');
     }
 
-    // todo: check user credits
+    const resolved = await resolveAiModel(body.model);
+    let skillVersionId: string | undefined;
+    if (body.skill && body.skill !== 'general') {
+      if (body.skill !== 'product-idea-diagnosis') {
+        return respErr('SKILL_NOT_AVAILABLE');
+      }
+      const publishedSkill = await findPublishedSkill(body.skill);
+      if (!publishedSkill) return respErr('SKILL_NOT_AVAILABLE');
+      skillVersionId = publishedSkill.version.id;
+    }
 
-    // todo: get provider from settings
-    const provider = 'openrouter';
-
-    // todo: auto generate title
-    const title = message.text.substring(0, 100);
-
-    const chatId = generateId().toLowerCase();
-    const currentTime = new Date();
-
-    const parts = [
-      {
-        type: 'text',
-        text: message.text,
-      },
-    ];
-
-    const chat: NewChat = {
-      id: chatId,
+    const pendingMessageId =
+      text || body?.hasAttachments ? generateId().toLowerCase() : undefined;
+    const chat = await createChat({
+      id: generateId().toLowerCase(),
       userId: user.id,
       status: ChatStatus.CREATED,
-      createdAt: currentTime,
-      updatedAt: currentTime,
-      model: body.model,
-      provider: provider,
-      title: title,
+      model: resolved.configuration.publicId,
+      provider: resolved.configuration.providerCode,
+      title: text?.substring(0, 100) || project!.name,
       parts: '',
-      // parts: JSON.stringify(parts),
-      metadata: JSON.stringify(body),
-      content: JSON.stringify(message),
-    };
+      metadata: JSON.stringify({ pendingMessageId }),
+      content: text ? JSON.stringify({ text }) : null,
+      projectId: body.projectId,
+      skillVersionId,
+      webSearchEnabled: Boolean(body.webSearch),
+    });
 
-    await createChat(chat);
-
-    return respData(chat);
-  } catch (e: any) {
-    console.log('new chat failed:', e);
-    return respErr(`new chat failed: ${e.message}`);
+    return respData({ ...toPublicChat(chat), pendingMessageId });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'NEW_CHAT_FAILED';
+    return respErr(message);
   }
 }

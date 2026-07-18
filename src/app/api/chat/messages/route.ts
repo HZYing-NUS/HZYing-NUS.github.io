@@ -3,6 +3,7 @@ import { ChatStatus, getChats, getChatsCount } from '@/shared/models/chat';
 import {
   getChatMessages,
   getChatMessagesCount,
+  toPublicChatMessage,
 } from '@/shared/models/chat_message';
 import { getUserInfo } from '@/shared/models/user';
 
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
     });
 
     return respData({
-      list: messages,
+      list: messages.map(toPublicChatMessage),
       total,
       page,
       limit,

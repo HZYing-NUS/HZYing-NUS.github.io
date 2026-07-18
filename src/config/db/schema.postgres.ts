@@ -2,12 +2,14 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
+  numeric,
   pgSchema,
   pgTable,
+  primaryKey,
   text,
   timestamp,
-  jsonb,
-  primaryKey,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
 import { envConfigs } from '@/config';
@@ -38,6 +40,10 @@ export const user = table(
     utmSource: text('utm_source').notNull().default(''),
     ip: text('ip').notNull().default(''),
     locale: text('locale').notNull().default(''),
+    aiAccessStatus: text('ai_access_status').notNull().default('active'),
+    globalMemoryEnabled: boolean('global_memory_enabled')
+      .notNull()
+      .default(true),
   },
   (table) => [
     // Search users by name in admin dashboard
@@ -260,7 +266,7 @@ export const order = table(
     ),
     // Composite: Prevent duplicate payments
     // Can also be used for: WHERE transactionId = ? (left-prefix)
-    index('idx_order_transaction_provider').on(
+    uniqueIndex('idx_order_transaction_provider').on(
       table.transactionId,
       table.paymentProvider
     ),
@@ -352,6 +358,7 @@ export const credit = table(
     deletedAt: timestamp('deleted_at'),
     consumedDetail: text('consumed_detail'), // consumed detail
     metadata: text('metadata'), // transaction metadata
+    idempotencyKey: text('idempotency_key'),
   },
   (table) => [
     // Critical composite index for credit consumption (FIFO queue)
@@ -369,7 +376,19 @@ export const credit = table(
     index('idx_credit_order_no').on(table.orderNo),
     // Query credits by subscription number
     index('idx_credit_subscription_no').on(table.subscriptionNo),
+    uniqueIndex('idx_credit_idempotency_key').on(table.idempotencyKey),
   ]
+);
+
+export const creditIdentityClaim = table(
+  'credit_identity_claim',
+  {
+    id: text('id').primaryKey(),
+    identityHash: text('identity_hash').notNull().unique(),
+    userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [index('idx_credit_identity_claim_user').on(table.userId)]
 );
 
 export const apikey = table(
@@ -524,6 +543,184 @@ export const aiTask = table(
   ]
 );
 
+export const aiProvider = table(
+  'ai_provider',
+  {
+    id: text('id').primaryKey(),
+    code: text('code').notNull().unique(),
+    name: text('name').notNull(),
+    apiBaseUrl: text('api_base_url'),
+    apiKeyEnvName: text('api_key_env_name'),
+    status: text('status').notNull().default('active'),
+    priority: integer('priority').notNull().default(0),
+    metadata: jsonb('metadata'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('idx_ai_provider_status').on(table.status, table.priority)]
+);
+
+export const aiModel = table(
+  'ai_model',
+  {
+    id: text('id').primaryKey(),
+    publicId: text('public_id').notNull().unique(),
+    visibleName: text('visible_name').notNull(),
+    description: text('description'),
+    providerId: text('provider_id')
+      .notNull()
+      .references(() => aiProvider.id, { onDelete: 'restrict' }),
+    providerModelId: text('provider_model_id').notNull(),
+    fallbackProviderId: text('fallback_provider_id').references(
+      () => aiProvider.id,
+      { onDelete: 'restrict' }
+    ),
+    fallbackProviderModelId: text('fallback_provider_model_id'),
+    fallbackIsSameModel: boolean('fallback_is_same_model')
+      .notNull()
+      .default(true),
+    fallbackInputPricePerMillion: numeric('fallback_input_price_per_million', {
+      precision: 18,
+      scale: 8,
+    }),
+    fallbackOutputPricePerMillion: numeric(
+      'fallback_output_price_per_million',
+      { precision: 18, scale: 8 }
+    ),
+    fallbackCacheReadPricePerMillion: numeric(
+      'fallback_cache_read_price_per_million',
+      { precision: 18, scale: 8 }
+    ),
+    fallbackCacheWritePricePerMillion: numeric(
+      'fallback_cache_write_price_per_million',
+      { precision: 18, scale: 8 }
+    ),
+    inputPricePerMillion: numeric('input_price_per_million', {
+      precision: 18,
+      scale: 8,
+    }).notNull(),
+    outputPricePerMillion: numeric('output_price_per_million', {
+      precision: 18,
+      scale: 8,
+    }).notNull(),
+    cacheReadPricePerMillion: numeric('cache_read_price_per_million', {
+      precision: 18,
+      scale: 8,
+    }),
+    cacheWritePricePerMillion: numeric('cache_write_price_per_million', {
+      precision: 18,
+      scale: 8,
+    }),
+    currency: text('currency').notNull().default('USD'),
+    pricingVersion: text('pricing_version').notNull(),
+    pricingSource: text('pricing_source'),
+    pricingEffectiveAt: timestamp('pricing_effective_at').notNull(),
+    contextWindow: integer('context_window').notNull(),
+    maxOutputTokens: integer('max_output_tokens').notNull(),
+    supportsVision: boolean('supports_vision').notNull().default(false),
+    supportsTools: boolean('supports_tools').notNull().default(false),
+    supportsStreaming: boolean('supports_streaming').notNull().default(true),
+    enabled: boolean('enabled').notNull().default(true),
+    recommendationMode: text('recommendation_mode'),
+    sort: integer('sort').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_model_enabled_sort').on(table.enabled, table.sort),
+    index('idx_ai_model_provider').on(table.providerId),
+    index('idx_ai_model_fallback_provider').on(table.fallbackProviderId),
+  ]
+);
+
+export const skill = table(
+  'skill',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull().unique(),
+    name: text('name').notNull(),
+    description: text('description'),
+    suitableFor: text('suitable_for'),
+    unsuitableFor: text('unsuitable_for'),
+    status: text('status').notNull().default('draft'),
+    userEnabled: boolean('user_enabled').notNull().default(false),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('idx_skill_status').on(table.status, table.userEnabled)]
+);
+
+export const skillVersion = table(
+  'skill_version',
+  {
+    id: text('id').primaryKey(),
+    skillId: text('skill_id')
+      .notNull()
+      .references(() => skill.id, { onDelete: 'cascade' }),
+    version: integer('version').notNull(),
+    methodology: text('methodology').notNull(),
+    systemPrompt: text('system_prompt').notNull(),
+    diagnosticSteps: jsonb('diagnostic_steps').notNull(),
+    followUpQuestions: jsonb('follow_up_questions').notNull(),
+    quickOutputFormat: text('quick_output_format').notNull(),
+    deepOutputFormat: text('deep_output_format').notNull(),
+    completionConditions: text('completion_conditions').notNull(),
+    referenceMaterials: jsonb('reference_materials'),
+    auditMetadata: jsonb('audit_metadata'),
+    status: text('status').notNull().default('draft'),
+    publishedAt: timestamp('published_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_skill_version_unique').on(table.skillId, table.version),
+    index('idx_skill_version_status').on(table.skillId, table.status),
+  ]
+);
+
+export const project = table(
+  'project',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    description: text('description'),
+    targetAudience: text('target_audience'),
+    stage: text('stage'),
+    technology: text('technology'),
+    confirmedDecisions: text('confirmed_decisions'),
+    completedItems: text('completed_items'),
+    currentProblem: text('current_problem'),
+    nextSteps: text('next_steps'),
+    importantConclusions: text('important_conclusions'),
+    recentProgress: text('recent_progress'),
+    autoMemoryEnabled: boolean('auto_memory_enabled').notNull().default(true),
+    status: text('status').notNull().default('active'),
+    deletedAt: timestamp('deleted_at'),
+    purgeAt: timestamp('purge_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('idx_project_user_status').on(table.userId, table.status)]
+);
+
 export const chat = table(
   'chat',
   {
@@ -542,8 +739,21 @@ export const chat = table(
     parts: text('parts').notNull(),
     metadata: text('metadata'),
     content: text('content'),
+    projectId: text('project_id').references(() => project.id, {
+      onDelete: 'cascade',
+    }),
+    skillVersionId: text('skill_version_id').references(() => skillVersion.id, {
+      onDelete: 'restrict',
+    }),
+    skillDisabledAt: timestamp('skill_disabled_at'),
+    webSearchEnabled: boolean('web_search_enabled').notNull().default(false),
+    deletedAt: timestamp('deleted_at'),
+    purgeAt: timestamp('purge_at'),
   },
-  (table) => [index('idx_chat_user_status').on(table.userId, table.status)]
+  (table) => [
+    index('idx_chat_user_status').on(table.userId, table.status),
+    index('idx_chat_project').on(table.userId, table.projectId),
+  ]
 );
 
 export const chatMessage = table(
@@ -566,10 +776,295 @@ export const chatMessage = table(
     metadata: text('metadata'),
     model: text('model').notNull(),
     provider: text('provider').notNull(),
+    content: text('content'),
+    skillVersionId: text('skill_version_id').references(() => skillVersion.id, {
+      onDelete: 'restrict',
+    }),
+    webSearchEnabled: boolean('web_search_enabled').notNull().default(false),
+    inputTokens: integer('input_tokens'),
+    outputTokens: integer('output_tokens'),
+    cacheReadTokens: integer('cache_read_tokens'),
+    cacheWriteTokens: integer('cache_write_tokens'),
+    estimatedCredits: integer('estimated_credits'),
+    reservedCredits: integer('reserved_credits'),
+    settledCredits: integer('settled_credits'),
+    refundedCredits: integer('refunded_credits'),
+    reservationId: text('reservation_id').references(
+      () => creditReservation.id,
+      { onDelete: 'set null' }
+    ),
+    sourceDetails: jsonb('source_details'),
+    fileIds: jsonb('file_ids'),
+    errorReason: text('error_reason'),
+    fallbackConfirmedAt: timestamp('fallback_confirmed_at'),
   },
   (table) => [
     index('idx_chat_message_chat_id').on(table.chatId, table.status),
     index('idx_chat_message_user_id').on(table.userId, table.status),
+  ]
+);
+
+export const projectMemory = table(
+  'project_memory',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    projectId: text('project_id')
+      .notNull()
+      .references(() => project.id, { onDelete: 'cascade' }),
+    type: text('type').notNull(),
+    content: text('content').notNull(),
+    importance: integer('importance').notNull().default(0),
+    sourceChatId: text('source_chat_id').references(() => chat.id, {
+      onDelete: 'cascade',
+    }),
+    sourceMessageId: text('source_message_id').references(
+      () => chatMessage.id,
+      { onDelete: 'cascade' }
+    ),
+    status: text('status').notNull().default('active'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_project_memory_owner').on(
+      table.userId,
+      table.projectId,
+      table.status
+    ),
+    index('idx_project_memory_source_chat').on(table.sourceChatId),
+  ]
+);
+
+export const globalMemory = table(
+  'global_memory',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    content: text('content').notNull(),
+    sourceChatId: text('source_chat_id').references(() => chat.id, {
+      onDelete: 'set null',
+    }),
+    sourceMessageId: text('source_message_id').references(
+      () => chatMessage.id,
+      { onDelete: 'set null' }
+    ),
+    confirmedAt: timestamp('confirmed_at'),
+    status: text('status').notNull().default('pending'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('idx_global_memory_owner').on(table.userId, table.status)]
+);
+
+export const aiFile = table(
+  'ai_file',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    projectId: text('project_id').references(() => project.id, {
+      onDelete: 'cascade',
+    }),
+    chatId: text('chat_id').references(() => chat.id, { onDelete: 'cascade' }),
+    originalName: text('original_name').notNull(),
+    objectKey: text('object_key').notNull().unique(),
+    mimeType: text('mime_type').notNull(),
+    sizeBytes: integer('size_bytes').notNull(),
+    contentHash: text('content_hash').notNull(),
+    parseStatus: text('parse_status').notNull().default('pending'),
+    parseError: text('parse_error'),
+    status: text('status').notNull().default('active'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+    deletedAt: timestamp('deleted_at'),
+  },
+  (table) => [
+    index('idx_ai_file_owner_project').on(
+      table.userId,
+      table.projectId,
+      table.status
+    ),
+    index('idx_ai_file_owner_chat').on(
+      table.userId,
+      table.chatId,
+      table.status
+    ),
+  ]
+);
+
+export const aiRequestLease = table(
+  'ai_request_lease',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    expiresAt: timestamp('expires_at').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_ai_request_lease_owner').on(table.userId, table.expiresAt),
+  ]
+);
+
+export const paymentRiskEvent = table(
+  'payment_risk_event',
+  {
+    id: text('id').primaryKey(),
+    provider: text('provider').notNull(),
+    providerEventId: text('provider_event_id').notNull(),
+    eventType: text('event_type').notNull(),
+    orderNo: text('order_no'),
+    transactionId: text('transaction_id'),
+    userId: text('user_id').references(() => user.id, { onDelete: 'restrict' }),
+    status: text('status').notNull(),
+    payload: jsonb('payload').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_payment_risk_event_provider_id').on(
+      table.provider,
+      table.providerEventId
+    ),
+    index('idx_payment_risk_event_order').on(table.provider, table.orderNo),
+  ]
+);
+
+export const fileChunk = table(
+  'file_chunk',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    fileId: text('file_id')
+      .notNull()
+      .references(() => aiFile.id, { onDelete: 'cascade' }),
+    chunkIndex: integer('chunk_index').notNull(),
+    content: text('content').notNull(),
+    tokenCount: integer('token_count'),
+    retrievalMetadata: jsonb('retrieval_metadata'),
+    embedding: jsonb('embedding'),
+    status: text('status').notNull().default('active'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_file_chunk_unique').on(table.fileId, table.chunkIndex),
+    index('idx_file_chunk_owner').on(table.userId, table.fileId, table.status),
+  ]
+);
+
+export const creditReservation = table(
+  'credit_reservation',
+  {
+    id: text('id').primaryKey(),
+    requestId: text('request_id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    idempotencyKey: text('idempotency_key').notNull(),
+    reservedCredits: integer('reserved_credits').notNull(),
+    settledCredits: integer('settled_credits').notNull().default(0),
+    refundedCredits: integer('refunded_credits').notNull().default(0),
+    status: text('status').notNull(),
+    priceSnapshot: jsonb('price_snapshot').notNull(),
+    costBreakdown: jsonb('cost_breakdown').notNull(),
+    consumedDetail: jsonb('consumed_detail').notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    settledAt: timestamp('settled_at'),
+    failureReason: text('failure_reason'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_credit_reservation_idempotency').on(
+      table.userId,
+      table.idempotencyKey
+    ),
+    index('idx_credit_reservation_owner').on(table.userId, table.createdAt),
+    index('idx_credit_reservation_request').on(table.userId, table.requestId),
+  ]
+);
+
+export const usageLedger = table(
+  'usage_ledger',
+  {
+    id: text('id').primaryKey(),
+    requestId: text('request_id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    reservationId: text('reservation_id').references(
+      () => creditReservation.id,
+      {
+        onDelete: 'restrict',
+      }
+    ),
+    entryType: text('entry_type').notNull(),
+    providerId: text('provider_id').references(() => aiProvider.id, {
+      onDelete: 'restrict',
+    }),
+    modelId: text('model_id').references(() => aiModel.id, {
+      onDelete: 'restrict',
+    }),
+    skillVersionId: text('skill_version_id').references(() => skillVersion.id, {
+      onDelete: 'restrict',
+    }),
+    inputTokens: integer('input_tokens').notNull().default(0),
+    outputTokens: integer('output_tokens').notNull().default(0),
+    cacheReadTokens: integer('cache_read_tokens').notNull().default(0),
+    cacheWriteTokens: integer('cache_write_tokens').notNull().default(0),
+    webSearchCostUsd: numeric('web_search_cost_usd', {
+      precision: 18,
+      scale: 8,
+    })
+      .notNull()
+      .default('0'),
+    fileCostUsd: numeric('file_cost_usd', { precision: 18, scale: 8 })
+      .notNull()
+      .default('0'),
+    memoryCostUsd: numeric('memory_cost_usd', { precision: 18, scale: 8 })
+      .notNull()
+      .default('0'),
+    internalCostUsd: numeric('internal_cost_usd', { precision: 18, scale: 8 })
+      .notNull()
+      .default('0'),
+    retailCostUsd: numeric('retail_cost_usd', { precision: 18, scale: 8 })
+      .notNull()
+      .default('0'),
+    rawCredits: numeric('raw_credits', { precision: 18, scale: 8 })
+      .notNull()
+      .default('0'),
+    chargedCredits: integer('charged_credits').notNull().default(0),
+    refundedCredits: integer('refunded_credits').notNull().default(0),
+    status: text('status').notNull(),
+    failureReason: text('failure_reason'),
+    priceSnapshot: jsonb('price_snapshot').notNull(),
+    metadata: jsonb('metadata'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_usage_ledger_owner').on(table.userId, table.createdAt),
+    index('idx_usage_ledger_request').on(table.userId, table.requestId),
+    index('idx_usage_ledger_reservation').on(table.reservationId),
   ]
 );
 
@@ -628,8 +1123,12 @@ export const resource = table(
     slug: text('slug').notNull().unique(),
     websiteUrl: text('website_url'),
     resourceType: text('resource_type').notNull(),
-    stageId: text('stage_id').references(() => stage.id, { onDelete: 'set null' }),
-    categoryId: text('category_id').references(() => category.id, { onDelete: 'set null' }),
+    stageId: text('stage_id').references(() => stage.id, {
+      onDelete: 'set null',
+    }),
+    categoryId: text('category_id').references(() => category.id, {
+      onDelete: 'set null',
+    }),
     summaryZh: text('summary_zh'),
     summaryEn: text('summary_en'),
     reasonZh: text('reason_zh'),
@@ -670,8 +1169,12 @@ export const collection = table(
     summaryEn: text('summary_en'),
     contentZh: text('content_zh'),
     contentEn: text('content_en'),
-    stageId: text('stage_id').references(() => stage.id, { onDelete: 'set null' }),
-    categoryId: text('category_id').references(() => category.id, { onDelete: 'set null' }),
+    stageId: text('stage_id').references(() => stage.id, {
+      onDelete: 'set null',
+    }),
+    categoryId: text('category_id').references(() => category.id, {
+      onDelete: 'set null',
+    }),
     seoTitleZh: text('seo_title_zh'),
     seoTitleEn: text('seo_title_en'),
     seoDescriptionZh: text('seo_description_zh'),
@@ -701,7 +1204,9 @@ export const submission = table(
     suggestedTags: text('suggested_tags'),
     relatedContentType: text('related_content_type'),
     relatedContentId: text('related_content_id'),
-    submitterUserId: text('submitter_user_id').references(() => user.id, { onDelete: 'set null' }),
+    submitterUserId: text('submitter_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
     status: text('status').default('pending').notNull(),
     adminNote: text('admin_note'),
     convertedContentType: text('converted_content_type'),
@@ -729,8 +1234,12 @@ export const profileContent = table('profile_content', {
 export const resourceTag = table(
   'resource_tag',
   {
-    resourceId: text('resource_id').notNull().references(() => resource.id, { onDelete: 'cascade' }),
-    tagId: text('tag_id').notNull().references(() => tag.id, { onDelete: 'cascade' }),
+    resourceId: text('resource_id')
+      .notNull()
+      .references(() => resource.id, { onDelete: 'cascade' }),
+    tagId: text('tag_id')
+      .notNull()
+      .references(() => tag.id, { onDelete: 'cascade' }),
   },
   (table) => [primaryKey({ columns: [table.resourceId, table.tagId] })]
 );
@@ -738,8 +1247,12 @@ export const resourceTag = table(
 export const collectionTag = table(
   'collection_tag',
   {
-    collectionId: text('collection_id').notNull().references(() => collection.id, { onDelete: 'cascade' }),
-    tagId: text('tag_id').notNull().references(() => tag.id, { onDelete: 'cascade' }),
+    collectionId: text('collection_id')
+      .notNull()
+      .references(() => collection.id, { onDelete: 'cascade' }),
+    tagId: text('tag_id')
+      .notNull()
+      .references(() => tag.id, { onDelete: 'cascade' }),
   },
   (table) => [primaryKey({ columns: [table.collectionId, table.tagId] })]
 );
@@ -747,8 +1260,12 @@ export const collectionTag = table(
 export const postTag = table(
   'post_tag',
   {
-    postId: text('post_id').notNull().references(() => post.id, { onDelete: 'cascade' }),
-    tagId: text('tag_id').notNull().references(() => tag.id, { onDelete: 'cascade' }),
+    postId: text('post_id')
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
+    tagId: text('tag_id')
+      .notNull()
+      .references(() => tag.id, { onDelete: 'cascade' }),
   },
   (table) => [primaryKey({ columns: [table.postId, table.tagId] })]
 );
@@ -756,8 +1273,12 @@ export const postTag = table(
 export const collectionResource = table(
   'collection_resource',
   {
-    collectionId: text('collection_id').notNull().references(() => collection.id, { onDelete: 'cascade' }),
-    resourceId: text('resource_id').notNull().references(() => resource.id, { onDelete: 'cascade' }),
+    collectionId: text('collection_id')
+      .notNull()
+      .references(() => collection.id, { onDelete: 'cascade' }),
+    resourceId: text('resource_id')
+      .notNull()
+      .references(() => resource.id, { onDelete: 'cascade' }),
     sortOrder: integer('sort_order').default(0).notNull(),
   },
   (table) => [primaryKey({ columns: [table.collectionId, table.resourceId] })]
@@ -766,8 +1287,12 @@ export const collectionResource = table(
 export const collectionPost = table(
   'collection_post',
   {
-    collectionId: text('collection_id').notNull().references(() => collection.id, { onDelete: 'cascade' }),
-    postId: text('post_id').notNull().references(() => post.id, { onDelete: 'cascade' }),
+    collectionId: text('collection_id')
+      .notNull()
+      .references(() => collection.id, { onDelete: 'cascade' }),
+    postId: text('post_id')
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
     sortOrder: integer('sort_order').default(0).notNull(),
   },
   (table) => [primaryKey({ columns: [table.collectionId, table.postId] })]
@@ -776,9 +1301,12 @@ export const collectionPost = table(
 export const postResource = table(
   'post_resource',
   {
-    postId: text('post_id').notNull().references(() => post.id, { onDelete: 'cascade' }),
-    resourceId: text('resource_id').notNull().references(() => resource.id, { onDelete: 'cascade' }),
+    postId: text('post_id')
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
+    resourceId: text('resource_id')
+      .notNull()
+      .references(() => resource.id, { onDelete: 'cascade' }),
   },
   (table) => [primaryKey({ columns: [table.postId, table.resourceId] })]
 );
-

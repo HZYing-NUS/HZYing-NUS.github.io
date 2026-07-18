@@ -22,5 +22,14 @@
       "maxDuration": 30
     }
   },
-  "crons": []
+  "crons": [
+    {
+      "path": "/api/cron/purge-deleted-content",
+      "schedule": "17 3 * * *"
+    },
+    {
+      "path": "/api/cron/refund-expired-reservations",
+      "schedule": "*/10 * * * *"
+    }
+  ]
 }

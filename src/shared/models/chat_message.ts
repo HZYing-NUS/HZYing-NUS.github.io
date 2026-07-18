@@ -1,7 +1,7 @@
-import { and, asc, count, desc, eq } from 'drizzle-orm';
+import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
 
 import { db } from '@/core/db';
-import { chatMessage } from '@/config/db/schema';
+import { chat, chatMessage } from '@/config/db/schema';
 
 import { Chat } from './chat';
 import { appendUserToResult, User } from './user';
@@ -17,18 +17,93 @@ export type ChatMessage = typeof chatMessage.$inferSelect & {
 };
 export type NewChatMessage = typeof chatMessage.$inferInsert;
 export type UpdateChatMessage = Partial<
-  Omit<NewChatMessage, 'id' | 'createdAt'>
+  Pick<
+    NewChatMessage,
+    | 'status'
+    | 'parts'
+    | 'metadata'
+    | 'content'
+    | 'model'
+    | 'provider'
+    | 'webSearchEnabled'
+    | 'inputTokens'
+    | 'outputTokens'
+    | 'cacheReadTokens'
+    | 'cacheWriteTokens'
+    | 'estimatedCredits'
+    | 'reservedCredits'
+    | 'settledCredits'
+    | 'refundedCredits'
+    | 'reservationId'
+    | 'sourceDetails'
+    | 'fileIds'
+    | 'errorReason'
+    | 'fallbackConfirmedAt'
+  >
 >;
+
+export function toPublicChatMessage(message: ChatMessage) {
+  return {
+    id: message.id,
+    status: message.status,
+    createdAt: message.createdAt,
+    updatedAt: message.updatedAt,
+    role: message.role,
+    parts: message.parts,
+    content: message.content,
+    metadata: null,
+    model: message.model,
+    skillVersionId: message.skillVersionId,
+    webSearchEnabled: message.webSearchEnabled,
+    inputTokens: message.inputTokens,
+    outputTokens: message.outputTokens,
+    cacheReadTokens: message.cacheReadTokens,
+    cacheWriteTokens: message.cacheWriteTokens,
+    estimatedCredits: message.estimatedCredits,
+    reservedCredits: message.reservedCredits,
+    settledCredits: message.settledCredits,
+    refundedCredits: message.refundedCredits,
+    sourceDetails: message.sourceDetails,
+    fileIds: message.fileIds,
+    errorReason: message.errorReason ? 'AI_RESPONSE_INTERRUPTED' : null,
+    fallbackConfirmedAt: message.fallbackConfirmedAt,
+    fallbackOffer:
+      message.metadata && typeof message.metadata === 'string'
+        ? (() => {
+            try {
+              return (
+                JSON.parse(message.metadata) as {
+                  fallbackOffer?: unknown;
+                }
+              ).fallbackOffer;
+            } catch {
+              return undefined;
+            }
+          })()
+        : undefined,
+  };
+}
 
 export async function createChatMessage(
   newChatMessage: NewChatMessage
 ): Promise<ChatMessage> {
-  const [result] = await db()
-    .insert(chatMessage)
-    .values(newChatMessage)
-    .returning();
-
-  return result;
+  return db().transaction(async (tx: any) => {
+    const [ownedChat] = await tx
+      .select({ id: chat.id })
+      .from(chat)
+      .where(
+        and(
+          eq(chat.id, newChatMessage.chatId),
+          eq(chat.userId, newChatMessage.userId)
+        )
+      );
+    if (!ownedChat) throw new Error('Chat not found');
+    const [result] = await tx
+      .insert(chatMessage)
+      .values(newChatMessage)
+      .returning();
+    return result;
+  });
 }
 
 export async function getChatMessages({
@@ -38,6 +113,7 @@ export async function getChatMessages({
   page = 1,
   limit = 30,
   getUser = false,
+  newestFirst = false,
 }: {
   userId?: string;
   chatId: string;
@@ -45,7 +121,11 @@ export async function getChatMessages({
   page?: number;
   limit?: number;
   getUser?: boolean;
+  newestFirst?: boolean;
 }): Promise<ChatMessage[]> {
+  if (!userId) {
+    throw new Error('userId is required for chat message queries');
+  }
   const result = await db()
     .select()
     .from(chatMessage)
@@ -56,7 +136,10 @@ export async function getChatMessages({
         status ? eq(chatMessage.status, status) : undefined
       )
     )
-    .orderBy(asc(chatMessage.createdAt))
+    .orderBy(
+      newestFirst ? desc(chatMessage.createdAt) : asc(chatMessage.createdAt),
+      newestFirst ? desc(chatMessage.id) : asc(chatMessage.id)
+    )
     .limit(limit)
     .offset((page - 1) * limit);
 
@@ -76,6 +159,9 @@ export async function getChatMessagesCount({
   chatId: string;
   status?: ChatMessageStatus;
 }): Promise<number> {
+  if (!userId) {
+    throw new Error('userId is required for chat message count queries');
+  }
   const [result] = await db()
     .select({ count: count() })
     .from(chatMessage)
@@ -90,24 +176,46 @@ export async function getChatMessagesCount({
   return result?.count || 0;
 }
 
-export async function findChatMessageById(id: string): Promise<ChatMessage> {
+export async function findChatMessageById(
+  id: string,
+  userId: string
+): Promise<ChatMessage | undefined> {
   const [result] = await db()
     .select()
     .from(chatMessage)
-    .where(eq(chatMessage.id, id));
+    .where(and(eq(chatMessage.id, id), eq(chatMessage.userId, userId)));
 
   return result;
 }
 
 export async function updateChatMessage(
   id: string,
-  updateChatMessage: UpdateChatMessage
-): Promise<ChatMessage> {
+  updateChatMessage: UpdateChatMessage,
+  userId: string
+): Promise<ChatMessage | undefined> {
   const [result] = await db()
     .update(chatMessage)
     .set(updateChatMessage)
-    .where(eq(chatMessage.id, id))
+    .where(and(eq(chatMessage.id, id), eq(chatMessage.userId, userId)))
     .returning();
 
   return result;
+}
+
+export async function claimChatMessageFallback(
+  id: string,
+  userId: string
+): Promise<boolean> {
+  const [claimed] = await db()
+    .update(chatMessage)
+    .set({ fallbackConfirmedAt: new Date() })
+    .where(
+      and(
+        eq(chatMessage.id, id),
+        eq(chatMessage.userId, userId),
+        isNull(chatMessage.fallbackConfirmedAt)
+      )
+    )
+    .returning({ id: chatMessage.id });
+  return Boolean(claimed);
 }
