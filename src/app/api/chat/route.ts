@@ -569,6 +569,7 @@ export async function POST(req: Request) {
           userId
         );
       }
+      return settlementAudit;
     };
 
     const stream = createUIMessageStream({
@@ -681,11 +682,18 @@ export async function POST(req: Request) {
             },
             onFinish: async ({ totalUsage }) => {
               try {
-                await settle({
+                const audit = await settle({
                   usage: totalUsage,
                   status: streamFailure ? 'interrupted' : 'settled',
                   failureReason: streamFailure,
                 });
+                if (audit) {
+                  writer.write({
+                    type: 'data-credit-settlement',
+                    id: `credit-settlement:${body.message!.id}`,
+                    data: audit,
+                  });
+                }
               } finally {
                 await releaseRequestLease();
               }
@@ -704,11 +712,18 @@ export async function POST(req: Request) {
                 { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0 }
               );
               try {
-                await settle({
+                const audit = await settle({
                   usage,
                   status: 'interrupted',
                   failureReason: streamFailure || 'REQUEST_ABORTED',
                 });
+                if (audit) {
+                  writer.write({
+                    type: 'data-credit-settlement',
+                    id: `credit-settlement:${body.message!.id}`,
+                    data: audit,
+                  });
+                }
               } finally {
                 await releaseRequestLease();
               }

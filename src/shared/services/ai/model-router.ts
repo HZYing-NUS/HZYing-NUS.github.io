@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { createAnthropic } from '@ai-sdk/anthropic';
+import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
 import {
@@ -12,6 +14,40 @@ export type ResolvedAiModel = NonNullable<
 >;
 
 export type ReasoningEffort = 'high' | 'medium' | 'low';
+
+function createLanguageModel({
+  apiBaseUrl,
+  apiKey,
+  providerCode,
+  providerModelId,
+}: {
+  apiBaseUrl: string | null;
+  apiKey: string;
+  providerCode: string;
+  providerModelId: string;
+}) {
+  if (providerCode === 'anthropic-compatible') {
+    return createAnthropic({
+      apiKey,
+      baseURL: apiBaseUrl || undefined,
+    }).messages(providerModelId);
+  }
+
+  if (providerCode === 'openai-compatible') {
+    return createOpenAI({
+      apiKey,
+      baseURL: apiBaseUrl || undefined,
+      name: providerCode,
+    }).chat(providerModelId);
+  }
+
+  const provider = createOpenRouter({
+    apiKey,
+    baseURL: apiBaseUrl || undefined,
+    compatibility: providerCode === 'openrouter' ? 'strict' : 'compatible',
+  });
+  return provider.chat(providerModelId);
+}
 
 export function isReasoningEnabledForModel(model: {
   supportsReasoning: boolean;
@@ -61,12 +97,6 @@ export async function resolveAiModel(
   const apiKey = process.env[apiKeyEnvName];
   if (!apiKey) throw new Error('MODEL_PROVIDER_NOT_CONFIGURED');
 
-  const provider = createOpenRouter({
-    apiKey,
-    baseURL: apiBaseUrl || undefined,
-    compatibility: providerCode === 'openrouter' ? 'strict' : 'compatible',
-  });
-
   return {
     configuration: {
       ...model,
@@ -93,7 +123,12 @@ export async function resolveAiModel(
           : model.cacheWritePricePerMillion,
     },
     channel,
-    languageModel: provider.chat(providerModelId),
+    languageModel: createLanguageModel({
+      apiBaseUrl,
+      apiKey,
+      providerCode,
+      providerModelId,
+    }),
   };
 }
 

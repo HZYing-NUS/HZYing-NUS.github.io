@@ -386,6 +386,31 @@ export function ChatMessages({
                       </div>
                     );
                   }
+                  case 'data-credit-settlement': {
+                    const settlement = part.data as {
+                      inputTokens: number;
+                      outputTokens: number;
+                      settledCredits: number;
+                      refundedCredits: number;
+                    };
+                    return (
+                      <div
+                        className="text-muted-foreground mt-3 flex flex-wrap gap-3 border-t border-black/10 pt-2 font-mono text-[10px]"
+                        key={`${message.id}-${i}`}
+                      >
+                        <span>{settlement.inputTokens} input tokens</span>
+                        <span>{settlement.outputTokens} output tokens</span>
+                        <span>{settlement.settledCredits} Credit</span>
+                        {settlement.refundedCredits > 0 ? (
+                          <span>
+                            {locale === 'zh'
+                              ? `退回 ${settlement.refundedCredits} Credit`
+                              : `${settlement.refundedCredits} Credit refunded`}
+                          </span>
+                        ) : null}
+                      </div>
+                    );
+                  }
                   default:
                     return null;
                 }
@@ -417,6 +442,9 @@ export function ChatMessages({
                 </div>
               ) : null}
               {message.role === 'assistant' &&
+              !message.parts.some(
+                (part) => part.type === 'data-credit-settlement'
+              ) &&
               (metadata?.inputTokens ||
                 metadata?.outputTokens ||
                 metadata?.settledCredits ||

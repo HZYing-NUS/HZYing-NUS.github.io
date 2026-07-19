@@ -76,6 +76,7 @@
     "balance": "{credits} Credit",
     "usage": "按实际用量结算",
     "insufficient": "Credit 余额不足。历史、项目与记忆仍可查看，但不能发起新请求。",
+    "insufficient_estimate": "Credit 余额不足：当前有 {balance} Credit，本次预计需要 {estimate} Credit。",
     "recharge": "前往充值",
     "estimate": "预计 {credits} Credit",
     "estimating": "正在估算",

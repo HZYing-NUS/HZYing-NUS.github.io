@@ -151,7 +151,8 @@ export function ChatInput({
         }
       : skills[0]);
   const availableCredits = user?.credits?.remainingCredits ?? 0;
-  const isInsufficient = Boolean(user && availableCredits < 1);
+  const requiredCredits = estimate ?? 1;
+  const isInsufficient = Boolean(user && availableCredits < requiredCredits);
   const isDisabled = status === 'submitted' || isCheckSign || isInsufficient;
 
   useEffect(() => {
@@ -282,25 +283,33 @@ export function ChatInput({
 
   useEffect(() => {
     if (!user || !input.trim()) {
+      setEstimate(null);
+      setEstimating(false);
       return;
     }
     const timeout = window.setTimeout(async () => {
+      setEstimate(null);
       setEstimating(true);
-      const payload = await fetch('/api/ai/estimate', {
-        method: 'POST',
-        body: JSON.stringify({
-          text: input,
-          model: lockedModel || model,
-          webSearch:
-            lockedWebSearch ?? (webSearchAvailable ? webSearch : false),
-          locale: estimateLocale,
-          chatId: estimateChatId,
-          projectId: estimateProjectId,
-          skillVersionId: estimateSkillVersionId,
-        }),
-      }).then((r) => r.json());
-      setEstimate(payload.code === 0 ? payload.data.credits : null);
-      setEstimating(false);
+      try {
+        const payload = await fetch('/api/ai/estimate', {
+          method: 'POST',
+          body: JSON.stringify({
+            text: input,
+            model: lockedModel || model,
+            webSearch:
+              lockedWebSearch ?? (webSearchAvailable ? webSearch : false),
+            locale: estimateLocale,
+            chatId: estimateChatId,
+            projectId: estimateProjectId,
+            skillVersionId: estimateSkillVersionId,
+          }),
+        }).then((r) => r.json());
+        setEstimate(payload.code === 0 ? payload.data.credits : null);
+      } catch {
+        setEstimate(null);
+      } finally {
+        setEstimating(false);
+      }
     }, 450);
     return () => window.clearTimeout(timeout);
   }, [
@@ -322,7 +331,14 @@ export function ChatInput({
       <>
         {isInsufficient ? (
           <div className="border-destructive/25 bg-destructive/5 mb-3 flex flex-col gap-3 rounded-xl border px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-muted-foreground">{t('insufficient')}</p>
+            <p className="text-muted-foreground">
+              {estimate
+                ? t('insufficient_estimate', {
+                    balance: availableCredits,
+                    estimate,
+                  })
+                : t('insufficient')}
+            </p>
             <Button
               variant="outline"
               size="sm"
@@ -359,6 +375,7 @@ export function ChatInput({
               setIsShowPaymentModal(true);
               return;
             }
+            if (estimating || estimate === null) return;
 
             try {
               await handleSubmit(message, {
@@ -390,6 +407,7 @@ export function ChatInput({
               placeholder={user ? t('input_placeholder') : t('signin_title')}
               onChange={(event) => {
                 const value = event.target.value;
+                setEstimate(null);
                 setInput(value);
                 onInputChange?.(value);
               }}
@@ -570,7 +588,9 @@ export function ChatInput({
                 </Tooltip>
               ) : null}
               <PromptInputSubmit
-                disabled={!input || isDisabled}
+                disabled={
+                  !input || isDisabled || estimating || estimate === null
+                }
                 status={status}
               />
             </div>

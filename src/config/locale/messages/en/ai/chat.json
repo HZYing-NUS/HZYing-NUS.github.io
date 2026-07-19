@@ -88,6 +88,7 @@
     "balance": "{credits} Credit",
     "usage": "Settled by actual usage",
     "insufficient": "Not enough Credit. You can still read chats, projects, and memories, but cannot start a model request.",
+    "insufficient_estimate": "Not enough Credit: your balance is {balance} Credit and this request is estimated at {estimate} Credit.",
     "recharge": "Go to Credit",
     "estimate": "Est. {credits} Credit",
     "estimating": "Estimating",

@@ -25,23 +25,32 @@ if (apply && process.env.CONFIRM_AI_ASSISTANT_SEED !== '1') {
 const client = postgres(process.env.DATABASE_URL, { max: 1 });
 const db = drizzle(client);
 const now = new Date();
-const providerId = 'ai-provider:openrouter-compatible';
+const claudeProviderId = 'ai-provider:honoursoft-anthropic';
+const deepSeekProviderId = 'ai-provider:deepseek-openai-compatible';
 const fallbackProviderId = 'ai-provider:fallback-compatible';
 const skillId = 'skill:product-idea-diagnosis';
 const skillVersionId = 'skill-version:product-idea-diagnosis:v1';
 
 const models = [
-  ['claude-haiku-4-5-20251001', 'Claude Haiku 4.5', '1.6', '8', 1, false],
-  ['claude-sonnet-4-6', 'Claude Sonnet 4.6', '4.8', '24', 2, false],
-  ['claude-sonnet-5', 'Claude Sonnet 5', '3.2', '16', 3, false],
-  ['deepseek-v4-flash', 'DeepSeek Flash', '0.14', '0.28', 4, false],
-  ['deepseek-v4-pro', 'DeepSeek Pro', '0.435', '0.87', 5, false],
+  [
+    'claude-haiku-4-5-20251001',
+    'Claude Haiku 4.5',
+    '1.6',
+    '8',
+    1,
+    false,
+    'claude',
+  ],
+  ['claude-sonnet-4-6', 'Claude Sonnet 4.6', '4.8', '24', 2, false, 'claude'],
+  ['claude-sonnet-5', 'Claude Sonnet 5', '3.2', '16', 3, false, 'claude'],
+  ['deepseek-v4-flash', 'DeepSeek Flash', '0.14', '0.28', 4, false, 'deepseek'],
+  ['deepseek-v4-pro', 'DeepSeek Pro', '0.435', '0.87', 5, false, 'deepseek'],
 ] as const;
 
 async function seed() {
   if (!apply) {
     console.log(
-      `Dry run: 2 providers, ${models.length} models, 1 skill version.`
+      `Dry run: 3 providers, ${models.length} models, 1 skill version.`
     );
     return;
   }
@@ -49,19 +58,42 @@ async function seed() {
   await db
     .insert(aiProvider)
     .values({
-      id: providerId,
-      code: 'openrouter-compatible',
-      name: 'OpenRouter Compatible',
-      apiBaseUrl: process.env.AI_PROVIDER_BASE_URL || null,
-      apiKeyEnvName: 'AI_PROVIDER_API_KEY',
+      id: claudeProviderId,
+      code: 'anthropic-compatible',
+      name: 'Honoursoft Claude',
+      apiBaseUrl: process.env.HONOURSOFT_API_BASE_URL || null,
+      apiKeyEnvName: 'HONOURSOFT_API_KEY',
       status: 'active',
     })
     .onConflictDoUpdate({
       target: aiProvider.code,
       set: {
-        apiBaseUrl: process.env.AI_PROVIDER_BASE_URL || null,
-        apiKeyEnvName: 'AI_PROVIDER_API_KEY',
+        name: 'Honoursoft Claude',
+        apiBaseUrl: process.env.HONOURSOFT_API_BASE_URL || null,
+        apiKeyEnvName: 'HONOURSOFT_API_KEY',
         status: 'active',
+      },
+    });
+
+  await db
+    .insert(aiProvider)
+    .values({
+      id: deepSeekProviderId,
+      code: 'openai-compatible',
+      name: 'DeepSeek Official',
+      apiBaseUrl: process.env.DEEPSEEK_API_BASE_URL || null,
+      apiKeyEnvName: 'DEEPSEEK_API_KEY',
+      status: 'active',
+      priority: 10,
+    })
+    .onConflictDoUpdate({
+      target: aiProvider.code,
+      set: {
+        name: 'DeepSeek Official',
+        apiBaseUrl: process.env.DEEPSEEK_API_BASE_URL || null,
+        apiKeyEnvName: 'DEEPSEEK_API_KEY',
+        status: 'active',
+        priority: 10,
       },
     });
 
@@ -84,10 +116,14 @@ async function seed() {
       },
     });
 
-  const [provider] = await db
+  const [claudeProvider] = await db
     .select({ id: aiProvider.id })
     .from(aiProvider)
-    .where(eq(aiProvider.code, 'openrouter-compatible'));
+    .where(eq(aiProvider.code, 'anthropic-compatible'));
+  const [deepSeekProvider] = await db
+    .select({ id: aiProvider.id })
+    .from(aiProvider)
+    .where(eq(aiProvider.code, 'openai-compatible'));
   const [fallbackProvider] = await db
     .select({ id: aiProvider.id })
     .from(aiProvider)
@@ -100,7 +136,10 @@ async function seed() {
     outputPrice,
     sort,
     supportsVision,
+    providerType,
   ] of models) {
+    const provider =
+      providerType === 'claude' ? claudeProvider : deepSeekProvider;
     await db
       .insert(aiModel)
       .values({

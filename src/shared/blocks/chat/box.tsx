@@ -6,6 +6,7 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, UIMessage } from 'ai';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { useAppContext } from '@/shared/contexts/app';
 import { useChatContext } from '@/shared/contexts/chat';
 import { Chat } from '@/shared/types/chat';
 
@@ -24,11 +25,18 @@ export function ChatBox({
   const locale = useLocale();
   const searchParams = useSearchParams();
   const pendingSent = useRef(false);
+  const { fetchUserCredits } = useAppContext();
   const { chat, setChat } = useChatContext();
 
   const chatInstance = useChat({
     id: initialChat?.id,
     messages: initialMessages,
+    onFinish: () => {
+      void fetchUserCredits();
+    },
+    onError: () => {
+      void fetchUserCredits();
+    },
     transport: new DefaultChatTransport({
       api: '/api/chat',
       prepareSendMessagesRequest({ messages, id, body }) {
