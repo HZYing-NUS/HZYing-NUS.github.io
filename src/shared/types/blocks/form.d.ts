@@ -25,6 +25,7 @@ export interface FormField {
     | 'markdown_editor'
     | 'switch'
     | 'checkbox'
+    | 'collection_steps'
     | 'upload_image';
   placeholder?: string;
   group?: string;

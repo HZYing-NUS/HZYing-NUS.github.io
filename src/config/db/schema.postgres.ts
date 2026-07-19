@@ -1246,6 +1246,22 @@ export const resourceTag = table(
   (table) => [primaryKey({ columns: [table.resourceId, table.tagId] })]
 );
 
+export const resourceStage = table(
+  'resource_stage',
+  {
+    resourceId: text('resource_id')
+      .notNull()
+      .references(() => resource.id, { onDelete: 'cascade' }),
+    stageId: text('stage_id')
+      .notNull()
+      .references(() => stage.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.resourceId, table.stageId] }),
+    index('idx_resource_stage_stage').on(table.stageId),
+  ]
+);
+
 export const collectionTag = table(
   'collection_tag',
   {
@@ -1281,6 +1297,11 @@ export const collectionResource = table(
     resourceId: text('resource_id')
       .notNull()
       .references(() => resource.id, { onDelete: 'cascade' }),
+    stepTitleZh: text('step_title_zh'),
+    stepTitleEn: text('step_title_en'),
+    stepDescriptionZh: text('step_description_zh'),
+    stepDescriptionEn: text('step_description_en'),
+    relationType: text('relation_type').default('required').notNull(),
     sortOrder: integer('sort_order').default(0).notNull(),
   },
   (table) => [primaryKey({ columns: [table.collectionId, table.resourceId] })]

@@ -28,6 +28,7 @@ import {
 } from '@/shared/types/blocks/form';
 
 import { Checkbox } from './checkbox';
+import { CollectionSteps } from './collection-steps';
 import { Input } from './input';
 import { Markdown } from './markdown';
 import { Select } from './select';
@@ -122,6 +123,10 @@ function buildFieldSchema(field: FormFieldType) {
     let schema = z.array(z.string());
 
     return schema;
+  }
+
+  if (field.type === 'collection_steps') {
+    return z.string();
   }
 
   if (field.type === 'upload_image') {
@@ -357,6 +362,8 @@ export function Form({
                         <Switch field={item} formField={field} data={data} />
                       ) : item.type === 'checkbox' ? (
                         <Checkbox field={item} formField={field} data={data} />
+                      ) : item.type === 'collection_steps' ? (
+                        <CollectionSteps field={item} formField={field} />
                       ) : item.type === 'markdown_editor' ? (
                         <Markdown field={item} formField={field} data={data} />
                       ) : item.type === 'upload_image' ? (

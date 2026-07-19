@@ -9,6 +9,7 @@ export type PlatformResource = {
   website: string;
   type: LocaleText;
   stage: LocaleText;
+  stages?: LocaleText[];
   category: LocaleText;
   tags: LocaleText[];
   priceType: LocaleText;
@@ -43,7 +44,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: 'Starter 开发模板', en: 'Starter template' },
     stage: { zh: '全栈开发', en: 'Full-stack development' },
     category: { zh: '开发底座', en: 'Development foundation' },
-    tags: [{ zh: 'Next.js', en: 'Next.js' }, { zh: '鉴权', en: 'Auth' }, { zh: '后台', en: 'Admin' }],
+    tags: [
+      { zh: 'Next.js', en: 'Next.js' },
+      { zh: '鉴权', en: 'Auth' },
+      { zh: '后台', en: 'Admin' },
+    ],
     priceType: { zh: '付费', en: 'Paid' },
     summary: {
       zh: '面向 AI 产品快速上线的 Next.js starter，内置多语言、鉴权、数据库、支付和后台能力。',
@@ -67,7 +72,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: '部署服务商', en: 'Deployment provider' },
     stage: { zh: '部署上线', en: 'Deployment' },
     category: { zh: '基础设施', en: 'Infrastructure' },
-    tags: [{ zh: 'Next.js', en: 'Next.js' }, { zh: '部署', en: 'Deploy' }, { zh: '预览环境', en: 'Preview' }],
+    tags: [
+      { zh: 'Next.js', en: 'Next.js' },
+      { zh: '部署', en: 'Deploy' },
+      { zh: '预览环境', en: 'Preview' },
+    ],
     priceType: { zh: 'Freemium', en: 'Freemium' },
     summary: {
       zh: 'Next.js 项目的主流部署平台，支持 GitHub 导入、预览环境、环境变量和生产部署。',
@@ -91,7 +100,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: '数据库服务商', en: 'Database provider' },
     stage: { zh: '后端开发', en: 'Backend development' },
     category: { zh: '基础设施', en: 'Infrastructure' },
-    tags: [{ zh: 'PostgreSQL', en: 'PostgreSQL' }, { zh: 'Drizzle', en: 'Drizzle' }, { zh: '数据库迁移', en: 'Migrations' }],
+    tags: [
+      { zh: 'PostgreSQL', en: 'PostgreSQL' },
+      { zh: 'Drizzle', en: 'Drizzle' },
+      { zh: '数据库迁移', en: 'Migrations' },
+    ],
     priceType: { zh: 'Freemium', en: 'Freemium' },
     summary: {
       zh: 'Serverless PostgreSQL 服务，适合搭配 Vercel 和 Drizzle 承载内容平台数据。',
@@ -114,8 +127,17 @@ export const platformResources: PlatformResource[] = [
     website: 'https://claude.ai/code',
     type: { zh: 'AI 编程工具', en: 'AI coding tool' },
     stage: { zh: '前端开发', en: 'Frontend development' },
+    stages: [
+      { zh: '前端开发', en: 'Frontend development' },
+      { zh: '后端开发', en: 'Backend development' },
+      { zh: '部署上线', en: 'Deployment' },
+    ],
     category: { zh: '开发效率', en: 'Development productivity' },
-    tags: [{ zh: 'AI 编程', en: 'AI coding' }, { zh: 'Agent', en: 'Agent' }, { zh: '终端', en: 'Terminal' }],
+    tags: [
+      { zh: 'AI 编程', en: 'AI coding' },
+      { zh: 'Agent', en: 'Agent' },
+      { zh: '终端', en: 'Terminal' },
+    ],
     priceType: { zh: '付费', en: 'Paid' },
     summary: {
       zh: '在终端、IDE 和网页中协作修改代码的 AI 编程工具，适合长期维护全栈项目。',
@@ -139,7 +161,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: 'SaaS 组件库', en: 'SaaS component library' },
     stage: { zh: 'UI 设计', en: 'UI design' },
     category: { zh: '界面组件', en: 'UI components' },
-    tags: [{ zh: '组件库', en: 'Components' }, { zh: 'Tailwind', en: 'Tailwind' }, { zh: 'React', en: 'React' }],
+    tags: [
+      { zh: '组件库', en: 'Components' },
+      { zh: 'Tailwind', en: 'Tailwind' },
+      { zh: 'React', en: 'React' },
+    ],
     priceType: { zh: '开源', en: 'Open source' },
     summary: {
       zh: '基于 Radix UI 和 Tailwind 的组件体系，适合搭建后台、表单、筛选和内容管理界面。',
@@ -163,7 +189,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: '参考网站', en: 'Reference site' },
     stage: { zh: '需求发现', en: 'Demand discovery' },
     category: { zh: '内容平台参考', en: 'Content platform reference' },
-    tags: [{ zh: '出海', en: 'Going global' }, { zh: '资源目录', en: 'Resource directory' }, { zh: '参考站', en: 'Reference' }],
+    tags: [
+      { zh: '出海', en: 'Going global' },
+      { zh: '资源目录', en: 'Resource directory' },
+      { zh: '参考站', en: 'Reference' },
+    ],
     priceType: { zh: '免费', en: 'Free' },
     summary: {
       zh: '面向 AI 出海的信息与资源平台，可作为信息架构和内容组织参考。',
@@ -187,7 +217,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: 'AI 工具榜单', en: 'AI tool directory' },
     stage: { zh: '需求发现', en: 'Demand discovery' },
     category: { zh: '市场观察', en: 'Market intelligence' },
-    tags: [{ zh: 'AI 工具', en: 'AI tools' }, { zh: '榜单', en: 'Ranking' }, { zh: '竞品发现', en: 'Competitor discovery' }],
+    tags: [
+      { zh: 'AI 工具', en: 'AI tools' },
+      { zh: '榜单', en: 'Ranking' },
+      { zh: '竞品发现', en: 'Competitor discovery' },
+    ],
     priceType: { zh: 'Freemium', en: 'Freemium' },
     summary: {
       zh: 'AI 工具目录和榜单，可用于发现新品类、竞品、关键词和海外需求信号。',
@@ -211,7 +245,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: 'SEO 工具', en: 'SEO tool' },
     stage: { zh: 'SEO', en: 'SEO' },
     category: { zh: '增长运营', en: 'Growth' },
-    tags: [{ zh: 'SEO', en: 'SEO' }, { zh: '关键词', en: 'Keywords' }, { zh: '流量', en: 'Traffic' }],
+    tags: [
+      { zh: 'SEO', en: 'SEO' },
+      { zh: '关键词', en: 'Keywords' },
+      { zh: '流量', en: 'Traffic' },
+    ],
     priceType: { zh: 'Freemium', en: 'Freemium' },
     summary: {
       zh: '用于查看网站 SEO、关键词和流量线索的工具，可辅助出海产品做内容选题。',
@@ -235,7 +273,11 @@ export const platformResources: PlatformResource[] = [
     type: { zh: '域名服务商', en: 'Domain provider' },
     stage: { zh: '域名邮箱', en: 'Domain and email' },
     category: { zh: '基础设施', en: 'Infrastructure' },
-    tags: [{ zh: '域名', en: 'Domain' }, { zh: 'DNS', en: 'DNS' }, { zh: '出海基础设施', en: 'Global infrastructure' }],
+    tags: [
+      { zh: '域名', en: 'Domain' },
+      { zh: 'DNS', en: 'DNS' },
+      { zh: '出海基础设施', en: 'Global infrastructure' },
+    ],
     priceType: { zh: '付费', en: 'Paid' },
     summary: {
       zh: '常用域名注册服务商，适合为 AI Web SaaS 项目购买和管理英文域名。',
@@ -257,14 +299,21 @@ export const platformResources: PlatformResource[] = [
 export const platformCollections: PlatformCollection[] = [
   {
     slug: 'ai-saas-launch-stack',
-    title: { zh: '从 0 上线一个 AI SaaS 的基础栈', en: 'Base Stack for Launching an AI SaaS from Zero' },
+    title: {
+      zh: '从 0 上线一个 AI SaaS 的基础栈',
+      en: 'Base Stack for Launching an AI SaaS from Zero',
+    },
     summary: {
       zh: '把 Starter、数据库、部署、域名和 UI 组件串成最小上线链路。',
       en: 'Connect starter, database, deployment, domain, and UI components into a minimal launch path.',
     },
     stage: { zh: '部署上线', en: 'Deployment' },
     category: { zh: '上线清单', en: 'Launch checklist' },
-    tags: [{ zh: 'Vercel', en: 'Vercel' }, { zh: 'Neon', en: 'Neon' }, { zh: 'ShipAny', en: 'ShipAny' }],
+    tags: [
+      { zh: 'Vercel', en: 'Vercel' },
+      { zh: 'Neon', en: 'Neon' },
+      { zh: 'ShipAny', en: 'ShipAny' },
+    ],
     resourceSlugs: ['shipany-next', 'neon', 'vercel', 'namecheap', 'shadcn-ui'],
     featured: true,
     allowAiCitation: true,
@@ -278,21 +327,31 @@ export const platformCollections: PlatformCollection[] = [
     },
     stage: { zh: '前端开发', en: 'Frontend development' },
     category: { zh: '开发效率', en: 'Development productivity' },
-    tags: [{ zh: 'AI 编程', en: 'AI coding' }, { zh: '一人公司', en: 'One-person company' }],
+    tags: [
+      { zh: 'AI 编程', en: 'AI coding' },
+      { zh: '一人公司', en: 'One-person company' },
+    ],
     resourceSlugs: ['claude-code', 'shipany-next', 'shadcn-ui'],
     featured: true,
     allowAiCitation: true,
   },
   {
     slug: 'seo-demand-discovery',
-    title: { zh: '需求发现与 SEO 工具清单', en: 'Demand Discovery and SEO Tool List' },
+    title: {
+      zh: '需求发现与 SEO 工具清单',
+      en: 'Demand Discovery and SEO Tool List',
+    },
     summary: {
       zh: '用 AI 工具榜单、竞品观察和关键词分析来生成资源库专题与文章选题。',
       en: 'Use AI directories, competitor observation, and keyword analysis to generate collection and article topics.',
     },
     stage: { zh: '需求发现', en: 'Demand discovery' },
     category: { zh: '增长运营', en: 'Growth' },
-    tags: [{ zh: 'SEO', en: 'SEO' }, { zh: '竞品', en: 'Competitors' }, { zh: '内容选题', en: 'Content ideas' }],
+    tags: [
+      { zh: 'SEO', en: 'SEO' },
+      { zh: '竞品', en: 'Competitors' },
+      { zh: '内容选题', en: 'Content ideas' },
+    ],
     resourceSlugs: ['toolify', 'aitdk', 'aichuhai'],
     featured: true,
     allowAiCitation: true,

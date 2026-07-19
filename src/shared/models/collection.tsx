@@ -9,9 +9,13 @@ import {
   resourceTag,
   tag,
 } from '@/config/db/schema';
+import type { CollectionStepInput } from '@/shared/forms/collection';
 import { TableColumn } from '@/shared/types/blocks/table';
 
-type CollectionValues = Omit<typeof collection.$inferInsert, 'createdAt' | 'updatedAt'>;
+type CollectionValues = Omit<
+  typeof collection.$inferInsert,
+  'createdAt' | 'updatedAt'
+>;
 
 type PublicResource = {
   slug: string;
@@ -37,35 +41,96 @@ function readJsonStringArray(value: string | null) {
   if (!value) return [];
   try {
     const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === 'string')
+      : [];
   } catch {
     return [];
   }
 }
 
-async function validateCollectionRelationIds(tx: any, tagIds: string[], resourceIds: string[]) {
+async function validateCollectionRelationIds(
+  tx: any,
+  tagIds: string[],
+  collectionSteps: CollectionStepInput[],
+  existingResourceIds: ReadonlySet<string>,
+  status?: string
+) {
+  if (status === 'published' && collectionSteps.length === 0) {
+    throw new Error('Published collections need at least one step');
+  }
   if (tagIds.length) {
-    const rows = await tx.select({ id: tag.id }).from(tag).where(inArray(tag.id, tagIds));
-    if (rows.length !== tagIds.length) throw new Error('One or more collection tags do not exist');
+    const rows = await tx
+      .select({ id: tag.id })
+      .from(tag)
+      .where(inArray(tag.id, tagIds));
+    if (rows.length !== tagIds.length)
+      throw new Error('One or more collection tags do not exist');
+  }
+
+  const resourceIds = collectionSteps.map((step) => step.resourceId);
+  if (new Set(resourceIds).size !== resourceIds.length) {
+    throw new Error('A resource can only appear once in a collection');
+  }
+  for (const step of collectionSteps) {
+    if (!step.resourceId)
+      throw new Error('Collection step resource is required');
+    if (!['required', 'alternative'].includes(step.relationType)) {
+      throw new Error('Invalid collection step relation type');
+    }
+    if (
+      !existingResourceIds.has(step.resourceId) &&
+      !step.stepDescriptionZh &&
+      !step.stepDescriptionEn
+    ) {
+      throw new Error('Collection step description is required');
+    }
   }
 
   if (resourceIds.length) {
-    const rows = await tx.select({ id: resource.id }).from(resource).where(inArray(resource.id, resourceIds));
-    if (rows.length !== resourceIds.length) throw new Error('One or more collection resources do not exist');
+    const rows = await tx
+      .select({ id: resource.id, status: resource.status })
+      .from(resource)
+      .where(inArray(resource.id, resourceIds));
+    if (rows.length !== resourceIds.length)
+      throw new Error('One or more collection resources do not exist');
+    if (
+      status === 'published' &&
+      rows.some((row: { status: string }) => row.status !== 'published')
+    ) {
+      throw new Error(
+        'Published collections can only use published resources / 已发布专题只能关联已发布资源'
+      );
+    }
   }
 }
 
-async function replaceCollectionRelations(tx: any, collectionId: string, tagIds: string[], resourceIds: string[]) {
-  await tx.delete(collectionTag).where(eq(collectionTag.collectionId, collectionId));
-  await tx.delete(collectionResource).where(eq(collectionResource.collectionId, collectionId));
+async function replaceCollectionRelations(
+  tx: any,
+  collectionId: string,
+  tagIds: string[],
+  collectionSteps: CollectionStepInput[]
+) {
+  await tx
+    .delete(collectionTag)
+    .where(eq(collectionTag.collectionId, collectionId));
+  await tx
+    .delete(collectionResource)
+    .where(eq(collectionResource.collectionId, collectionId));
 
   if (tagIds.length) {
-    await tx.insert(collectionTag).values(tagIds.map((tagId) => ({ collectionId, tagId })));
+    await tx
+      .insert(collectionTag)
+      .values(tagIds.map((tagId) => ({ collectionId, tagId })));
   }
 
-  if (resourceIds.length) {
+  if (collectionSteps.length) {
     await tx.insert(collectionResource).values(
-      resourceIds.map((resourceId, sortOrder) => ({ collectionId, resourceId, sortOrder }))
+      collectionSteps.map(({ existing, ...step }, sortOrder) => ({
+        collectionId,
+        ...step,
+        sortOrder,
+      }))
     );
   }
 }
@@ -97,7 +162,9 @@ export async function getCollections({
     .offset((page - 1) * limit);
 }
 
-export async function getCollectionsCount({ query = '' }: { query?: string } = {}) {
+export async function getCollectionsCount({
+  query = '',
+}: { query?: string } = {}) {
   const keyword = query.trim();
   const where = keyword
     ? or(
@@ -106,37 +173,76 @@ export async function getCollectionsCount({ query = '' }: { query?: string } = {
         ilike(collection.slug, `%${keyword}%`)
       )
     : undefined;
-  const [result] = await db().select({ count: count() }).from(collection).where(where);
+  const [result] = await db()
+    .select({ count: count() })
+    .from(collection)
+    .where(where);
   return result?.count || 0;
 }
 
 export async function getCollectionById(id: string) {
-  const [item] = await db().select().from(collection).where(eq(collection.id, id)).limit(1);
+  const [item] = await db()
+    .select()
+    .from(collection)
+    .where(eq(collection.id, id))
+    .limit(1);
   return item;
 }
 
 export async function getCollectionTagIds(collectionId: string) {
-  const rows = await db().select({ tagId: collectionTag.tagId }).from(collectionTag).where(eq(collectionTag.collectionId, collectionId));
+  const rows = await db()
+    .select({ tagId: collectionTag.tagId })
+    .from(collectionTag)
+    .where(eq(collectionTag.collectionId, collectionId));
   return (rows as { tagId: string }[]).map((row) => row.tagId);
 }
 
-export async function getCollectionResourceIds(collectionId: string) {
+export async function getCollectionSteps(collectionId: string) {
   const rows = await db()
-    .select({ resourceId: collectionResource.resourceId })
+    .select({
+      resourceId: collectionResource.resourceId,
+      stepTitleZh: collectionResource.stepTitleZh,
+      stepTitleEn: collectionResource.stepTitleEn,
+      stepDescriptionZh: collectionResource.stepDescriptionZh,
+      stepDescriptionEn: collectionResource.stepDescriptionEn,
+      relationType: collectionResource.relationType,
+    })
     .from(collectionResource)
     .where(eq(collectionResource.collectionId, collectionId))
     .orderBy(asc(collectionResource.sortOrder));
-  return (rows as { resourceId: string }[]).map((row) => row.resourceId);
+  type CollectionStepRow = Omit<CollectionStepInput, 'existing'> & {
+    relationType: string;
+  };
+  return (rows as CollectionStepRow[]).map((row) => ({
+    ...row,
+    existing: true,
+    relationType:
+      row.relationType === 'alternative' ? 'alternative' : 'required',
+  })) satisfies CollectionStepInput[];
 }
 
-export async function createCollection(values: CollectionValues, tagIds: string[], resourceIds: string[]) {
+export async function createCollection(
+  values: CollectionValues,
+  tagIds: string[],
+  collectionSteps: CollectionStepInput[]
+) {
   const uniqueTagIds = Array.from(new Set(tagIds));
-  const uniqueResourceIds = Array.from(new Set(resourceIds));
 
   return db().transaction(async (tx: any) => {
-    await validateCollectionRelationIds(tx, uniqueTagIds, uniqueResourceIds);
+    await validateCollectionRelationIds(
+      tx,
+      uniqueTagIds,
+      collectionSteps,
+      new Set(),
+      values.status
+    );
     const [item] = await tx.insert(collection).values(values).returning();
-    await replaceCollectionRelations(tx, item.id, uniqueTagIds, uniqueResourceIds);
+    await replaceCollectionRelations(
+      tx,
+      item.id,
+      uniqueTagIds,
+      collectionSteps
+    );
     return item;
   });
 }
@@ -145,31 +251,105 @@ export async function updateCollection(
   id: string,
   values: Partial<CollectionValues>,
   tagIds: string[],
-  resourceIds: string[]
+  collectionSteps: CollectionStepInput[]
 ) {
   const uniqueTagIds = Array.from(new Set(tagIds));
-  const uniqueResourceIds = Array.from(new Set(resourceIds));
 
   return db().transaction(async (tx: any) => {
-    await validateCollectionRelationIds(tx, uniqueTagIds, uniqueResourceIds);
-    const [item] = await tx.update(collection).set(values).where(eq(collection.id, id)).returning();
+    const [currentCollection, currentSteps] = await Promise.all([
+      tx
+        .select({ status: collection.status })
+        .from(collection)
+        .where(eq(collection.id, id))
+        .limit(1),
+      tx
+        .select({ resourceId: collectionResource.resourceId })
+        .from(collectionResource)
+        .where(eq(collectionResource.collectionId, id)),
+    ]);
+    if (!currentCollection[0]) return undefined;
+
+    await validateCollectionRelationIds(
+      tx,
+      uniqueTagIds,
+      collectionSteps,
+      new Set(
+        (currentSteps as { resourceId: string }[]).map(
+          (step) => step.resourceId
+        )
+      ),
+      values.status ?? currentCollection[0].status
+    );
+    const [item] = await tx
+      .update(collection)
+      .set(values)
+      .where(eq(collection.id, id))
+      .returning();
     if (!item) return item;
-    await replaceCollectionRelations(tx, id, uniqueTagIds, uniqueResourceIds);
+    await replaceCollectionRelations(tx, id, uniqueTagIds, collectionSteps);
     return item;
   });
 }
 
-export async function getPublishedCollections(locale: string, allowAiCitation = false) {
+export async function deleteCollection(id: string) {
+  return db().transaction(async (tx: any) => {
+    const [item] = await tx
+      .select()
+      .from(collection)
+      .where(eq(collection.id, id))
+      .limit(1)
+      .for('update');
+    if (!item) throw new Error('Collection not found');
+    if (item.status !== 'draft')
+      throw new Error('Only draft collections can be permanently deleted');
+
+    const [deleted] = await tx
+      .delete(collection)
+      .where(and(eq(collection.id, id), eq(collection.status, 'draft')))
+      .returning();
+    if (!deleted)
+      throw new Error('Only draft collections can be permanently deleted');
+    return deleted;
+  });
+}
+
+export async function archiveCollection(id: string) {
+  const [item] = await db()
+    .update(collection)
+    .set({ status: 'archived', updatedAt: new Date() })
+    .where(and(eq(collection.id, id), eq(collection.status, 'published')))
+    .returning();
+
+  if (!item) throw new Error('Only published collections can be archived');
+  return item;
+}
+
+export async function getPublishedCollections(
+  locale: string,
+  allowAiCitation = false
+) {
   const rows = await db()
     .select()
     .from(collection)
-    .where(and(eq(collection.status, 'published'), ...(allowAiCitation ? [eq(collection.allowAiCitation, true)] : [])))
+    .where(
+      and(
+        eq(collection.status, 'published'),
+        ...(allowAiCitation ? [eq(collection.allowAiCitation, true)] : [])
+      )
+    )
     .orderBy(asc(collection.sortOrder), asc(collection.createdAt));
 
-  return Promise.all((rows as (typeof collection.$inferSelect)[]).map((item) => getPublishedCollectionView(item, locale)));
+  return Promise.all(
+    (rows as (typeof collection.$inferSelect)[]).map((item) =>
+      getPublishedCollectionView(item, locale)
+    )
+  );
 }
 
-export async function getPublishedCollectionBySlug(slug: string, locale: string) {
+export async function getPublishedCollectionBySlug(
+  slug: string,
+  locale: string
+) {
   const [item] = await db()
     .select()
     .from(collection)
@@ -179,7 +359,10 @@ export async function getPublishedCollectionBySlug(slug: string, locale: string)
   return getPublishedCollectionView(item, locale);
 }
 
-export async function getCollectionTableColumns(locale: string): Promise<TableColumn[]> {
+export async function getCollectionTableColumns(
+  locale: string,
+  canWrite = true
+): Promise<TableColumn[]> {
   const isZh = locale === 'zh';
   return [
     {
@@ -187,40 +370,108 @@ export async function getCollectionTableColumns(locale: string): Promise<TableCo
       title: isZh ? '专题' : 'Collection',
       callback: (row: typeof collection.$inferSelect) => (
         <div className="space-y-1">
-          <div className="font-medium">{isZh ? row.titleZh : row.titleEn || row.titleZh}</div>
+          <div className="font-medium">
+            {isZh ? row.titleZh : row.titleEn || row.titleZh}
+          </div>
           <div className="text-muted-foreground text-xs">{row.slug}</div>
         </div>
       ),
     },
-    { name: 'status', title: isZh ? '状态' : 'Status', callback: (row: typeof collection.$inferSelect) => row.status },
-    { name: 'featured', title: isZh ? '精选' : 'Featured', callback: (row: typeof collection.$inferSelect) => (row.featured ? (isZh ? '是' : 'Yes') : (isZh ? '否' : 'No')) },
     {
-      name: 'action',
-      title: '',
-      type: 'dropdown',
-      callback: (row: typeof collection.$inferSelect) => [
-        { id: 'edit', title: isZh ? '编辑' : 'Edit', icon: 'RiEditLine', url: `/admin/collections/${row.id}/edit` },
-      ],
+      name: 'status',
+      title: isZh ? '状态' : 'Status',
+      callback: (row: typeof collection.$inferSelect) => row.status,
     },
+    {
+      name: 'featured',
+      title: isZh ? '精选' : 'Featured',
+      callback: (row: typeof collection.$inferSelect) =>
+        row.featured ? (isZh ? '是' : 'Yes') : isZh ? '否' : 'No',
+    },
+    ...(canWrite
+      ? [
+          {
+            name: 'action',
+            title: '',
+            type: 'dropdown',
+            callback: (row: typeof collection.$inferSelect) => [
+              {
+                id: 'edit',
+                title: isZh ? '编辑' : 'Edit',
+                icon: 'RiEditLine',
+                url: `/admin/collections/${row.id}/edit`,
+              },
+              ...(row.status === 'published'
+                ? [
+                    {
+                      id: 'archive',
+                      title: isZh ? '归档' : 'Archive',
+                      icon: 'RiArchiveLine',
+                      url: `/admin/collections/${row.id}/delete`,
+                    },
+                  ]
+                : row.status === 'draft'
+                  ? [
+                      {
+                        id: 'delete',
+                        title: isZh ? '永久删除' : 'Delete permanently',
+                        icon: 'RiDeleteBinLine',
+                        url: `/admin/collections/${row.id}/delete`,
+                      },
+                    ]
+                  : []),
+            ],
+          } satisfies TableColumn,
+        ]
+      : []),
   ];
 }
 
-async function getPublishedCollectionView(item: typeof collection.$inferSelect, locale: string) {
+async function getPublishedCollectionView(
+  item: typeof collection.$inferSelect,
+  locale: string
+) {
   const [tagRows, resourceRows] = await Promise.all([
-    db().select({ id: tag.id, nameZh: tag.nameZh, nameEn: tag.nameEn }).from(collectionTag).innerJoin(tag, eq(collectionTag.tagId, tag.id)).where(eq(collectionTag.collectionId, item.id)),
+    db()
+      .select({ id: tag.id, nameZh: tag.nameZh, nameEn: tag.nameEn })
+      .from(collectionTag)
+      .innerJoin(tag, eq(collectionTag.tagId, tag.id))
+      .where(eq(collectionTag.collectionId, item.id)),
     db()
       .select({
         resource: resource,
         sortOrder: collectionResource.sortOrder,
+        stepTitleZh: collectionResource.stepTitleZh,
+        stepTitleEn: collectionResource.stepTitleEn,
+        stepDescriptionZh: collectionResource.stepDescriptionZh,
+        stepDescriptionEn: collectionResource.stepDescriptionEn,
+        relationType: collectionResource.relationType,
       })
       .from(collectionResource)
       .innerJoin(resource, eq(collectionResource.resourceId, resource.id))
-      .where(and(eq(collectionResource.collectionId, item.id), eq(resource.status, 'published')))
+      .where(
+        and(
+          eq(collectionResource.collectionId, item.id),
+          eq(resource.status, 'published')
+        )
+      )
       .orderBy(asc(collectionResource.sortOrder)),
   ]);
 
-  const typedTagRows = tagRows as { id: string; nameZh: string; nameEn: string | null }[];
-  const typedResourceRows = resourceRows as { resource: typeof resource.$inferSelect; sortOrder: number }[];
+  const typedTagRows = tagRows as {
+    id: string;
+    nameZh: string;
+    nameEn: string | null;
+  }[];
+  const typedResourceRows = resourceRows as {
+    resource: typeof resource.$inferSelect;
+    sortOrder: number;
+    stepTitleZh: string | null;
+    stepTitleEn: string | null;
+    stepDescriptionZh: string | null;
+    stepDescriptionEn: string | null;
+    relationType: string;
+  }[];
 
   return {
     id: item.id,
@@ -231,12 +482,39 @@ async function getPublishedCollectionView(item: typeof collection.$inferSelect, 
     stageId: item.stageId,
     categoryId: item.categoryId,
     featured: item.featured,
-    tags: typedTagRows.map((tagItem) => ({ id: tagItem.id, name: pickLocale(locale, tagItem.nameZh, tagItem.nameEn) })),
-    resources: typedResourceRows.map((resourceItem) => toPublicResource(resourceItem.resource, locale)),
+    tags: typedTagRows.map((tagItem) => ({
+      id: tagItem.id,
+      name: pickLocale(locale, tagItem.nameZh, tagItem.nameEn),
+    })),
+    resources: typedResourceRows.map((resourceItem) => ({
+      ...toPublicResource(resourceItem.resource, locale),
+      stepTitle: pickLocale(
+        locale,
+        resourceItem.stepTitleZh,
+        resourceItem.stepTitleEn
+      ),
+      stepDescription: pickLocale(
+        locale,
+        resourceItem.stepDescriptionZh,
+        resourceItem.stepDescriptionEn
+      ),
+      relationType:
+        resourceItem.relationType === 'alternative'
+          ? 'alternative'
+          : 'required',
+    })),
   };
 }
 
-function toPublicResource(item: typeof resource.$inferSelect, locale: string): PublicResource & { name: string; summary: string; reason: string; useCase: string } {
+function toPublicResource(
+  item: typeof resource.$inferSelect,
+  locale: string
+): PublicResource & {
+  name: string;
+  summary: string;
+  reason: string;
+  useCase: string;
+} {
   return {
     slug: item.slug,
     nameZh: item.nameZh,

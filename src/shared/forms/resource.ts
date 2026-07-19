@@ -1,5 +1,5 @@
-import { Form } from '@/shared/types/blocks/form';
 import { category, resource, stage, tag } from '@/config/db/schema';
+import { Form } from '@/shared/types/blocks/form';
 
 const resourceTypes = [
   'reference_site',
@@ -26,6 +26,7 @@ export function getResourceForm({
   categories,
   tags,
   tagIds = [],
+  stageIds = [],
   submit,
 }: {
   locale: string;
@@ -34,6 +35,7 @@ export function getResourceForm({
   categories: (typeof category.$inferSelect)[];
   tags: (typeof tag.$inferSelect)[];
   tagIds?: string[];
+  stageIds?: string[];
   submit: Form['submit'];
 }): Form {
   const isZh = locale === 'zh';
@@ -59,7 +61,9 @@ export function getResourceForm({
         type: 'text',
         value: values?.slug,
         validation: { required: true },
-        tip: isZh ? '使用小写英文、数字和连字符。' : 'Use lowercase letters, numbers, and hyphens.',
+        tip: isZh
+          ? '使用小写英文、数字和连字符。'
+          : 'Use lowercase letters, numbers, and hyphens.',
       },
       {
         name: 'websiteUrl',
@@ -77,7 +81,7 @@ export function getResourceForm({
       },
       {
         name: 'stageId',
-        title: isZh ? '使用阶段' : 'Stage',
+        title: isZh ? '主阶段' : 'Primary stage',
         type: 'select',
         value: values?.stageId || '',
         options: [
@@ -87,6 +91,19 @@ export function getResourceForm({
             value: item.id,
           })),
         ],
+      },
+      {
+        name: 'stages',
+        title: isZh ? '适用阶段' : 'Applicable stages',
+        type: 'checkbox',
+        value: stageIds,
+        tip: isZh
+          ? '资源可用于多个阶段；选择后，主阶段必须包含在适用阶段中。'
+          : 'A resource can apply to multiple stages. The primary stage must be included when stages are selected.',
+        options: stages.map((item) => ({
+          title: isZh ? item.nameZh : item.nameEn || item.nameZh,
+          value: item.id,
+        })),
       },
       {
         name: 'categoryId',
@@ -208,15 +225,32 @@ export function getResourceValues(formData: FormData) {
   const getNullableText = (name: string) => getText(name) || null;
   const sortOrder = Number(formData.get('sortOrder') || 0);
 
-  const rawTags = String(formData.get('tags') || '[]');
-  let tagIds: string[];
-  try {
-    const parsed = JSON.parse(rawTags);
-    tagIds = Array.isArray(parsed) && parsed.every((value) => typeof value === 'string')
-      ? Array.from(new Set(parsed))
-      : [];
-  } catch {
-    throw new Error('Invalid resource tags');
+  const getStringArray = (name: string, errorMessage: string) => {
+    const rawValue = String(formData.get(name) || '[]');
+    let values: string[];
+    try {
+      const parsed = JSON.parse(rawValue);
+      values =
+        Array.isArray(parsed) &&
+        parsed.every((value) => typeof value === 'string')
+          ? Array.from(new Set(parsed))
+          : [];
+    } catch {
+      throw new Error(errorMessage);
+    }
+    return values;
+  };
+
+  const tagIds = getStringArray('tags', 'Invalid resource tags');
+  const stageIds = getStringArray('stages', 'Invalid resource stages');
+  const stageId = getNullableText('stageId');
+  if (stageIds.length && !stageId) {
+    throw new Error(
+      'A primary stage is required when applicable stages are selected'
+    );
+  }
+  if (stageId && stageIds.length && !stageIds.includes(stageId)) {
+    throw new Error('The primary stage must be included in applicable stages');
   }
 
   return {
@@ -226,7 +260,7 @@ export function getResourceValues(formData: FormData) {
       slug: getText('slug').toLowerCase(),
       websiteUrl: getText('websiteUrl'),
       resourceType: getText('resourceType') || 'tool',
-      stageId: getNullableText('stageId'),
+      stageId,
       categoryId: getNullableText('categoryId'),
       pricingType: getText('pricingType') || 'unknown',
       summaryZh: getNullableText('summaryZh'),
@@ -239,9 +273,12 @@ export function getResourceValues(formData: FormData) {
       screenshotUrl: getNullableText('screenshotUrl'),
       status: getText('status') || 'draft',
       sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
-      featured: formData.get('featured') === 'on',
-      allowAiCitation: formData.get('allowAiCitation') === 'on',
+      featured: ['true', 'on'].includes(String(formData.get('featured'))),
+      allowAiCitation: ['true', 'on'].includes(
+        String(formData.get('allowAiCitation'))
+      ),
     },
     tagIds,
+    stageIds: stageIds.length ? stageIds : stageId ? [stageId] : [],
   };
 }

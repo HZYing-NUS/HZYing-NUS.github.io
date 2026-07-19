@@ -9,6 +9,7 @@ import {
   collectionResource,
   collectionTag,
   resource,
+  resourceStage,
   resourceTag,
   stage,
   tag,
@@ -26,12 +27,17 @@ const apply = args.has('--apply');
 const dryRun = args.has('--dry-run') || !apply;
 
 if (!envFile) {
-  throw new Error('Missing --env=<file>. Example: pnpm seed:platform -- --env=.env.local --dry-run');
+  throw new Error(
+    'Missing --env=<file>. Example: pnpm seed:platform -- --env=.env.local --dry-run'
+  );
 }
 
 config({ path: envFile, override: true });
 
-if (process.env.DATABASE_PROVIDER && process.env.DATABASE_PROVIDER !== 'postgresql') {
+if (
+  process.env.DATABASE_PROVIDER &&
+  process.env.DATABASE_PROVIDER !== 'postgresql'
+) {
   throw new Error('Platform seed supports DATABASE_PROVIDER=postgresql only.');
 }
 
@@ -52,6 +58,7 @@ const counts = {
   resources: { created: 0, skipped: 0 },
   collections: { created: 0, skipped: 0 },
   resourceTags: { created: 0, skipped: 0 },
+  resourceStages: { created: 0, skipped: 0 },
   collectionTags: { created: 0, skipped: 0 },
   collectionResources: { created: 0, skipped: 0 },
 };
@@ -61,10 +68,12 @@ function stableId(kind: string, slug: string) {
 }
 
 function toSlug(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '') || 'untitled';
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'untitled'
+  );
 }
 
 function slugForLocaleText(value: { zh: string; en: string }) {
@@ -94,11 +103,23 @@ async function insertRelation({
 }
 
 async function seed() {
-  const [existingStages, existingCategories, existingTags, existingResources, existingCollections] = await Promise.all([
+  const [
+    existingStages,
+    existingCategories,
+    existingTags,
+    existingResources,
+    existingCollections,
+  ] = await Promise.all([
     db.select({ id: stage.id, slug: stage.slug }).from(stage),
     db.select({ id: category.id, slug: category.slug }).from(category),
     db.select({ id: tag.id, slug: tag.slug }).from(tag),
-    db.select({ id: resource.id, slug: resource.slug }).from(resource),
+    db
+      .select({
+        id: resource.id,
+        slug: resource.slug,
+        stageId: resource.stageId,
+      })
+      .from(resource),
     db.select({ id: collection.id, slug: collection.slug }).from(collection),
   ]);
 
@@ -111,10 +132,37 @@ async function seed() {
   const allCategories = new Map<string, { zh: string; en: string }>();
   const allTags = new Map<string, { zh: string; en: string }>();
 
+  for (const item of existingResources) {
+    if (!item.stageId) continue;
+    const primaryStageId = item.stageId;
+    const existingResourceStages = await db
+      .select({ stageId: resourceStage.stageId })
+      .from(resourceStage)
+      .where(eq(resourceStage.resourceId, item.id))
+      .limit(1);
+    if (existingResourceStages.length) {
+      counts.resourceStages.skipped += 1;
+      continue;
+    }
+
+    counts.resourceStages.created += 1;
+    if (!dryRun) {
+      await db
+        .insert(resourceStage)
+        .values({ resourceId: item.id, stageId: primaryStageId });
+    }
+  }
+
   for (const item of [...platformResources, ...platformCollections]) {
     allStages.set(slugForLocaleText(item.stage), item.stage);
+    if ('stages' in item) {
+      for (const itemStage of item.stages || []) {
+        allStages.set(slugForLocaleText(itemStage), itemStage);
+      }
+    }
     allCategories.set(slugForLocaleText(item.category), item.category);
-    for (const itemTag of item.tags) allTags.set(slugForLocaleText(itemTag), itemTag);
+    for (const itemTag of item.tags)
+      allTags.set(slugForLocaleText(itemTag), itemTag);
   }
 
   for (const [slug, item] of allStages) {
@@ -126,7 +174,13 @@ async function seed() {
     const id = stableId('stage', slug);
     counts.stages.created += 1;
     if (!dryRun) {
-      await db.insert(stage).values({ id, slug, nameZh: item.zh, nameEn: item.en, sortOrder: stageBySlug.size + 1 });
+      await db.insert(stage).values({
+        id,
+        slug,
+        nameZh: item.zh,
+        nameEn: item.en,
+        sortOrder: stageBySlug.size + 1,
+      });
     }
     stageBySlug.set(slug, id);
   }
@@ -139,7 +193,10 @@ async function seed() {
 
     const id = stableId('category', slug);
     counts.categories.created += 1;
-    if (!dryRun) await db.insert(category).values({ id, slug, nameZh: item.zh, nameEn: item.en });
+    if (!dryRun)
+      await db
+        .insert(category)
+        .values({ id, slug, nameZh: item.zh, nameEn: item.en });
     categoryBySlug.set(slug, id);
   }
 
@@ -151,12 +208,16 @@ async function seed() {
 
     const id = stableId('tag', slug);
     counts.tags.created += 1;
-    if (!dryRun) await db.insert(tag).values({ id, slug, nameZh: item.zh, nameEn: item.en });
+    if (!dryRun)
+      await db
+        .insert(tag)
+        .values({ id, slug, nameZh: item.zh, nameEn: item.en });
     tagBySlug.set(slug, id);
   }
 
   for (const item of platformResources) {
     let resourceId = resourceBySlug.get(item.slug);
+    const resourceCreated = !resourceId;
     if (resourceId) {
       counts.resources.skipped += 1;
     } else {
@@ -191,10 +252,37 @@ async function seed() {
       const tagId = tagBySlug.get(slugForLocaleText(itemTag));
       if (!tagId) continue;
       await insertRelation({
-        exists: async () => Boolean((await db.select().from(resourceTag).where(and(eq(resourceTag.resourceId, resourceId), eq(resourceTag.tagId, tagId))).limit(1))[0]),
+        exists: async () =>
+          Boolean(
+            (
+              await db
+                .select()
+                .from(resourceTag)
+                .where(
+                  and(
+                    eq(resourceTag.resourceId, resourceId),
+                    eq(resourceTag.tagId, tagId)
+                  )
+                )
+                .limit(1)
+            )[0]
+          ),
         insert: () => db.insert(resourceTag).values({ resourceId, tagId }),
         statistic: counts.resourceTags,
       });
+    }
+
+    if (resourceCreated) {
+      for (const itemStage of item.stages?.length
+        ? item.stages
+        : [item.stage]) {
+        const stageId = stageBySlug.get(slugForLocaleText(itemStage));
+        if (!stageId) continue;
+        counts.resourceStages.created += 1;
+        if (!dryRun) {
+          await db.insert(resourceStage).values({ resourceId, stageId });
+        }
+      }
     }
   }
 
@@ -227,7 +315,21 @@ async function seed() {
       const tagId = tagBySlug.get(slugForLocaleText(itemTag));
       if (!tagId) continue;
       await insertRelation({
-        exists: async () => Boolean((await db.select().from(collectionTag).where(and(eq(collectionTag.collectionId, collectionId), eq(collectionTag.tagId, tagId))).limit(1))[0]),
+        exists: async () =>
+          Boolean(
+            (
+              await db
+                .select()
+                .from(collectionTag)
+                .where(
+                  and(
+                    eq(collectionTag.collectionId, collectionId),
+                    eq(collectionTag.tagId, tagId)
+                  )
+                )
+                .limit(1)
+            )[0]
+          ),
         insert: () => db.insert(collectionTag).values({ collectionId, tagId }),
         statistic: counts.collectionTags,
       });
@@ -237,15 +339,36 @@ async function seed() {
       const resourceId = resourceBySlug.get(resourceSlug);
       if (!resourceId) continue;
       await insertRelation({
-        exists: async () => Boolean((await db.select().from(collectionResource).where(and(eq(collectionResource.collectionId, collectionId), eq(collectionResource.resourceId, resourceId))).limit(1))[0]),
-        insert: () => db.insert(collectionResource).values({ collectionId, resourceId, sortOrder }),
+        exists: async () =>
+          Boolean(
+            (
+              await db
+                .select()
+                .from(collectionResource)
+                .where(
+                  and(
+                    eq(collectionResource.collectionId, collectionId),
+                    eq(collectionResource.resourceId, resourceId)
+                  )
+                )
+                .limit(1)
+            )[0]
+          ),
+        insert: () =>
+          db
+            .insert(collectionResource)
+            .values({ collectionId, resourceId, sortOrder }),
         statistic: counts.collectionResources,
       });
     }
   }
 
   console.table(counts);
-  console.log(dryRun ? 'Dry run completed. No database rows were written.' : 'Platform seed applied.');
+  console.log(
+    dryRun
+      ? 'Dry run completed. No database rows were written.'
+      : 'Platform seed applied.'
+  );
 }
 
 seed()

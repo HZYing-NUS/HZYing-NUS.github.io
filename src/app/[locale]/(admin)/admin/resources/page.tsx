@@ -1,10 +1,15 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 
-import { PERMISSIONS, requirePermission } from '@/core/rbac';
+import { checkPageAccess, PERMISSIONS, requirePermission } from '@/core/rbac';
 import { Header, Main, MainHeader } from '@/shared/blocks/dashboard';
 import { TableCard } from '@/shared/blocks/table';
-import { getResourceTableColumns, getResources, getResourcesCount } from '@/shared/models/resource';
-import { Crumb } from '@/shared/types/blocks/common';
+import {
+  getResourcesCount,
+  getResourcesWithStages,
+  getResourceTableColumns,
+} from '@/shared/models/resource';
+import { getStages } from '@/shared/models/resource-taxonomy';
+import { Button, Crumb } from '@/shared/types/blocks/common';
 import { type Table } from '@/shared/types/blocks/table';
 
 export default async function AdminResourcesPage({
@@ -24,29 +29,34 @@ export default async function AdminResourcesPage({
     locale,
   });
 
-  const t = await getTranslations('admin.sidebar');
+  const title = locale === 'zh' ? '资源' : 'Resources';
   const page = Number(pageNum) || 1;
   const limit = Number(pageSize) || 30;
-  const [resources, total] = await Promise.all([
-    getResources({ page, limit, query: q }),
+  const [resources, total, canWrite, stages] = await Promise.all([
+    getResourcesWithStages({ page, limit, query: q }),
     getResourcesCount({ query: q }),
+    checkPageAccess({ codes: [PERMISSIONS.POSTS_WRITE], locale }),
+    getStages(),
   ]);
 
   const crumbs: Crumb[] = [
-    { title: t('dashboard'), url: '/admin' },
-    { title: t('resources'), is_active: true },
+    { title: locale === 'zh' ? '后台' : 'Dashboard', url: '/admin' },
+    { title, is_active: true },
   ];
 
+  const actions: Button[] = canWrite
+    ? [
+        {
+          title: locale === 'zh' ? '新增资源' : 'Add resource',
+          icon: 'RiAddLine',
+          url: '/admin/resources/add',
+        },
+      ]
+    : [];
+
   const table: Table = {
-    title: t('resources'),
-    actions: [
-      {
-        title: locale === 'zh' ? '新增资源' : 'Add resource',
-        icon: 'RiAddLine',
-        url: '/admin/resources/add',
-      },
-    ],
-    columns: getResourceTableColumns(locale),
+    title,
+    columns: getResourceTableColumns(locale, canWrite, stages),
     data: resources,
     pagination: {
       total,
@@ -59,7 +69,7 @@ export default async function AdminResourcesPage({
     <>
       <Header crumbs={crumbs} />
       <Main>
-        <MainHeader title={t('resources')} />
+        <MainHeader title={title} actions={actions} />
         <TableCard table={table} />
       </Main>
     </>

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 
 import { PERMISSIONS, requirePermission } from '@/core/rbac';
 import { Header, Main, MainHeader } from '@/shared/blocks/dashboard';
@@ -7,7 +7,11 @@ import { FormCard } from '@/shared/blocks/form';
 import { getResourceForm, getResourceValues } from '@/shared/forms/resource';
 import { getUuid } from '@/shared/lib/hash';
 import { createResource } from '@/shared/models/resource';
-import { getCategories, getStages, getTags } from '@/shared/models/resource-taxonomy';
+import {
+  getCategories,
+  getStages,
+  getTags,
+} from '@/shared/models/resource-taxonomy';
 import { Crumb } from '@/shared/types/blocks/common';
 
 export default async function AddResourcePage({
@@ -24,15 +28,14 @@ export default async function AddResourcePage({
     locale,
   });
 
-  const t = await getTranslations('admin.sidebar');
   const [stages, categories, tags] = await Promise.all([
     getStages(),
     getCategories(),
     getTags(),
   ]);
   const crumbs: Crumb[] = [
-    { title: t('dashboard'), url: '/admin' },
-    { title: t('resources'), url: '/admin/resources' },
+    { title: locale === 'zh' ? '后台' : 'Dashboard', url: '/admin' },
+    { title: locale === 'zh' ? '资源' : 'Resources', url: '/admin/resources' },
     { title: locale === 'zh' ? '新增资源' : 'Add resource', is_active: true },
   ];
 
@@ -48,9 +51,13 @@ export default async function AddResourcePage({
       handler: async (formData: FormData) => {
         'use server';
 
-        await requirePermission({ code: PERMISSIONS.POSTS_WRITE, redirectUrl: '/admin/no-permission', locale });
-        const { values, tagIds } = getResourceValues(formData);
-        await createResource({ id: getUuid(), ...values }, tagIds);
+        await requirePermission({
+          code: PERMISSIONS.POSTS_WRITE,
+          redirectUrl: '/admin/no-permission',
+          locale,
+        });
+        const { values, tagIds, stageIds } = getResourceValues(formData);
+        await createResource({ id: getUuid(), ...values }, tagIds, stageIds);
         redirect(`/${locale}/admin/resources`);
       },
     },
