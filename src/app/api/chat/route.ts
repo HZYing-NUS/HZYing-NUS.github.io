@@ -37,12 +37,14 @@ import { buildAiContext } from '@/shared/services/ai/context';
 import {
   createPriceSnapshot,
   getFallbackAvailability,
+  getReasoningBudgetTokens,
   getReasoningEffort,
   isReasoningEnabledForModel,
   resolveAiModel,
 } from '@/shared/services/ai/model-router';
 import {
   calculateAiPrice,
+  calculateWebSearchCostUsd,
   estimateTokenCount,
   getAiPricingSettings,
   requireWebSearchPricing,
@@ -342,15 +344,22 @@ export async function POST(req: Request) {
     const inputText = `${baseContext.system}\n${historyMessages
       .map(messageText)
       .join('\n')}`;
+    const reasoningEstimateTokens = body.reasoning
+      ? getReasoningBudgetTokens(modelConfiguration)
+      : 0;
+    const estimatedOutputTokens = Math.min(
+      modelConfiguration.maxOutputTokens,
+      1500 + reasoningEstimateTokens
+    );
     const estimate = calculateAiPrice({
       model: modelConfiguration,
       usage: {
         inputTokens:
           estimateTokenCount(inputText) +
           baseContext.imageParts.length * pricingSettings.imageInputTokens,
-        outputTokens: Math.min(modelConfiguration.maxOutputTokens, 1500),
+        outputTokens: estimatedOutputTokens,
         webSearchCostUsd: chat.webSearchEnabled
-          ? pricingSettings.webSearchCostUsd
+          ? pricingSettings.webSearchEstimatedCostUsd
           : 0,
       },
       ...pricingSettings,
@@ -360,6 +369,15 @@ export async function POST(req: Request) {
     if (resolved.channel === 'primary' && fallbackAvailability.available) {
       try {
         const fallbackResolved = await resolveAiModel(chat.model, 'fallback');
+        if (
+          body.reasoning &&
+          !isReasoningEnabledForModel(fallbackResolved.configuration)
+        ) {
+          throw new Error('FALLBACK_REASONING_NOT_AVAILABLE');
+        }
+        const fallbackReasoningEstimateTokens = body.reasoning
+          ? getReasoningBudgetTokens(fallbackResolved.configuration)
+          : 0;
         fallbackEstimatedCredits = calculateAiPrice({
           model: fallbackResolved.configuration,
           usage: {
@@ -368,10 +386,10 @@ export async function POST(req: Request) {
               baseContext.imageParts.length * pricingSettings.imageInputTokens,
             outputTokens: Math.min(
               fallbackResolved.configuration.maxOutputTokens,
-              1500
+              1500 + fallbackReasoningEstimateTokens
             ),
             webSearchCostUsd: chat.webSearchEnabled
-              ? pricingSettings.webSearchCostUsd
+              ? pricingSettings.webSearchEstimatedCostUsd
               : 0,
           },
           ...pricingSettings,
@@ -394,8 +412,15 @@ export async function POST(req: Request) {
       idempotencyKey: `chat:${chat.id}:${body.message.id}`,
       priceSnapshot: createPriceSnapshot(modelConfiguration),
       costBreakdown: {
-        model: estimate.internalCostUsd,
-        webSearch: chat.webSearchEnabled ? pricingSettings.webSearchCostUsd : 0,
+        model:
+          estimate.internalCostUsd -
+          (chat.webSearchEnabled
+            ? pricingSettings.webSearchEstimatedCostUsd
+            : 0),
+        reasoningOutputTokens: reasoningEstimateTokens,
+        webSearch: chat.webSearchEnabled
+          ? pricingSettings.webSearchEstimatedCostUsd
+          : 0,
         contextTokensIncludedInModel: true,
       },
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
@@ -476,21 +501,26 @@ export async function POST(req: Request) {
       usage: {
         inputTokens?: number;
         outputTokens?: number;
+        reasoningTokens?: number;
         cachedInputTokens?: number;
       };
       status: string;
       failureReason?: string;
     }) => {
       if (finalized || !reservationId || !userId || !modelConfiguration) return;
+      const actualWebSearchCostUsd = context.webSearchExecuted
+        ? calculateWebSearchCostUsd(
+            pricingSettings,
+            context.webSearchProviderCredits
+          )
+        : 0;
       const actual = calculateAiPrice({
         model: modelConfiguration,
         usage: {
           inputTokens: usage.inputTokens,
           outputTokens: usage.outputTokens,
           cacheReadTokens: usage.cachedInputTokens,
-          webSearchCostUsd: context.webSearchExecuted
-            ? pricingSettings.webSearchCostUsd
-            : 0,
+          webSearchCostUsd: actualWebSearchCostUsd,
         },
         ...pricingSettings,
       });
@@ -521,16 +551,20 @@ export async function POST(req: Request) {
           inputTokens: usage.inputTokens,
           outputTokens: usage.outputTokens,
           cacheReadTokens: usage.cachedInputTokens,
-          webSearchCostUsd: context.webSearchExecuted
-            ? String(pricingSettings.webSearchCostUsd)
-            : '0',
+          webSearchCostUsd: String(actualWebSearchCostUsd),
           internalCostUsd: String(actual.internalCostUsd),
           retailCostUsd: String(actual.retailCostUsd),
           rawCredits: String(actual.rawCredits),
           status:
             chargedCredits < actual.credits ? 'platform_cost_covered' : status,
           failureReason,
-          metadata: { sources: context.sources },
+          metadata: {
+            sources: context.sources,
+            reasoning: Boolean(body.reasoning),
+            reasoningTokens: usage.reasoningTokens ?? 0,
+            webSearchDepth: context.webSearchDepth,
+            webSearchProviderCredits: context.webSearchProviderCredits,
+          },
         },
       });
       finalized = true;
@@ -660,12 +694,9 @@ export async function POST(req: Request) {
                         sendReasoning: true,
                         thinking: {
                           type: 'enabled' as const,
-                          budgetTokens:
-                            effort === 'high'
-                              ? 8192
-                              : effort === 'low'
-                                ? 2048
-                                : 4096,
+                          budgetTokens: getReasoningBudgetTokens(
+                            modelConfiguration!
+                          ),
                         },
                       },
                     };
@@ -726,11 +757,18 @@ export async function POST(req: Request) {
                     total.inputTokens + (step.usage.inputTokens ?? 0),
                   outputTokens:
                     total.outputTokens + (step.usage.outputTokens ?? 0),
+                  reasoningTokens:
+                    total.reasoningTokens + (step.usage.reasoningTokens ?? 0),
                   cachedInputTokens:
                     total.cachedInputTokens +
                     (step.usage.cachedInputTokens ?? 0),
                 }),
-                { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0 }
+                {
+                  inputTokens: 0,
+                  outputTokens: 0,
+                  reasoningTokens: 0,
+                  cachedInputTokens: 0,
+                }
               );
               try {
                 const audit = await settle({

@@ -13,17 +13,20 @@ import { getUserInfo } from '@/shared/models/user';
 
 export async function POST(req: Request) {
   try {
-    const { sourceChatId, sourceMessageId } = (await req.json()) as {
+    const { sourceChatId, sourceMessageId, skill } = (await req.json()) as {
       sourceChatId?: string;
       sourceMessageId?: string;
+      skill?: string;
     };
-    if (!sourceChatId || !sourceMessageId) return respErr('INVALID_REQUEST');
+    if (!sourceChatId || !sourceMessageId || !skill) {
+      return respErr('INVALID_REQUEST');
+    }
     const user = await getUserInfo();
     if (!user) return respErr('UNAUTHORIZED');
     const [sourceChat, sourceMessage, publishedSkill] = await Promise.all([
       findChatById(sourceChatId, user.id),
       findChatMessageById(sourceMessageId, user.id),
-      findPublishedSkill('product-idea-diagnosis'),
+      findPublishedSkill(skill),
     ]);
     if (!sourceChat || sourceMessage?.chatId !== sourceChat.id) {
       return respErr('SOURCE_NOT_FOUND');

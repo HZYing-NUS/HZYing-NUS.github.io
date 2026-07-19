@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { UIMessage } from 'ai';
+import { useLocale } from 'next-intl';
 
 import { ChatBox } from '@/shared/blocks/chat/box';
 import { Loader } from '@/shared/components/ai-elements/loader';
@@ -10,48 +11,53 @@ import { Chat } from '@/shared/types/chat';
 
 export default function ChatPage() {
   const params = useParams();
+  const locale = useLocale();
 
   const [initialChat, setInitialChat] = useState<Chat | null>(null);
   const [initialMessages, setInitialMessages] = useState<UIMessage[] | null>(
     null
   );
 
-  const fetchChat = useCallback(async (chatId: string) => {
-    try {
-      const resp = await fetch('/api/chat/info', {
-        method: 'POST',
-        body: JSON.stringify({ chatId }),
-      });
-      if (!resp.ok) {
-        throw new Error(`request failed with status: ${resp.status}`);
-      }
-      const { code, message, data } = (await resp.json()) as any;
-      if (code !== 0) {
-        throw new Error(message);
-      }
+  const fetchChat = useCallback(
+    async (chatId: string) => {
+      try {
+        const resp = await fetch('/api/chat/info', {
+          method: 'POST',
+          body: JSON.stringify({ chatId, locale }),
+        });
+        if (!resp.ok) {
+          throw new Error(`request failed with status: ${resp.status}`);
+        }
+        const { code, message, data } = (await resp.json()) as any;
+        if (code !== 0) {
+          throw new Error(message);
+        }
 
-      setInitialChat({
-        id: data.id,
-        title: data.title,
-        createdAt: data.createdAt,
-        model: data.model,
-        parts: data.parts ? JSON.parse(data.parts) : [],
-        metadata: data.metadata ? JSON.parse(data.metadata) : undefined,
-        content: data.content ? JSON.parse(data.content) : undefined,
-        skillVersionId: data.skillVersionId,
-        skill: data.skill,
-        webSearchEnabled: data.webSearchEnabled,
-        projectId: data.projectId,
-        projectSummary: data.projectSummary,
-      } as Chat);
+        setInitialChat({
+          id: data.id,
+          title: data.title,
+          createdAt: data.createdAt,
+          model: data.model,
+          parts: data.parts ? JSON.parse(data.parts) : [],
+          metadata: data.metadata ? JSON.parse(data.metadata) : undefined,
+          content: data.content ? JSON.parse(data.content) : undefined,
+          skillVersionId: data.skillVersionId,
+          skill: data.skill,
+          skillDisabledAt: data.skillDisabledAt,
+          webSearchEnabled: data.webSearchEnabled,
+          projectId: data.projectId,
+          projectSummary: data.projectSummary,
+        } as Chat);
 
-      if (data.id) {
-        fetchMessages(data.id);
+        if (data.id) {
+          fetchMessages(data.id);
+        }
+      } catch (e: any) {
+        console.log('fetch chat failed:', e);
       }
-    } catch (e: any) {
-      console.log('fetch chat failed:', e);
-    }
-  }, []);
+    },
+    [locale]
+  );
 
   const fetchMessages = async (chatId: string) => {
     try {

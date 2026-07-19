@@ -153,7 +153,7 @@ export function SkillsWorkspace() {
     fetch(`/api/skills?locale=${locale}`)
       .then((r) => r.json())
       .then((p) => p.code === 0 && setSkills(p.data));
-  }, []);
+  }, [locale]);
   return (
     <WorkspaceShell title={t('skills')} description={t('skills_description')}>
       {skills.length === 0 ? (

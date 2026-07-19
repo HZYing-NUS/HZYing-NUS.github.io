@@ -9,14 +9,18 @@ export async function GET() {
   ]);
   const webSearchApiKeyEnv =
     configs.ai_web_search_api_key_env || 'TAVILY_API_KEY';
-  const webSearchCostUsd = Number(configs.ai_web_search_cost_usd || '0');
+  const webSearchCreditCostUsd = Number(
+    configs.ai_web_search_credit_cost_usd ||
+      configs.ai_web_search_cost_usd ||
+      '0'
+  );
   const defaultModel = models[0];
   return Response.json({
     defaultModel: defaultModel
       ? { id: defaultModel.publicId, name: defaultModel.visibleName }
       : null,
     webSearchAvailable: Boolean(
-      process.env[webSearchApiKeyEnv] && webSearchCostUsd > 0
+      process.env[webSearchApiKeyEnv] && webSearchCreditCostUsd > 0
     ),
     models: [
       {

@@ -2,9 +2,12 @@ import 'server-only';
 
 import { findAvailableSkillVersionById } from '@/shared/models/skill';
 
+import { selectSkillReferences } from './skill-references';
+
 export async function getRuntimeSkillContext(
   skillVersionId: string,
-  locale: 'zh' | 'en'
+  locale: 'zh' | 'en',
+  question = ''
 ) {
   const selected = await findAvailableSkillVersionById(skillVersionId);
   if (!selected) throw new Error('SKILL_VERSION_NOT_AVAILABLE');
@@ -13,6 +16,11 @@ export async function getRuntimeSkillContext(
     locale === 'en'
       ? selected.skill.nameEn || selected.skill.name
       : selected.skill.name;
+  const references = selectSkillReferences({
+    references: selected.version.referenceMaterials,
+    question,
+    locale,
+  });
   if (locale === 'en') {
     const version = selected.version;
     if (
@@ -39,6 +47,10 @@ export async function getRuntimeSkillContext(
         `Quick output format: ${version.quickOutputFormatEn}`,
         `Deep output format: ${version.deepOutputFormatEn}`,
         `Completion conditions: ${version.completionConditionsEn}`,
+        ...references.map(
+          (reference) =>
+            `Relevant reference (${reference.id}): ${reference.content}`
+        ),
       ].join('\n\n'),
     };
   }
@@ -56,6 +68,9 @@ export async function getRuntimeSkillContext(
       `快速输出格式：${selected.version.quickOutputFormat}`,
       `深度输出格式：${selected.version.deepOutputFormat}`,
       `结束条件：${selected.version.completionConditions}`,
+      ...references.map(
+        (reference) => `相关专题（${reference.id}）：${reference.content}`
+      ),
     ].join('\n\n'),
   };
 }

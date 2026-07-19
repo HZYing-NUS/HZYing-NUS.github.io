@@ -7,7 +7,10 @@ import { getUserInfo } from '@/shared/models/user';
 
 export async function POST(req: Request) {
   try {
-    let { chatId } = await req.json();
+    const { chatId, locale } = (await req.json()) as {
+      chatId?: string;
+      locale?: string;
+    };
     if (!chatId) {
       return respErr('chatId is required');
     }
@@ -41,7 +44,7 @@ export async function POST(req: Request) {
         ? {
             slug: selectedSkill.skill.slug,
             name:
-              String(req.headers.get('accept-language') || '').startsWith('en')
+              locale === 'en'
                 ? selectedSkill.skill.nameEn || selectedSkill.skill.name
                 : selectedSkill.skill.name,
             version: selectedSkill.version.version,

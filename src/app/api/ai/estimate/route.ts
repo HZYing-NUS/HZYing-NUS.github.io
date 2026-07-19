@@ -5,7 +5,11 @@ import { getRelevantProjectFiles } from '@/shared/models/ai_file';
 import { findPublishedSkill } from '@/shared/models/skill';
 import { getUserInfo } from '@/shared/models/user';
 import { buildAiContext } from '@/shared/services/ai/context';
-import { resolveAiModel } from '@/shared/services/ai/model-router';
+import {
+  getReasoningBudgetTokens,
+  isReasoningEnabledForModel,
+  resolveAiModel,
+} from '@/shared/services/ai/model-router';
 import {
   calculateAiPrice,
   estimateTokenCount,
@@ -20,6 +24,9 @@ export async function POST(req: Request) {
     const body = await req.json();
     const text = String(body.text || '').trim();
     const model = await resolveAiModel(body.model || 'auto');
+    if (body.reasoning && !isReasoningEnabledForModel(model.configuration)) {
+      return respErr('REASONING_NOT_AVAILABLE');
+    }
     const fileIds = Array.isArray(body.fileIds)
       ? body.fileIds
       : body.projectId
@@ -52,13 +59,21 @@ export async function POST(req: Request) {
     const inputTokens =
       estimateTokenCount(`${context.system}\n${text}`) +
       context.imageParts.length * settings.imageInputTokens;
-    const outputTokens = Math.min(model.configuration.maxOutputTokens, 1200);
+    const reasoningTokens = body.reasoning
+      ? getReasoningBudgetTokens(model.configuration)
+      : 0;
+    const outputTokens = Math.min(
+      model.configuration.maxOutputTokens,
+      1200 + reasoningTokens
+    );
     const result = calculateAiPrice({
       model: model.configuration,
       usage: {
         inputTokens,
         outputTokens,
-        webSearchCostUsd: body.webSearch ? settings.webSearchCostUsd : 0,
+        webSearchCostUsd: body.webSearch
+          ? settings.webSearchEstimatedCostUsd
+          : 0,
       },
       ...settings,
     });
@@ -66,6 +81,7 @@ export async function POST(req: Request) {
       credits: result.credits,
       inputTokens,
       assumedOutputTokens: outputTokens,
+      assumedReasoningTokens: reasoningTokens,
       includesWebSearch: Boolean(body.webSearch),
       sourceCount: context.sources.length,
       imageCount: context.imageParts.length,

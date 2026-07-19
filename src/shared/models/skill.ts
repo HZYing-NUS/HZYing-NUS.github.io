@@ -14,6 +14,23 @@ export type NewSkill = typeof skill.$inferInsert;
 export type NewSkillVersion = typeof skillVersion.$inferInsert;
 export type AdminSkill = typeof skill.$inferSelect;
 export type AdminSkillVersion = typeof skillVersion.$inferSelect;
+export type PublishedSkill = {
+  skill: AdminSkill;
+  version: AdminSkillVersion;
+};
+export type SkillUsageRecord = {
+  chatId: string;
+  chatTitle: string;
+  userId: string;
+  createdAt: Date;
+  skillDisabledAt: Date | null;
+  skillName: string;
+  skillNameEn: string | null;
+  skillSlug: string;
+  version: number;
+  versionId: string;
+  messageCount: number;
+};
 
 export async function createSkill(newSkill: NewSkill) {
   const [created] = await db().insert(skill).values(newSkill).returning();
@@ -59,6 +76,14 @@ export async function createSkillVersion(version: NewSkillVersion) {
 
 export async function createNextSkillVersion(skillId: string) {
   return db().transaction(async (tx: any) => {
+    const [existingDraft] = await tx
+      .select({ id: skillVersion.id })
+      .from(skillVersion)
+      .where(
+        and(eq(skillVersion.skillId, skillId), eq(skillVersion.status, 'draft'))
+      )
+      .limit(1);
+    if (existingDraft) throw new Error('SKILL_DRAFT_ALREADY_EXISTS');
     const [latest] = await tx
       .select()
       .from(skillVersion)
@@ -168,7 +193,37 @@ export async function publishSkillVersion(id: string) {
 }
 
 export async function archiveSkillVersion(id: string) {
-  return updateSkillVersion(id, { status: 'archived' });
+  return db().transaction(async (tx: any) => {
+    const [target] = await tx
+      .select()
+      .from(skillVersion)
+      .where(eq(skillVersion.id, id))
+      .limit(1);
+    if (!target) throw new Error('SKILL_VERSION_NOT_FOUND');
+
+    const [archived] = await tx
+      .update(skillVersion)
+      .set({ status: 'archived' })
+      .where(eq(skillVersion.id, id))
+      .returning();
+    const [remainingPublished] = await tx
+      .select({ id: skillVersion.id })
+      .from(skillVersion)
+      .where(
+        and(
+          eq(skillVersion.skillId, target.skillId),
+          eq(skillVersion.status, 'published')
+        )
+      )
+      .limit(1);
+    if (!remainingPublished) {
+      await tx
+        .update(skill)
+        .set({ status: 'archived', userEnabled: false })
+        .where(eq(skill.id, target.skillId));
+    }
+    return archived;
+  });
 }
 
 export async function getSkillVersionReferenceCount(id: string) {
@@ -216,17 +271,22 @@ export async function deleteSkill(id: string) {
   const versions = await getAdminSkillVersions(id);
   if (
     versions.some((version) => version.status !== 'draft') ||
-    (await Promise.all(
-      versions.map((version) => getSkillVersionReferenceCount(version.id))
-    )).some((references) => references > 0)
+    (
+      await Promise.all(
+        versions.map((version) => getSkillVersionReferenceCount(version.id))
+      )
+    ).some((references) => references > 0)
   ) {
     throw new Error('SKILL_IN_USE');
   }
-  const [deleted] = await db().delete(skill).where(eq(skill.id, id)).returning();
+  const [deleted] = await db()
+    .delete(skill)
+    .where(eq(skill.id, id))
+    .returning();
   return deleted;
 }
 
-export async function getPublishedSkills() {
+export async function getPublishedSkills(): Promise<PublishedSkill[]> {
   const publishedVersions = db()
     .select({
       skillId: skillVersion.skillId,
@@ -280,8 +340,10 @@ export async function findAvailableSkillVersionById(id: string) {
   return result;
 }
 
-export async function getSkillUsageRecords(limit = 50) {
-  const rows = await db()
+export async function getSkillUsageRecords(
+  limit = 50
+): Promise<SkillUsageRecord[]> {
+  const rows = (await db()
     .select({
       chatId: chat.id,
       chatTitle: chat.title,
@@ -298,18 +360,26 @@ export async function getSkillUsageRecords(limit = 50) {
     .innerJoin(skillVersion, eq(chat.skillVersionId, skillVersion.id))
     .innerJoin(skill, eq(skillVersion.skillId, skill.id))
     .orderBy(desc(chat.createdAt))
-    .limit(limit);
-  if (!rows.length) return rows;
-  const messageCounts = await db()
+    .limit(limit)) as Omit<SkillUsageRecord, 'messageCount'>[];
+  if (!rows.length) return [];
+  const messageCounts = (await db()
     .select({
       chatId: chatMessage.chatId,
       value: count(),
     })
     .from(chatMessage)
-    .where(inArray(chatMessage.chatId, rows.map((row) => row.chatId)))
-    .groupBy(chatMessage.chatId);
+    .where(
+      inArray(
+        chatMessage.chatId,
+        rows.map((row) => row.chatId)
+      )
+    )
+    .groupBy(chatMessage.chatId)) as Array<{ chatId: string; value: number }>;
   const counts = new Map(
     messageCounts.map((item) => [item.chatId, Number(item.value)])
   );
-  return rows.map((row) => ({ ...row, messageCount: counts.get(row.chatId) || 0 }));
+  return rows.map((row) => ({
+    ...row,
+    messageCount: counts.get(row.chatId) || 0,
+  }));
 }

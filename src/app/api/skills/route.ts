@@ -2,7 +2,8 @@ import { respData } from '@/shared/lib/resp';
 import { getPublishedSkills } from '@/shared/models/skill';
 
 export async function GET(req: Request) {
-  const locale = new URL(req.url).searchParams.get('locale') === 'en' ? 'en' : 'zh';
+  const locale =
+    new URL(req.url).searchParams.get('locale') === 'en' ? 'en' : 'zh';
   const results = await getPublishedSkills();
   return respData(
     results.map((result) => ({

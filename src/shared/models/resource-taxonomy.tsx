@@ -233,6 +233,7 @@ export function getResourceTaxonomyTableColumns(
 }
 
 export function getResourceTaxonomyPath(kind: ResourceTaxonomyKind) {
+  if (kind === 'category') return '/admin/resource-categories';
   return `/admin/resource-${kind}s`;
 }
 

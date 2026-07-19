@@ -67,6 +67,7 @@ export function ChatInput({
   onInputChange,
   lockedModel,
   lockedSkill,
+  lockedSkillLabel,
   skillInitiallyDisabled,
   lockedWebSearch,
   initialSkill,
@@ -84,6 +85,7 @@ export function ChatInput({
   onInputChange?: (value: string) => void;
   lockedModel?: string;
   lockedSkill?: string;
+  lockedSkillLabel?: string;
   skillInitiallyDisabled?: boolean;
   lockedWebSearch?: boolean;
   initialSkill?: string;
@@ -124,6 +126,7 @@ export function ChatInput({
   const [skillCatalogLoaded, setSkillCatalogLoaded] = useState(false);
   const [estimate, setEstimate] = useState<number | null>(null);
   const [estimating, setEstimating] = useState(false);
+  const [estimateFailed, setEstimateFailed] = useState(false);
   const dynamicModels = useMemo(
     () =>
       models.length
@@ -146,7 +149,7 @@ export function ChatInput({
     (lockedSkill && lockedSkill !== 'general'
       ? {
           id: lockedSkill,
-          label: lockedSkill,
+          label: lockedSkillLabel || lockedSkill,
           description: '',
           icon: SparklesIcon,
         }
@@ -280,11 +283,13 @@ export function ChatInput({
     if (!user || !input.trim()) {
       setEstimate(null);
       setEstimating(false);
+      setEstimateFailed(false);
       return;
     }
     const timeout = window.setTimeout(async () => {
       setEstimate(null);
       setEstimating(true);
+      setEstimateFailed(false);
       try {
         const payload = await fetch('/api/ai/estimate', {
           method: 'POST',
@@ -299,9 +304,14 @@ export function ChatInput({
             skillVersionId: estimateSkillVersionId,
           }),
         }).then((r) => r.json());
-        setEstimate(payload.code === 0 ? payload.data.credits : null);
+        if (payload.code === 0 && Number.isFinite(payload.data?.credits)) {
+          setEstimate(payload.data.credits);
+        } else {
+          setEstimateFailed(true);
+        }
       } catch {
         setEstimate(null);
+        setEstimateFailed(true);
       } finally {
         setEstimating(false);
       }
@@ -403,6 +413,7 @@ export function ChatInput({
               onChange={(event) => {
                 const value = event.target.value;
                 setEstimate(null);
+                setEstimateFailed(false);
                 setInput(value);
                 onInputChange?.(value);
               }}
@@ -574,12 +585,18 @@ export function ChatInput({
                       <CircleDollarSignIcon className="size-3" />
                       {estimating
                         ? t('estimating')
-                        : estimate
+                        : estimate !== null
                           ? t('estimate', { credits: estimate })
-                          : t('balance', { credits: availableCredits })}
+                          : input.trim()
+                            ? estimateFailed
+                              ? t('estimate_unavailable')
+                              : t('estimating')
+                            : t('balance', { credits: availableCredits })}
                     </Badge>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>{t('usage')}</TooltipContent>
+                  <TooltipContent sideOffset={6}>
+                    {input.trim() ? t('usage') : t('balance_hint')}
+                  </TooltipContent>
                 </Tooltip>
               ) : null}
               <PromptInputSubmit

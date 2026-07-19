@@ -23,7 +23,12 @@ export interface AiPriceResult {
 
 export async function getAiPricingSettings() {
   const configs = await getAllConfigs();
-  const configuredWebSearchCost = configs.ai_web_search_cost_usd?.trim();
+  const configuredWebSearchCreditCost =
+    configs.ai_web_search_credit_cost_usd?.trim() ||
+    configs.ai_web_search_cost_usd?.trim();
+  const webSearchDepth =
+    configs.ai_web_search_depth === 'advanced' ? 'advanced' : 'basic';
+  const estimatedWebSearchCredits = webSearchDepth === 'advanced' ? 2 : 1;
   const settings = {
     multiplier: Number(configs.ai_cost_multiplier || '2.857143'),
     creditValueUsd: Number(configs.ai_credit_value_usd || '0.05'),
@@ -33,10 +38,14 @@ export async function getAiPricingSettings() {
     reservationThresholdTokens: Number(
       configs.ai_reservation_threshold_tokens || '1024'
     ),
-    webSearchCostUsd: configuredWebSearchCost
-      ? Number(configuredWebSearchCost)
+    webSearchCreditCostUsd: configuredWebSearchCreditCost
+      ? Number(configuredWebSearchCreditCost)
       : 0,
-    webSearchPricingConfigured: Boolean(configuredWebSearchCost),
+    estimatedWebSearchCredits,
+    webSearchEstimatedCostUsd: configuredWebSearchCreditCost
+      ? Number(configuredWebSearchCreditCost) * estimatedWebSearchCredits
+      : 0,
+    webSearchPricingConfigured: Boolean(configuredWebSearchCreditCost),
     imageInputTokens: Number(
       configs.ai_image_input_tokens ||
         process.env.AI_IMAGE_INPUT_TOKENS ||
@@ -50,12 +59,20 @@ export async function getAiPricingSettings() {
     settings.reservationChunk < 1 ||
     settings.reservationThresholdTokens < 1 ||
     settings.imageInputTokens < 1 ||
-    settings.webSearchCostUsd < 0 ||
-    (settings.webSearchPricingConfigured && settings.webSearchCostUsd === 0)
+    settings.webSearchCreditCostUsd < 0 ||
+    (settings.webSearchPricingConfigured &&
+      settings.webSearchCreditCostUsd === 0)
   ) {
     throw new Error('INVALID_AI_PRICING_CONFIGURATION');
   }
   return settings;
+}
+
+export function calculateWebSearchCostUsd(
+  settings: Awaited<ReturnType<typeof getAiPricingSettings>>,
+  providerCredits: number
+) {
+  return settings.webSearchCreditCostUsd * Math.max(0, providerCredits);
 }
 
 export function requireWebSearchPricing(

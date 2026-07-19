@@ -64,6 +64,23 @@ export function getReasoningEffort(model: {
   return effort === 'high' || effort === 'low' ? effort : 'medium';
 }
 
+export function getReasoningBudgetTokens(model: {
+  reasoningEffort: string;
+  maxOutputTokens: number;
+}) {
+  const effort = getReasoningEffort(model);
+  const requestedBudget =
+    effort === 'high' ? 8192 : effort === 'low' ? 2048 : 4096;
+  const answerTokenReserve = Math.min(
+    1024,
+    Math.floor(model.maxOutputTokens / 2)
+  );
+  return Math.max(
+    1,
+    Math.min(requestedBudget, model.maxOutputTokens - answerTokenReserve)
+  );
+}
+
 export async function resolveAiModel(
   publicId: string,
   channel: 'primary' | 'fallback' = 'primary'

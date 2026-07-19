@@ -10,6 +10,8 @@ import {
 } from '@/shared/components/ui/select';
 import { FormField } from '@/shared/types/blocks/form';
 
+const EMPTY_SELECT_VALUE = '__empty_select_value__';
+
 export function Select({
   field,
   formField,
@@ -19,11 +21,15 @@ export function Select({
   formField: ControllerRenderProps<Record<string, unknown>, string>;
   data?: any;
 }) {
+  const value =
+    formField.value === '' ? EMPTY_SELECT_VALUE : (formField.value as string);
+
   return (
     <SelectComponent
-      value={formField.value as string}
-      onValueChange={formField.onChange}
-      defaultValue={field.value}
+      value={value}
+      onValueChange={(nextValue) =>
+        formField.onChange(nextValue === EMPTY_SELECT_VALUE ? '' : nextValue)
+      }
       {...field.attributes}
     >
       <SelectTrigger className="bg-background w-full rounded-md">
@@ -31,7 +37,10 @@ export function Select({
       </SelectTrigger>
       <SelectContent className="bg-background rounded-md">
         {field.options?.map((option: any) => (
-          <SelectItem key={option.value} value={option.value}>
+          <SelectItem
+            key={option.value || EMPTY_SELECT_VALUE}
+            value={option.value || EMPTY_SELECT_VALUE}
+          >
             {option.title}
           </SelectItem>
         ))}

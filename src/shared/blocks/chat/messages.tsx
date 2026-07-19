@@ -33,6 +33,8 @@ import { Button } from '@/shared/components/ui/button';
 import { useChatContext } from '@/shared/contexts/chat';
 import { cn } from '@/shared/lib/utils';
 
+const PRODUCT_IDEA_DIAGNOSIS_SKILL = 'product-idea-diagnosis';
+
 export function ChatMessages({
   chatInstance,
 }: {
@@ -68,7 +70,6 @@ export function ChatMessages({
         : [],
     [chat?.skillVersionId, messages]
   );
-
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, status]);
@@ -94,7 +95,7 @@ export function ChatMessages({
           model: chat?.model || 'auto',
           projectId: chat?.projectId,
           chatId: chat?.id,
-          skill: 'product-idea-diagnosis',
+          skill: PRODUCT_IDEA_DIAGNOSIS_SKILL,
           locale,
         }),
       })
@@ -125,6 +126,7 @@ export function ChatMessages({
       body: JSON.stringify({
         sourceChatId: chat.id,
         sourceMessageId: messageId,
+        skill: PRODUCT_IDEA_DIAGNOSIS_SKILL,
       }),
     }).then((response) => response.json());
     if (payload.code === 0) {

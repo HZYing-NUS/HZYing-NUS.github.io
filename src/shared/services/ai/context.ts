@@ -74,10 +74,14 @@ export async function buildAiContext({
   const siteSources = await retrieveAssistantSources(question, locale);
   let externalSources: ExternalSource[] = [];
   let webSearchExecuted = false;
+  let webSearchProviderCredits = 0;
+  let webSearchDepth: 'basic' | 'advanced' | undefined;
   if (webSearchEnabled && includeWebSearch) {
     const webSearch = await searchWeb(question);
     externalSources = webSearch.sources;
     webSearchExecuted = webSearch.executed;
+    webSearchProviderCredits = webSearch.providerCredits;
+    webSearchDepth = webSearch.searchDepth;
   }
 
   const projectMemories = projectId
@@ -165,7 +169,8 @@ export async function buildAiContext({
   if (skillVersionId && !skillDisabled) {
     const runtimeSkill = await getRuntimeSkillContext(
       skillVersionId,
-      locale === 'en' ? 'en' : 'zh'
+      locale === 'en' ? 'en' : 'zh',
+      question
     );
     skillName = runtimeSkill.name;
     skillContext = runtimeSkill.system;
@@ -203,6 +208,8 @@ export async function buildAiContext({
     sources: allSources,
     imageParts,
     webSearchExecuted,
+    webSearchProviderCredits,
+    webSearchDepth,
     system: [
       locale === 'en'
         ? 'You are the WebTools AI assistant. Help users build their first Web product.'
