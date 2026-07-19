@@ -28,7 +28,7 @@ export async function POST(req: Request) {
           )
         : [];
     const requestedSkill =
-      body.skill === 'product-idea-diagnosis'
+      body.skill && body.skill !== 'general'
         ? await findPublishedSkill(body.skill)
         : undefined;
     const context = await buildAiContext({

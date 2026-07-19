@@ -1,5 +1,11 @@
 # 基于 ShipAny 的 AI Web SaaS 一站式出海资源平台 SPEC
 
+> 状态：已归档。
+>
+> 本文档记录 WebTools 从静态个人站迁移为 ShipAny 内容平台的 V1 需求与历史决策。主体功能已基本完成，本文档不再作为当前开发规格。
+>
+> 后续的 AI 助手、项目记忆、Skill、联网搜索、模型供应商、Credit 与付费体系，参见 `docs/specs/webtools-ai-assistant-v1-spec.md`。
+
 ## Context
 
 当前项目是梓颖的个人静态网站，主要通过 GitHub Pages 部署。现有核心结构为：

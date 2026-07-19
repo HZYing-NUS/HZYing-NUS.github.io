@@ -154,6 +154,14 @@ export async function updateAiProvider(id: string, updates: UpdateAiProvider) {
   return result;
 }
 
+export async function deleteAiProvider(id: string) {
+  const [result] = await db()
+    .delete(aiProvider)
+    .where(eq(aiProvider.id, id))
+    .returning({ id: aiProvider.id });
+  return result;
+}
+
 export async function getAdminAiModels(): Promise<AdminAiModel[]> {
   return db()
     .select({
@@ -205,6 +213,14 @@ export async function updateAiModel(id: string, updates: UpdateAiModel) {
     .set(updates)
     .where(eq(aiModel.id, id))
     .returning();
+  return result;
+}
+
+export async function deleteAiModel(id: string) {
+  const [result] = await db()
+    .delete(aiModel)
+    .where(eq(aiModel.id, id))
+    .returning({ id: aiModel.id });
   return result;
 }
 

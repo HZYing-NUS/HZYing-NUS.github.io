@@ -1,21 +1,31 @@
 import { respData } from '@/shared/lib/resp';
-import { findPublishedSkill } from '@/shared/models/skill';
+import { getPublishedSkills } from '@/shared/models/skill';
 
-export async function GET() {
-  const result = await findPublishedSkill('product-idea-diagnosis');
+export async function GET(req: Request) {
+  const locale = new URL(req.url).searchParams.get('locale') === 'en' ? 'en' : 'zh';
+  const results = await getPublishedSkills();
   return respData(
-    result
-      ? [
-          {
-            id: result.skill.id,
-            slug: result.skill.slug,
-            name: result.skill.name,
-            description: result.skill.description,
-            suitableFor: result.skill.suitableFor,
-            unsuitableFor: result.skill.unsuitableFor,
-            versionId: result.version.id,
-          },
-        ]
-      : []
+    results.map((result) => ({
+      id: result.skill.id,
+      slug: result.skill.slug,
+      name:
+        locale === 'en'
+          ? result.skill.nameEn || result.skill.name
+          : result.skill.name,
+      description:
+        locale === 'en'
+          ? result.skill.descriptionEn || result.skill.description
+          : result.skill.description,
+      suitableFor:
+        locale === 'en'
+          ? result.skill.suitableForEn || result.skill.suitableFor
+          : result.skill.suitableFor,
+      unsuitableFor:
+        locale === 'en'
+          ? result.skill.unsuitableForEn || result.skill.unsuitableFor
+          : result.skill.unsuitableFor,
+      versionId: result.version.id,
+      version: result.version.version,
+    }))
   );
 }

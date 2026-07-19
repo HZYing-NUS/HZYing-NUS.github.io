@@ -13,6 +13,12 @@ export interface Chat {
   metadata?: any;
   content: any;
   skillVersionId?: string | null;
+  skill?: {
+    slug: string;
+    name: string;
+    version: number;
+    versionId: string;
+  } | null;
   skillDisabledAt?: Date | string | null;
   webSearchEnabled?: boolean;
   projectId?: string | null;

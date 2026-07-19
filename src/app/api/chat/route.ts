@@ -649,13 +649,34 @@ export async function POST(req: Request) {
             messages: convertToModelMessages(historyMessages),
             maxOutputTokens: modelConfiguration!.maxOutputTokens,
             providerOptions: body.reasoning
-              ? {
-                  openrouter: {
-                    reasoning: {
-                      effort: getReasoningEffort(modelConfiguration!),
-                    },
-                  },
-                }
+              ? ((() => {
+                  const effort = getReasoningEffort(modelConfiguration!);
+                  if (
+                    resolved.configuration.providerCode ===
+                    'anthropic-compatible'
+                  ) {
+                    return {
+                      anthropic: {
+                        sendReasoning: true,
+                        thinking: {
+                          type: 'enabled' as const,
+                          budgetTokens:
+                            effort === 'high'
+                              ? 8192
+                              : effort === 'low'
+                                ? 2048
+                                : 4096,
+                        },
+                      },
+                    };
+                  }
+                  if (
+                    resolved.configuration.providerCode === 'openai-compatible'
+                  ) {
+                    return { openai: { reasoningEffort: effort } };
+                  }
+                  return { openrouter: { reasoning: { effort } } };
+                })() as any)
               : undefined,
             abortSignal,
             onChunk: async ({ chunk }) => {

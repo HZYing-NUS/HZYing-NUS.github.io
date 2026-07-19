@@ -42,7 +42,7 @@ export function FollowUp({
       status={chatInstance.status}
       error={chatInstance.error?.message ?? null}
       lockedModel={chat?.model}
-      lockedSkill={chat?.skillVersionId ? 'product-idea-diagnosis' : 'general'}
+      lockedSkill={chat?.skill?.slug || 'general'}
       skillInitiallyDisabled={Boolean(chat?.skillDisabledAt)}
       lockedWebSearch={Boolean(chat?.webSearchEnabled)}
       estimateLocale={locale}

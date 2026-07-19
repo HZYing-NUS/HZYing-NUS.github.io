@@ -2,6 +2,7 @@ import { respData, respErr } from '@/shared/lib/resp';
 import { findChatById, toPublicChat } from '@/shared/models/chat';
 import { getProjectMemories } from '@/shared/models/memory';
 import { findProjectById } from '@/shared/models/project';
+import { findAvailableSkillVersionById } from '@/shared/models/skill';
 import { getUserInfo } from '@/shared/models/user';
 
 export async function POST(req: Request) {
@@ -31,8 +32,22 @@ export async function POST(req: Request) {
     const projectMemories = chat.projectId
       ? await getProjectMemories(user.id, chat.projectId)
       : [];
+    const selectedSkill = chat.skillVersionId
+      ? await findAvailableSkillVersionById(chat.skillVersionId)
+      : undefined;
     return respData({
       ...toPublicChat(chat),
+      skill: selectedSkill
+        ? {
+            slug: selectedSkill.skill.slug,
+            name:
+              String(req.headers.get('accept-language') || '').startsWith('en')
+                ? selectedSkill.skill.nameEn || selectedSkill.skill.name
+                : selectedSkill.skill.name,
+            version: selectedSkill.version.version,
+            versionId: selectedSkill.version.id,
+          }
+        : null,
       projectSummary: project
         ? {
             name: project.name,

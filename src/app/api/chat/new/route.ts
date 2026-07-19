@@ -61,9 +61,6 @@ export async function POST(req: Request) {
     }
     let skillVersionId: string | undefined;
     if (body.skill && body.skill !== 'general') {
-      if (body.skill !== 'product-idea-diagnosis') {
-        return respErr('SKILL_NOT_AVAILABLE');
-      }
       const publishedSkill = await findPublishedSkill(body.skill);
       if (!publishedSkill) return respErr('SKILL_NOT_AVAILABLE');
       skillVersionId = publishedSkill.version.id;

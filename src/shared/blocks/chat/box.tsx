@@ -91,9 +91,7 @@ export function ChatBox({
         {
           body: {
             model: initialChat.model,
-            skill: initialChat.skillVersionId
-              ? 'product-idea-diagnosis'
-              : 'general',
+            skill: initialChat.skill?.slug || 'general',
             webSearch: Boolean(initialChat.webSearchEnabled),
             reasoning: Boolean(initialChat.metadata?.pendingReasoning),
             locale,

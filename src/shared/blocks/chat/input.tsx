@@ -11,7 +11,7 @@ import {
   RouteIcon,
   SparklesIcon,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import {
   PromptInput,
@@ -93,6 +93,7 @@ export function ChatInput({
   estimateLocale?: string;
 }) {
   const t = useTranslations('ai.chat.generator');
+  const locale = useLocale();
   const { user, isCheckSign, setIsShowSignModal, setIsShowPaymentModal } =
     useAppContext();
   const generalSkill = useMemo(
@@ -142,10 +143,10 @@ export function ChatInput({
   const reasoningAvailable = Boolean(selectedDynamicModel?.supportsReasoning);
   const selectedSkill =
     skills.find((item) => item.id === (lockedSkill || skill)) ||
-    (lockedSkill === 'product-idea-diagnosis'
+    (lockedSkill && lockedSkill !== 'general'
       ? {
           id: lockedSkill,
-          label: t('diagnosis'),
+          label: lockedSkill,
           description: '',
           icon: SparklesIcon,
         }
@@ -190,21 +191,15 @@ export function ChatInput({
   }, [lockedWebSearch, t]);
 
   useEffect(() => {
-    fetch('/api/skills')
+    fetch(`/api/skills?locale=${locale}`)
       .then((response) => response.json())
       .then((payload: { data?: PublicSkill[] }) => {
         const availableSkills: ChatSkillOption[] = [
           generalSkill,
           ...(payload.data || []).map((item) => ({
             id: item.slug,
-            label:
-              item.slug === 'product-idea-diagnosis'
-                ? t('diagnosis')
-                : item.name,
-            description:
-              item.slug === 'product-idea-diagnosis'
-                ? t('diagnosis_description')
-                : item.description || '',
+            label: item.name,
+            description: item.description || '',
             icon: SparklesIcon,
           })),
         ];
@@ -219,7 +214,7 @@ export function ChatInput({
         }
       })
       .catch(() => setSkillCatalogLoaded(true));
-  }, [generalSkill, lockedSkill, t]);
+  }, [generalSkill, locale, lockedSkill]);
 
   useEffect(() => {
     if (!user || !modelCatalogLoaded || !skillCatalogLoaded) return;

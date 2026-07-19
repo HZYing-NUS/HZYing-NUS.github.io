@@ -150,7 +150,7 @@ export function SkillsWorkspace() {
   const locale = useLocale();
   const [skills, setSkills] = useState<any[]>([]);
   useEffect(() => {
-    fetch('/api/skills')
+    fetch(`/api/skills?locale=${locale}`)
       .then((r) => r.json())
       .then((p) => p.code === 0 && setSkills(p.data));
   }, []);
@@ -159,14 +159,14 @@ export function SkillsWorkspace() {
       {skills.length === 0 ? (
         <WorkspaceEmpty>{t('skill_unavailable')}</WorkspaceEmpty>
       ) : (
-        skills.map((skill) => (
+        skills.map((skill, index) => (
           <article
             key={skill.id}
             className="dark:border-border grid gap-8 border-y border-black/15 py-8 md:grid-cols-[1fr_18rem]"
           >
             <div>
               <p className="mb-3 font-mono text-[10px] tracking-[.2em] text-[#a34e32] uppercase">
-                Skill 01
+                Skill {String(index + 1).padStart(2, '0')}
               </p>
               <h2 className="text-2xl font-medium">{skill.name}</h2>
               <p className="dark:text-muted-foreground mt-3 max-w-2xl text-sm leading-7 text-[#68635b]">
@@ -205,7 +205,7 @@ export function SkillsWorkspace() {
               </p>
               <Button asChild>
                 <Link href={`/chat?skill=${skill.slug}`}>
-                  {t('skill_action')}
+                  {locale === 'zh' ? `使用${skill.name}` : `Use ${skill.name}`}
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>

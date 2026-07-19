@@ -163,7 +163,7 @@ async function seed() {
         maxOutputTokens: 8192,
         supportsStreaming: true,
         supportsVision,
-        supportsReasoning: false,
+        supportsReasoning: providerType === 'claude',
         reasoningEffort: 'medium',
         enabled: true,
         sort,
@@ -184,6 +184,8 @@ async function seed() {
           pricingVersion: '2026-07-17',
           pricingEffectiveAt: now,
           supportsVision,
+          supportsReasoning: providerType === 'claude',
+          reasoningEffort: 'medium',
           enabled: true,
           sort,
         },
@@ -196,9 +198,16 @@ async function seed() {
       id: skillId,
       slug: 'product-idea-diagnosis',
       name: '产品想法诊断',
+      nameEn: 'Product idea diagnosis',
       description: '诊断产品想法、目标用户、付费意愿、分发路径和 MVP 范围。',
+      descriptionEn:
+        'Evaluate a product idea, target user, willingness to pay, distribution path, and MVP scope.',
       suitableFor: '产品判断、MVP、定价、首批用户、出海与 B2B 机会。',
+      suitableForEn:
+        'Product decisions, MVP scope, pricing, first customers, international markets, and B2B opportunities.',
       unsuitableFor: '纯技术排错、违法欺诈或侵权项目。',
+      unsuitableForEn:
+        'Pure technical debugging, illegal or fraudulent projects, and infringement.',
       status: 'published',
       userEnabled: true,
     })
@@ -218,23 +227,44 @@ async function seed() {
       version: 1,
       methodology:
         '围绕痛、钱、分发诊断，并给出五类明确结论、最危险假设和 MVP 降级方案。',
+      methodologyEn:
+        'Evaluate pain, payment, and distribution, then give one of five clear conclusions, the riskiest assumption, and a reduced MVP path.',
       systemPrompt:
         '先给判断，再补关键事实；每轮最多追问一个最影响结论的问题。不得模仿任何现实人物。',
+      systemPromptEn:
+        'Lead with a clear judgment, then add the key facts. Ask at most one question per turn: the question that most affects the conclusion. Do not imitate any real person.',
       diagnosticSteps: [
         '判断五类结论',
         '识别最危险假设',
         '检查痛、钱、分发',
         '给出本周行动',
       ],
+      diagnosticStepsEn: [
+        'Choose one of five conclusions',
+        'Identify the riskiest assumption',
+        'Check pain, payment, and distribution',
+        'Give one action for this week',
+      ],
       followUpQuestions: [
         '最近一次真实场景是什么？',
         '谁会付钱？',
         '第一批十个用户在哪里？',
       ],
+      followUpQuestionsEn: [
+        'What was the most recent real situation?',
+        'Who will pay?',
+        'Where are the first ten users?',
+      ],
       quickOutputFormat: '明确结论＋最危险假设＋一个行动＋至多一个问题。',
+      quickOutputFormatEn:
+        'Clear conclusion, riskiest assumption, one action, and at most one question.',
       deepOutputFormat:
         '当前结论、目标用户、付费方、分发路径、最危险假设、最小验证版本、本周行动。',
+      deepOutputFormatEn:
+        'Current conclusion, target user, payer, distribution path, riskiest assumption, minimum validation version, and action for this week.',
       completionConditions: '事实足以形成明确结论，或用户已有可执行验证动作。',
+      completionConditionsEn:
+        'The facts support a clear conclusion, or the user has an executable validation action.',
       referenceMaterials: [
         'b2b-decision-chain',
         'find-idea',
@@ -252,7 +282,31 @@ async function seed() {
     })
     .onConflictDoUpdate({
       target: [skillVersion.skillId, skillVersion.version],
-      set: { status: 'published', publishedAt: now },
+      set: {
+        methodologyEn:
+          'Evaluate pain, payment, and distribution, then give one of five clear conclusions, the riskiest assumption, and a reduced MVP path.',
+        systemPromptEn:
+          'Lead with a clear judgment, then add the key facts. Ask at most one question per turn: the question that most affects the conclusion. Do not imitate any real person.',
+        diagnosticStepsEn: [
+          'Choose one of five conclusions',
+          'Identify the riskiest assumption',
+          'Check pain, payment, and distribution',
+          'Give one action for this week',
+        ],
+        followUpQuestionsEn: [
+          'What was the most recent real situation?',
+          'Who will pay?',
+          'Where are the first ten users?',
+        ],
+        quickOutputFormatEn:
+          'Clear conclusion, riskiest assumption, one action, and at most one question.',
+        deepOutputFormatEn:
+          'Current conclusion, target user, payer, distribution path, riskiest assumption, minimum validation version, and action for this week.',
+        completionConditionsEn:
+          'The facts support a clear conclusion, or the user has an executable validation action.',
+        status: 'published',
+        publishedAt: now,
+      },
     });
 
   console.log('AI assistant catalog seed completed.');

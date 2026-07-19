@@ -39,6 +39,7 @@ export default function ChatPage() {
         metadata: data.metadata ? JSON.parse(data.metadata) : undefined,
         content: data.content ? JSON.parse(data.content) : undefined,
         skillVersionId: data.skillVersionId,
+        skill: data.skill,
         webSearchEnabled: data.webSearchEnabled,
         projectId: data.projectId,
         projectSummary: data.projectSummary,

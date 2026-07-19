@@ -4,11 +4,11 @@ import type { UIMessage } from 'ai';
 
 import { findAiFile, getFileChunks } from '@/shared/models/ai_file';
 import { getGlobalMemories, getProjectMemories } from '@/shared/models/memory';
-import { findAvailableSkillVersionById } from '@/shared/models/skill';
 import { findUserById } from '@/shared/models/user';
 import { retrieveAssistantSources } from '@/shared/services/resource-assistant';
 import { getStorageService } from '@/shared/services/storage';
 
+import { getRuntimeSkillContext } from './skill-context';
 import { searchWeb, type ExternalSource } from './web-search';
 
 type ProjectMemoryRecord = Awaited<
@@ -161,34 +161,14 @@ export async function buildAiContext({
   }
 
   let skillContext = '';
+  let skillName = '';
   if (skillVersionId && !skillDisabled) {
-    const published = await findAvailableSkillVersionById(
+    const runtimeSkill = await getRuntimeSkillContext(
       skillVersionId,
-      'product-idea-diagnosis'
+      locale === 'en' ? 'en' : 'zh'
     );
-    if (!published) {
-      throw new Error('SKILL_VERSION_NOT_AVAILABLE');
-    }
-    skillContext =
-      locale === 'en'
-        ? [
-            'The reference methodology may contain Chinese source material. Translate and answer entirely in English.',
-            `Methodology: ${published.version.methodology}`,
-            `Diagnostic steps: ${JSON.stringify(published.version.diagnosticSteps)}`,
-            `Follow-up questions: ${JSON.stringify(published.version.followUpQuestions)}`,
-            `Quick output format: ${published.version.quickOutputFormat}`,
-            `Deep output format: ${published.version.deepOutputFormat}`,
-            `Completion conditions: ${published.version.completionConditions}`,
-          ].join('\n\n')
-        : [
-            published.version.systemPrompt,
-            published.version.methodology,
-            `固定诊断步骤：${JSON.stringify(published.version.diagnosticSteps)}`,
-            `追问问题：${JSON.stringify(published.version.followUpQuestions)}`,
-            `快速输出格式：${published.version.quickOutputFormat}`,
-            `深度输出格式：${published.version.deepOutputFormat}`,
-            `结束条件：${published.version.completionConditions}`,
-          ].join('\n\n');
+    skillName = runtimeSkill.name;
+    skillContext = runtimeSkill.system;
   }
 
   const allSources: AiSource[] = [
@@ -214,7 +194,7 @@ export async function buildAiContext({
         ? 'No reliable source reached the relevance threshold. Do not invent sources.'
         : '本次未检索到达到相关性阈值的可靠来源，不要编造来源。',
     skillContext
-      ? `${locale === 'en' ? 'Current Skill: Product idea diagnosis' : '当前 Skill：产品想法诊断'}\n${skillContext}`
+      ? `${locale === 'en' ? `Current Skill: ${skillName}` : `当前 Skill：${skillName}`}\n${skillContext}`
       : '',
   ].filter(Boolean);
 
