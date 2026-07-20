@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 import {
   BotIcon,
@@ -127,6 +127,7 @@ export function ChatInput({
   const [estimate, setEstimate] = useState<number | null>(null);
   const [estimating, setEstimating] = useState(false);
   const [estimateFailed, setEstimateFailed] = useState(false);
+  const estimateRequestId = useRef(0);
   const dynamicModels = useMemo(
     () =>
       models.length
@@ -280,50 +281,74 @@ export function ChatInput({
   ]);
 
   useEffect(() => {
+    const requestId = ++estimateRequestId.current;
     if (!user || !input.trim()) {
       setEstimate(null);
       setEstimating(false);
       setEstimateFailed(false);
       return;
     }
+    setEstimate(null);
+    setEstimating(true);
+    setEstimateFailed(false);
+    const controller = new AbortController();
     const timeout = window.setTimeout(async () => {
-      setEstimate(null);
-      setEstimating(true);
-      setEstimateFailed(false);
       try {
         const payload = await fetch('/api/ai/estimate', {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             text: input,
             model: lockedModel || model,
+            skill: lockedSkill || skill,
+            skillDisabled: Boolean(
+              lockedSkill && lockedSkill !== 'general' && skillDisabled
+            ),
             webSearch:
               lockedWebSearch ?? (webSearchAvailable ? webSearch : false),
+            reasoning: reasoningAvailable && reasoning,
             locale: estimateLocale,
             chatId: estimateChatId,
             projectId: estimateProjectId,
             skillVersionId: estimateSkillVersionId,
           }),
         }).then((r) => r.json());
+        if (requestId !== estimateRequestId.current) return;
         if (payload.code === 0 && Number.isFinite(payload.data?.credits)) {
           setEstimate(payload.data.credits);
         } else {
           setEstimateFailed(true);
         }
-      } catch {
+      } catch (error) {
+        if (
+          controller.signal.aborted ||
+          requestId !== estimateRequestId.current
+        ) {
+          return;
+        }
         setEstimate(null);
         setEstimateFailed(true);
       } finally {
-        setEstimating(false);
+        if (requestId === estimateRequestId.current) setEstimating(false);
       }
     }, 450);
-    return () => window.clearTimeout(timeout);
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, [
     input,
     model,
+    skill,
+    skillDisabled,
     webSearch,
     webSearchAvailable,
+    reasoning,
+    reasoningAvailable,
     user,
     lockedModel,
+    lockedSkill,
     lockedWebSearch,
     estimateLocale,
     estimateChatId,
@@ -380,7 +405,7 @@ export function ChatInput({
               setIsShowPaymentModal(true);
               return;
             }
-            if (estimating || estimate === null) return;
+            if (estimating) return;
 
             try {
               await handleSubmit(message, {
@@ -580,13 +605,16 @@ export function ChatInput({
                   <TooltipTrigger asChild>
                     <Badge
                       variant="outline"
-                      className="hidden gap-1 font-normal sm:inline-flex"
+                      className="inline-flex gap-1 font-normal"
                     >
                       <CircleDollarSignIcon className="size-3" />
                       {estimating
                         ? t('estimating')
                         : estimate !== null
-                          ? t('estimate', { credits: estimate })
+                          ? t('estimate', {
+                              credits: estimate,
+                              balance: availableCredits,
+                            })
                           : input.trim()
                             ? estimateFailed
                               ? t('estimate_unavailable')
@@ -600,9 +628,7 @@ export function ChatInput({
                 </Tooltip>
               ) : null}
               <PromptInputSubmit
-                disabled={
-                  !input || isDisabled || estimating || estimate === null
-                }
+                disabled={!input || isDisabled || estimating}
                 status={status}
               />
             </div>

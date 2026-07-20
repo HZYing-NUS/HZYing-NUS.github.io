@@ -1,8 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Check, Plus, Trash2 } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  Copy,
+  Gift,
+  LoaderCircle,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { Link } from '@/core/i18n/navigation';
 import { Button } from '@/shared/components/ui/button';
@@ -222,12 +231,89 @@ export function CreditsWorkspace() {
   const locale = useLocale();
   const { user, setIsShowSignModal } = useAppContext();
   const [activity, setActivity] = useState<any>(null);
+  const [packages, setPackages] = useState<CreditPackage[]>([]);
+  const [referral, setReferral] = useState<ReferralOverview | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [checkoutCode, setCheckoutCode] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+
   useEffect(() => {
-    if (user)
-      fetch('/api/credits/activity')
-        .then((r) => r.json())
-        .then((p) => p.code === 0 && setActivity(p.data));
-  }, [user]);
+    if (!user) return;
+
+    let active = true;
+    setActivity(null);
+    setPackages([]);
+    setReferral(null);
+    setLoading(true);
+    setLoadFailed(false);
+
+    Promise.all([
+      fetch('/api/credits/activity').then((response) => response.json()),
+      fetch(`/api/credits/packages?locale=${locale}`).then((response) =>
+        response.json()
+      ),
+      fetch('/api/referrals/me').then((response) => response.json()),
+    ])
+      .then(([activityPayload, packagesPayload, referralPayload]) => {
+        if (!active) return;
+        if (activityPayload.code === 0) setActivity(activityPayload.data);
+        if (packagesPayload.code === 0) {
+          setPackages(packagesPayload.data.packages || []);
+        }
+        if (referralPayload.code === 0) setReferral(referralPayload.data);
+        setLoadFailed(
+          activityPayload.code !== 0 ||
+            packagesPayload.code !== 0 ||
+            referralPayload.code !== 0
+        );
+      })
+      .catch(() => {
+        if (active) setLoadFailed(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [locale, user]);
+
+  const checkout = async (creditPackage: CreditPackage) => {
+    setCheckoutCode(creditPackage.code);
+    try {
+      const response = await fetch('/api/payment/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: creditPackage.code,
+          payment_provider: 'creem',
+          locale,
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok || payload.code !== 0 || !payload.data?.checkoutUrl) {
+        throw new Error(payload.message || t('checkout_failed'));
+      }
+      window.location.href = payload.data.checkoutUrl;
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t('checkout_failed')
+      );
+      setCheckoutCode(null);
+    }
+  };
+
+  const copyInviteLink = async () => {
+    if (!referral?.inviteUrl) return;
+    try {
+      await navigator.clipboard.writeText(referral.inviteUrl);
+      toast.success(t('invite_copied'));
+    } catch {
+      toast.error(t('invite_copy_failed'));
+    }
+  };
+
   if (!user)
     return (
       <WorkspaceShell
@@ -246,34 +332,217 @@ export function CreditsWorkspace() {
     );
   return (
     <WorkspaceShell title={t('credits')} description={t('credits_description')}>
-      <div className="grid gap-10 lg:grid-cols-[16rem_1fr]">
-        <aside>
+      {loadFailed ? (
+        <p className="mb-8 border-l-2 border-[#c45d38] pl-4 text-sm text-[#6f6a61] dark:text-[#b8b0a5]">
+          {t('credits_load_failed')}
+        </p>
+      ) : null}
+      <div className="grid gap-12 lg:grid-cols-[16rem_minmax(0,1fr)]">
+        <aside className="lg:sticky lg:top-24 lg:self-start">
           <p className="font-mono text-[10px] tracking-[.18em] text-[#777268] uppercase">
             {t('balance')}
           </p>
           <p className="mt-3 text-5xl font-semibold tracking-tight">
-            {activity?.balance ?? '—'}
+            {loading ? '…' : (activity?.balance ?? '—')}
           </p>
-          <p className="mt-8 border-l-2 border-[#c45d38] pl-4 text-sm leading-6">
-            <strong>{t('packages_pending')}</strong>
-            <br />
-            <span className="text-[#6f6a61]">{t('packages_contact')}</span>
+          <p className="mt-3 text-xs leading-5 text-[#777268] dark:text-[#aaa399]">
+            {t('balance_description')}
           </p>
         </aside>
-        <section className="space-y-10">
-          <Ledger
-            title={t('reservations')}
-            rows={activity?.reservations || []}
-            valueKey="reservedCredits"
-          />
-          <Ledger
-            title={t('ledger')}
-            rows={activity?.ledger || []}
-            valueKey="chargedCredits"
-          />
-        </section>
+        <div className="min-w-0 space-y-14">
+          <section>
+            <div className="mb-5 flex items-end justify-between gap-5">
+              <div>
+                <p className="font-mono text-[10px] tracking-[.18em] text-[#a34e32] uppercase">
+                  {t('one_time_purchase')}
+                </p>
+                <h2 className="mt-2 text-xl font-medium">
+                  {t('credit_packages')}
+                </h2>
+              </div>
+              <p className="hidden max-w-xs text-right text-xs leading-5 text-[#777268] sm:block dark:text-[#aaa399]">
+                {t('package_note')}
+              </p>
+            </div>
+            {loading ? (
+              <div className="dark:border-border flex min-h-48 items-center justify-center border-y border-black/10">
+                <LoaderCircle className="size-5 animate-spin text-[#777268]" />
+              </div>
+            ) : packages.length ? (
+              <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3 dark:border-white/15 dark:bg-white/15">
+                {packages.map((creditPackage) => (
+                  <article
+                    key={creditPackage.code}
+                    className={`relative flex min-h-64 flex-col bg-[#f5f1e8] p-6 dark:bg-[#171715] ${
+                      creditPackage.recommended
+                        ? 'shadow-[inset_0_3px_0_#c45d38]'
+                        : ''
+                    }`}
+                  >
+                    <div className="flex min-h-6 items-center justify-between gap-3">
+                      <h3 className="text-sm font-medium">
+                        {creditPackage.name}
+                      </h3>
+                      {creditPackage.recommended ? (
+                        <span className="bg-[#c45d38] px-2 py-1 font-mono text-[9px] tracking-[.12em] text-white uppercase">
+                          {t('recommended')}
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-8 text-4xl font-semibold tracking-[-0.04em]">
+                      {creditPackage.credits.toLocaleString(locale)}
+                    </p>
+                    <p className="mt-1 font-mono text-[10px] tracking-[.15em] text-[#777268] uppercase">
+                      Credit
+                    </p>
+                    <div className="mt-auto flex items-end justify-between gap-3 pt-8">
+                      <p className="text-xl font-medium">
+                        ${Number(creditPackage.priceUsd).toFixed(2)}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant={
+                          creditPackage.recommended ? 'default' : 'outline'
+                        }
+                        disabled={checkoutCode !== null}
+                        onClick={() => checkout(creditPackage)}
+                      >
+                        {checkoutCode === creditPackage.code ? (
+                          <LoaderCircle className="size-4 animate-spin" />
+                        ) : null}
+                        {t('buy_now')}
+                      </Button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <WorkspaceEmpty>{t('packages_unavailable')}</WorkspaceEmpty>
+            )}
+            <p className="mt-4 text-xs leading-5 text-[#777268] sm:hidden dark:text-[#aaa399]">
+              {t('package_note')}
+            </p>
+          </section>
+
+          <section className="dark:border-border border-y border-black/15 py-8">
+            <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
+              <div className="min-w-0">
+                <div className="flex items-center gap-3">
+                  <Gift className="size-5 text-[#c45d38]" />
+                  <h2 className="text-xl font-medium">{t('invite_rewards')}</h2>
+                </div>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6f6a61] dark:text-[#b8b0a5]">
+                  {t('invite_description')}
+                </p>
+                <div className="mt-6 flex min-w-0 gap-2">
+                  <div className="dark:border-border min-w-0 flex-1 border border-black/15 bg-white/30 px-4 py-3 dark:bg-white/5">
+                    <p className="font-mono text-[9px] tracking-[.15em] text-[#777268] uppercase">
+                      {t('invite_link')}
+                    </p>
+                    <p className="mt-1 truncate text-sm">
+                      {referral?.inviteUrl || '—'}
+                    </p>
+                  </div>
+                  <Button
+                    className="h-auto self-stretch"
+                    variant="outline"
+                    disabled={!referral?.inviteUrl}
+                    onClick={copyInviteLink}
+                  >
+                    <Copy className="size-4" />
+                    {t('copy_invite_link')}
+                  </Button>
+                </div>
+                <p className="mt-3 text-xs leading-5 text-[#777268] dark:text-[#aaa399]">
+                  {t('invite_rules')}
+                </p>
+              </div>
+              <dl className="grid grid-cols-2 gap-px bg-black/10 dark:bg-white/10">
+                <ReferralStat
+                  label={t('invite_code')}
+                  value={referral?.inviteCode || '—'}
+                />
+                <ReferralStat
+                  label={t('successful_invites')}
+                  value={referral?.stats.successfulInvites ?? 0}
+                />
+                <ReferralStat
+                  label={t('pending_rewards')}
+                  value={`${referral?.stats.pendingCredits ?? 0} Credit`}
+                />
+                <ReferralStat
+                  label={t('earned_rewards')}
+                  value={`${referral?.stats.earnedCredits ?? 0} Credit`}
+                />
+              </dl>
+            </div>
+            {referral?.rewards?.length ? (
+              <div className="mt-8">
+                <Ledger
+                  title={t('reward_records')}
+                  rows={referral.rewards}
+                  valueKey="credits"
+                />
+              </div>
+            ) : null}
+          </section>
+
+          <section className="space-y-10">
+            <Ledger
+              title={t('reservations')}
+              rows={activity?.reservations || []}
+              valueKey="reservedCredits"
+            />
+            <Ledger
+              title={t('ledger')}
+              rows={activity?.ledger || []}
+              valueKey="chargedCredits"
+            />
+          </section>
+        </div>
       </div>
     </WorkspaceShell>
+  );
+}
+
+type CreditPackage = {
+  code: string;
+  name: string;
+  credits: number;
+  priceUsd: number;
+  recommended: boolean;
+};
+
+type ReferralOverview = {
+  inviteCode: string;
+  inviteUrl: string;
+  stats: {
+    successfulInvites: number;
+    pendingCredits: number;
+    earnedCredits: number;
+  };
+  rewards: Array<{
+    id: string;
+    status: string;
+    credits: number;
+    createdAt: string;
+  }>;
+};
+
+function ReferralStat({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className="bg-[#f5f1e8] p-4 dark:bg-[#171715]">
+      <dt className="text-[11px] leading-4 text-[#777268] dark:text-[#aaa399]">
+        {label}
+      </dt>
+      <dd className="mt-2 font-mono text-sm font-medium break-all">{value}</dd>
+    </div>
   );
 }
 

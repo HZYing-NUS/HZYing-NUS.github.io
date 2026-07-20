@@ -9,7 +9,10 @@ import {
 } from 'ai';
 
 import { enforceFixedWindowRateLimit } from '@/shared/lib/rate-limit';
-import { getRelevantProjectFiles } from '@/shared/models/ai_file';
+import {
+  getAiFilesByIds,
+  getRelevantProjectFiles,
+} from '@/shared/models/ai_file';
 import {
   acquireAiRequestLease,
   assertAiAccess,
@@ -19,7 +22,9 @@ import { findChatById, updateChat } from '@/shared/models/chat';
 import {
   ChatMessageStatus,
   claimChatMessageFallback,
+  claimChatMessageRequest,
   createChatMessage,
+  failChatMessageRequest,
   findChatMessageById,
   getChatMessages,
   updateChatMessage,
@@ -30,10 +35,20 @@ import {
   reserveCredits,
   settleCreditReservation,
 } from '@/shared/models/credit';
-import { createProjectMemory } from '@/shared/models/memory';
+import {
+  saveGlobalMemoryCandidates,
+  saveProjectMemoryCandidates,
+} from '@/shared/models/memory';
 import { findProjectById } from '@/shared/models/project';
-import { getUserInfo } from '@/shared/models/user';
+import { enqueueReferralEventBestEffort } from '@/shared/models/referral';
+import { findUserById, getUserInfo } from '@/shared/models/user';
 import { buildAiContext } from '@/shared/services/ai/context';
+import { sumChargeableParseCosts } from '@/shared/services/ai/file-parse-policy';
+import { parseAiFile } from '@/shared/services/ai/file-parsing';
+import {
+  extractGlobalMemoryCandidates,
+  extractProjectMemoryCandidates,
+} from '@/shared/services/ai/memory-extraction';
 import {
   createPriceSnapshot,
   getFallbackAvailability,
@@ -43,12 +58,18 @@ import {
   resolveAiModel,
 } from '@/shared/services/ai/model-router';
 import {
+  AI_ESTIMATED_BASE_OUTPUT_TOKENS,
+  calculateAddonOnlyPrice,
   calculateAiPrice,
+  calculateContextAddonCosts,
+  calculateFileParseCostUsd,
   calculateWebSearchCostUsd,
+  estimateStreamingOutputTokenUpperBound,
   estimateTokenCount,
   getAiPricingSettings,
   requireWebSearchPricing,
 } from '@/shared/services/ai/pricing';
+import { referralEventKey } from '@/shared/services/referral-policy';
 
 export const maxDuration = 120;
 
@@ -63,10 +84,13 @@ function publicErrorCode(error: unknown) {
     [
       'AI_ACCESS_BLOCKED',
       'AI_CONCURRENCY_LIMIT',
+      'INSUFFICIENT_CREDITS',
       'WEB_SEARCH_NOT_CONFIGURED',
       'WEB_SEARCH_PRICING_NOT_CONFIGURED',
       'MODEL_NOT_AVAILABLE',
       'MODEL_DOES_NOT_SUPPORT_VISION',
+      'INVALID_FALLBACK_CONFIRMATION',
+      'REASONING_NOT_AVAILABLE',
       'FALLBACK_CONFIRMATION_ALREADY_USED',
       'REQUEST_ABORTED',
     ].includes(message)
@@ -74,6 +98,10 @@ function publicErrorCode(error: unknown) {
     return message;
   }
   return 'AI_REQUEST_FAILED';
+}
+
+function isInsufficientCreditError(error: unknown) {
+  return internalErrorMessage(error).includes('Insufficient credits');
 }
 
 function positiveInteger(value: string | undefined, fallback: number) {
@@ -115,6 +143,8 @@ export async function POST(req: Request) {
   let assistantSaved = false;
   let requestLeaseId: string | undefined;
   let requestLeaseReleased = false;
+  let requestMessageClaimed = false;
+  let requestMessageId: string | undefined;
   let requestLeaseReleasePromise: Promise<void> | undefined;
 
   const releaseRequestLease = async () => {
@@ -180,6 +210,7 @@ export async function POST(req: Request) {
     if (!body.chatId || !body.message?.id || !body.message.parts?.length) {
       return Response.json({ message: 'INVALID_REQUEST' }, { status: 400 });
     }
+    requestMessageId = body.message.id;
     const user = await getUserInfo();
     if (!user)
       return Response.json({ message: 'UNAUTHORIZED' }, { status: 401 });
@@ -196,21 +227,35 @@ export async function POST(req: Request) {
     const chat = await findChatById(body.chatId, user.id);
     if (!chat)
       return Response.json({ message: 'CHAT_NOT_FOUND' }, { status: 404 });
-    const existingUserMessage = await findChatMessageById(
-      body.message.id,
-      user.id
-    );
-    if (existingUserMessage) {
+    const requestClaimed = await claimChatMessageRequest({
+      id: body.message.id,
+      chatId: chat.id,
+      userId: user.id,
+      status: ChatMessageStatus.PROCESSING,
+      role: 'user',
+      parts: JSON.stringify(body.message.parts),
+      metadata: JSON.stringify({ requestState: 'processing' }),
+      model: chat.model,
+      provider: 'pending',
+      webSearchEnabled: chat.webSearchEnabled,
+      fileIds: Array.isArray(body.fileIds) ? body.fileIds : [],
+    });
+    if (!requestClaimed) {
+      const existingUserMessage = await findChatMessageById(
+        body.message.id,
+        user.id
+      );
       return Response.json(
         {
           message:
-            existingUserMessage.chatId === chat.id
+            existingUserMessage?.chatId === chat.id
               ? 'MESSAGE_ALREADY_PROCESSED'
               : 'MESSAGE_ID_CONFLICT',
         },
         { status: 409 }
       );
     }
+    requestMessageClaimed = true;
 
     const primaryResolved = await resolveAiModel(chat.model);
     let fallbackSourceMessage:
@@ -250,10 +295,7 @@ export async function POST(req: Request) {
         !fallbackOffer?.offeredAt ||
         fallbackSourceMessage.fallbackConfirmedAt
       ) {
-        return Response.json(
-          { message: 'INVALID_FALLBACK_CONFIRMATION' },
-          { status: 400 }
-        );
+        throw new Error('INVALID_FALLBACK_CONFIRMATION');
       }
     }
 
@@ -262,10 +304,7 @@ export async function POST(req: Request) {
       : primaryResolved;
     modelConfiguration = resolved.configuration;
     if (body.reasoning && !isReasoningEnabledForModel(modelConfiguration)) {
-      return Response.json(
-        { message: 'REASONING_NOT_AVAILABLE' },
-        { status: 400 }
-      );
+      throw new Error('REASONING_NOT_AVAILABLE');
     }
     const requestMessage = fallbackSourceMessage
       ? {
@@ -307,12 +346,10 @@ export async function POST(req: Request) {
       message: requestMessage,
       fileIds,
       includeWebSearch: false,
+      allowParsing: false,
     });
     if (baseContext.imageParts.length && !modelConfiguration.supportsVision) {
-      return Response.json(
-        { message: 'MODEL_DOES_NOT_SUPPORT_VISION' },
-        { status: 400 }
-      );
+      throw new Error('MODEL_DOES_NOT_SUPPORT_VISION');
     }
 
     const history = await getChatMessages({
@@ -349,18 +386,51 @@ export async function POST(req: Request) {
       : 0;
     const estimatedOutputTokens = Math.min(
       modelConfiguration.maxOutputTokens,
-      1500 + reasoningEstimateTokens
+      AI_ESTIMATED_BASE_OUTPUT_TOKENS + reasoningEstimateTokens
+    );
+    const estimatedInputTokens =
+      estimateTokenCount(inputText) +
+      baseContext.imageParts.length * pricingSettings.imageInputTokens;
+    const estimatedWebSearchCostUsd = chat.webSearchEnabled
+      ? pricingSettings.webSearchEstimatedCostUsd
+      : 0;
+    const baseAddonCosts = calculateContextAddonCosts({
+      fileContextTokens: baseContext.fileContextTokens,
+      memoryContextTokens: baseContext.memoryContextTokens,
+      settings: pricingSettings,
+    });
+    const requestedFiles = await getAiFilesByIds(fileIds, user.id);
+    const requestedFileIds = fileIds.slice(0, 10);
+    if (requestedFiles.length !== new Set(requestedFileIds).size) {
+      throw new Error('FILE_NOT_FOUND');
+    }
+    for (const file of requestedFiles) {
+      const belongsToContext = chat.projectId
+        ? file.projectId === chat.projectId || file.chatId === chat.id
+        : file.chatId === chat.id;
+      if (!belongsToContext) throw new Error('FILE_NOT_AVAILABLE_IN_CHAT');
+    }
+    const pendingParseFiles = requestedFiles.filter(
+      (file: (typeof requestedFiles)[number]) =>
+        file.parseStatus !== 'parsed' &&
+        !file.mimeType.startsWith('image/') &&
+        ['text/plain', 'text/markdown', 'application/pdf'].includes(
+          file.mimeType
+        )
+    );
+    const estimatedParseCostUsd = pendingParseFiles.reduce(
+      (total: number, file: (typeof pendingParseFiles)[number]) =>
+        total + calculateFileParseCostUsd(file.sizeBytes, pricingSettings),
+      0
     );
     const estimate = calculateAiPrice({
       model: modelConfiguration,
       usage: {
-        inputTokens:
-          estimateTokenCount(inputText) +
-          baseContext.imageParts.length * pricingSettings.imageInputTokens,
+        inputTokens: estimatedInputTokens,
         outputTokens: estimatedOutputTokens,
-        webSearchCostUsd: chat.webSearchEnabled
-          ? pricingSettings.webSearchEstimatedCostUsd
-          : 0,
+        webSearchCostUsd: estimatedWebSearchCostUsd,
+        ...baseAddonCosts,
+        fileCostUsd: baseAddonCosts.fileCostUsd + estimatedParseCostUsd,
       },
       ...pricingSettings,
     });
@@ -386,11 +456,13 @@ export async function POST(req: Request) {
               baseContext.imageParts.length * pricingSettings.imageInputTokens,
             outputTokens: Math.min(
               fallbackResolved.configuration.maxOutputTokens,
-              1500 + fallbackReasoningEstimateTokens
+              AI_ESTIMATED_BASE_OUTPUT_TOKENS + fallbackReasoningEstimateTokens
             ),
             webSearchCostUsd: chat.webSearchEnabled
               ? pricingSettings.webSearchEstimatedCostUsd
               : 0,
+            ...baseAddonCosts,
+            fileCostUsd: baseAddonCosts.fileCostUsd + estimatedParseCostUsd,
           },
           ...pricingSettings,
         }).credits;
@@ -398,7 +470,7 @@ export async function POST(req: Request) {
         fallbackEstimatedCredits = undefined;
       }
     }
-    const requestId = generateId().toLowerCase();
+    const requestId = `chat:${chat.id}:${body.message.id}`;
     const requestLease = await acquireAiRequestLease({
       userId: user.id,
       limit: positiveInteger(process.env.AI_MAX_CONCURRENT_REQUESTS, 2),
@@ -416,21 +488,135 @@ export async function POST(req: Request) {
           estimate.internalCostUsd -
           (chat.webSearchEnabled
             ? pricingSettings.webSearchEstimatedCostUsd
-            : 0),
+            : 0) -
+          baseAddonCosts.fileCostUsd -
+          baseAddonCosts.memoryCostUsd -
+          estimatedParseCostUsd,
         reasoningOutputTokens: reasoningEstimateTokens,
         webSearch: chat.webSearchEnabled
           ? pricingSettings.webSearchEstimatedCostUsd
           : 0,
+        file: baseAddonCosts.fileCostUsd + estimatedParseCostUsd,
+        fileParsing: estimatedParseCostUsd,
+        memory: baseAddonCosts.memoryCostUsd,
         contextTokensIncludedInModel: true,
       },
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
     reservationId = reservation.id;
+    let reservedCredits = reservation.reservedCredits;
     if (
       fallbackSourceMessage &&
       !(await claimChatMessageFallback(fallbackSourceMessage.id, user.id))
     ) {
       throw new Error('FALLBACK_CONFIRMATION_ALREADY_USED');
+    }
+
+    let actualParseCostUsd = 0;
+    const parseAttempts: Array<{
+      fileId: string;
+      chargeable: boolean;
+      costUsd: number;
+    }> = [];
+    for (const file of pendingParseFiles) {
+      const costUsd = calculateFileParseCostUsd(
+        file.sizeBytes,
+        pricingSettings
+      );
+      const parseResult = await parseAiFile(file.id, user.id, requestId);
+      parseAttempts.push({
+        fileId: file.id,
+        chargeable: parseResult.chargeable,
+        costUsd,
+      });
+      actualParseCostUsd = sumChargeableParseCosts(parseAttempts);
+      if (parseResult.status === 'in_progress') {
+        const failureReason = 'FILE_PARSE_IN_PROGRESS';
+        const parsingFailure = calculateAddonOnlyPrice({
+          internalCostUsd: actualParseCostUsd,
+          ...pricingSettings,
+        });
+        const chargedCredits = Math.min(
+          parsingFailure.credits,
+          reservedCredits
+        );
+        await settleCreditReservation({
+          reservationId: reservation.id,
+          userId: user.id,
+          actualCredits: chargedCredits,
+          usage: {
+            fileCostUsd: String(actualParseCostUsd),
+            internalCostUsd: String(parsingFailure.internalCostUsd),
+            retailCostUsd: String(parsingFailure.retailCostUsd),
+            rawCredits: String(parsingFailure.rawCredits),
+            status: 'file_parse_failed',
+            failureReason,
+            metadata: { operation: 'file_parse', fileId: file.id },
+            fileParseCharges: parseAttempts
+              .filter((attempt) => attempt.chargeable)
+              .map((attempt) => ({
+                fileId: attempt.fileId,
+                attemptId: requestId,
+                actualCostUsd: String(attempt.costUsd),
+              })),
+          },
+        });
+        finalized = true;
+        await updateChatMessage(
+          body.message.id,
+          {
+            metadata: JSON.stringify({ requestState: 'failed' }),
+            errorReason: failureReason,
+          },
+          user.id
+        );
+        throw new Error(failureReason);
+      }
+      if (parseResult.status === 'failed') {
+        const failureReason = parseResult.error.message;
+        const parsingFailure = calculateAddonOnlyPrice({
+          internalCostUsd: actualParseCostUsd,
+          ...pricingSettings,
+        });
+        const chargedCredits = Math.min(
+          parsingFailure.credits,
+          reservedCredits
+        );
+        await settleCreditReservation({
+          reservationId: reservation.id,
+          userId: user.id,
+          actualCredits: chargedCredits,
+          usage: {
+            fileCostUsd: String(actualParseCostUsd),
+            internalCostUsd: String(parsingFailure.internalCostUsd),
+            retailCostUsd: String(parsingFailure.retailCostUsd),
+            rawCredits: String(parsingFailure.rawCredits),
+            status: 'file_parse_failed',
+            failureReason,
+            metadata: { operation: 'file_parse', fileId: file.id },
+            fileParseCharges: parseAttempts
+              .filter((attempt) => attempt.chargeable)
+              .map((attempt) => ({
+                fileId: attempt.fileId,
+                attemptId: requestId,
+                actualCostUsd: String(attempt.costUsd),
+              })),
+          },
+        });
+        finalized = true;
+        await updateChatMessage(
+          body.message.id,
+          {
+            metadata: JSON.stringify({ requestState: 'failed' }),
+            errorReason: failureReason,
+          },
+          user.id
+        );
+        throw new Error('FILE_PARSE_FAILED');
+      }
+      if (!parseResult.file || parseResult.file.parseStatus !== 'parsed') {
+        throw new Error('FILE_PARSE_NOT_AVAILABLE');
+      }
     }
 
     const context = chat.webSearchEnabled
@@ -444,8 +630,23 @@ export async function POST(req: Request) {
           locale: body.locale === 'en' ? 'en' : 'zh',
           message: requestMessage,
           fileIds,
+          allowParsing: false,
         })
-      : baseContext;
+      : pendingParseFiles.length
+        ? await buildAiContext({
+            userId: user.id,
+            projectId: chat.projectId,
+            chatId: chat.id,
+            skillVersionId: chat.skillVersionId,
+            skillDisabled: Boolean(chat.skillDisabledAt || body.disableSkill),
+            webSearchEnabled: false,
+            locale: body.locale === 'en' ? 'en' : 'zh',
+            message: requestMessage,
+            fileIds,
+            includeWebSearch: false,
+            allowParsing: false,
+          })
+        : baseContext;
 
     if (
       fallbackSourceMessage &&
@@ -460,38 +661,85 @@ export async function POST(req: Request) {
       context.webSearchExecuted = false;
     }
 
+    const actualInputText = `${context.system}\n${historyMessages
+      .map(messageText)
+      .join('\n')}`;
+    const actualEstimatedInputTokens =
+      estimateTokenCount(actualInputText) +
+      context.imageParts.length * pricingSettings.imageInputTokens;
+    const actualWebSearchCostUsd = context.webSearchExecuted
+      ? calculateWebSearchCostUsd(
+          pricingSettings,
+          context.webSearchProviderCredits
+        )
+      : 0;
+    const actualAddonCosts = calculateContextAddonCosts({
+      fileContextTokens: context.fileContextTokens,
+      memoryContextTokens: context.memoryContextTokens,
+      settings: pricingSettings,
+    });
+    actualAddonCosts.fileCostUsd += actualParseCostUsd;
+    const actualEstimate = calculateAiPrice({
+      model: modelConfiguration,
+      usage: {
+        inputTokens: actualEstimatedInputTokens,
+        outputTokens: estimatedOutputTokens,
+        webSearchCostUsd: actualWebSearchCostUsd,
+        ...actualAddonCosts,
+      },
+      ...pricingSettings,
+    });
+    if (actualEstimate.credits > reservedCredits) {
+      const additionalCredits = actualEstimate.credits - reservedCredits;
+      try {
+        await extendCreditReservation({
+          reservationId: reservation.id,
+          userId: user.id,
+          additionalCredits,
+          extensionId: `${reservation.id}:context:${actualEstimate.credits}`,
+        });
+        reservedCredits += additionalCredits;
+      } catch (error) {
+        if (isInsufficientCreditError(error)) {
+          throw new Error('INSUFFICIENT_CREDITS');
+        }
+        throw error;
+      }
+    }
+
     if (body.disableSkill && chat.skillVersionId && !chat.skillDisabledAt) {
       await updateChat(chat.id, { skillDisabledAt: new Date() }, user.id);
     }
 
-    await createChatMessage({
-      id: body.message.id,
-      chatId: chat.id,
-      userId: user.id,
-      status: ChatMessageStatus.CREATED,
-      role: 'user',
-      parts: JSON.stringify(requestMessage.parts),
-      metadata: JSON.stringify({
-        requestId,
-        reasoning: Boolean(body.reasoning),
-        fallbackForMessageId: fallbackSourceMessage?.id,
-      }),
-      model: chat.model,
-      provider: modelConfiguration.providerCode,
-      skillVersionId: chat.skillVersionId,
-      webSearchEnabled: chat.webSearchEnabled,
-      estimatedCredits: estimate.credits,
-      reservedCredits: reservation.reservedCredits,
-      reservationId: reservation.id,
-      sourceDetails: context.sources,
-      fileIds,
-    });
+    await updateChatMessage(
+      body.message.id,
+      {
+        status: ChatMessageStatus.CREATED,
+        metadata: JSON.stringify({
+          requestId,
+          requestState: 'streaming',
+          reasoning: Boolean(body.reasoning),
+          fallbackForMessageId: fallbackSourceMessage?.id,
+        }),
+        model: chat.model,
+        provider: modelConfiguration.providerCode,
+        skillVersionId: chat.skillVersionId,
+        webSearchEnabled: chat.webSearchEnabled,
+        estimatedCredits: actualEstimate.credits,
+        reservedCredits,
+        reservationId: reservation.id,
+        sourceDetails: context.sources,
+        fileIds,
+      },
+      user.id
+    );
 
     const abortController = new AbortController();
     const abortSignal = AbortSignal.any([req.signal, abortController.signal]);
-    let outputCharacters = 0;
+    let streamedOutputText = '';
     let extensionCount = 0;
-    let reservedCredits = reservation.reservedCredits;
+    let reservationExtensionPlatformFailure = false;
+    let finalizationPromise: Promise<typeof settlementAudit> | undefined;
 
     const settle = async ({
       usage,
@@ -521,6 +769,7 @@ export async function POST(req: Request) {
           outputTokens: usage.outputTokens,
           cacheReadTokens: usage.cachedInputTokens,
           webSearchCostUsd: actualWebSearchCostUsd,
+          ...actualAddonCosts,
         },
         ...pricingSettings,
       });
@@ -552,6 +801,8 @@ export async function POST(req: Request) {
           outputTokens: usage.outputTokens,
           cacheReadTokens: usage.cachedInputTokens,
           webSearchCostUsd: String(actualWebSearchCostUsd),
+          fileCostUsd: String(actualAddonCosts.fileCostUsd),
+          memoryCostUsd: String(actualAddonCosts.memoryCostUsd),
           internalCostUsd: String(actual.internalCostUsd),
           retailCostUsd: String(actual.retailCostUsd),
           rawCredits: String(actual.rawCredits),
@@ -565,8 +816,23 @@ export async function POST(req: Request) {
             webSearchDepth: context.webSearchDepth,
             webSearchProviderCredits: context.webSearchProviderCredits,
           },
+          fileParseCharges: parseAttempts
+            .filter((attempt) => attempt.chargeable)
+            .map((attempt) => ({
+              fileId: attempt.fileId,
+              attemptId: requestId,
+              actualCostUsd: String(attempt.costUsd),
+            })),
         },
       });
+      if (chargedCredits > 0) {
+        await enqueueReferralEventBestEffort({
+          eventType: 'first_ai_settlement',
+          userId,
+          idempotencyKey: referralEventKey('first_ai_settlement', userId),
+          payload: { reservationId, actualCredits: chargedCredits },
+        });
+      }
       finalized = true;
       settlementAudit = {
         inputTokens: usage.inputTokens ?? 0,
@@ -606,27 +872,66 @@ export async function POST(req: Request) {
       return settlementAudit;
     };
 
+    const finalizeOnce = (
+      finalize: () => Promise<typeof settlementAudit>
+    ): Promise<typeof settlementAudit> => {
+      if (!finalizationPromise) {
+        finalizationPromise = finalize();
+        void finalizationPromise.catch(() => undefined);
+      }
+      return finalizationPromise;
+    };
+
+    const startSettlement = (parameters: Parameters<typeof settle>[0]) =>
+      finalizeOnce(() => settle(parameters));
+
+    const startRefundFinalization = (failure: string, errorReason: string) =>
+      finalizeOnce(async () => {
+        await refundReservedCredits(failure);
+        settlementAudit = {
+          inputTokens: 0,
+          outputTokens: 0,
+          cacheReadTokens: 0,
+          settledCredits: 0,
+          refundedCredits: reservedCredits,
+        };
+        await updateChatMessage(
+          body.message!.id,
+          {
+            errorReason,
+            settledCredits: 0,
+            refundedCredits: reservedCredits,
+          },
+          user.id
+        );
+        return settlementAudit;
+      });
+
     const stream = createUIMessageStream({
       originalMessages: historyMessages,
       generateId: createIdGenerator({ size: 16 }),
       onError: (error) => publicErrorCode(error),
       execute: async ({ writer }) => {
         let providerFailureHandled = false;
-        const handleProviderFailure = async (failure: string) => {
-          if (providerFailureHandled) return;
-          await refundReservedCredits(failure);
+        const handleProviderFailure = async (
+          failure: string,
+          offerFallback = true
+        ) => {
+          if (providerFailureHandled) return finalizationPromise;
           providerFailureHandled = true;
+          await startRefundFinalization(
+            failure,
+            `${offerFallback ? 'CHANNEL_FAILURE' : 'PLATFORM_FAILURE'}:${failure}`
+          );
           const offeredAt = new Date().toISOString();
           await updateChatMessage(
             body.message!.id,
             {
-              errorReason: `CHANNEL_FAILURE:${failure}`,
-              settledCredits: 0,
-              refundedCredits: reservedCredits,
               metadata: JSON.stringify({
                 requestId,
                 reasoning: Boolean(body.reasoning),
                 fallbackOffer:
+                  offerFallback &&
                   resolved.channel === 'primary' &&
                   fallbackEstimatedCredits !== undefined
                     ? {
@@ -640,6 +945,7 @@ export async function POST(req: Request) {
             user.id
           );
           if (
+            offerFallback &&
             resolved.channel === 'primary' &&
             fallbackEstimatedCredits !== undefined
           ) {
@@ -712,45 +1018,84 @@ export async function POST(req: Request) {
             abortSignal,
             onChunk: async ({ chunk }) => {
               if (chunk.type !== 'text-delta') return;
-              outputCharacters += chunk.text.length;
-              const threshold =
-                (extensionCount + 1) *
-                pricingSettings.reservationThresholdTokens *
-                3;
-              if (outputCharacters < threshold) return;
+              streamedOutputText += chunk.text;
+              const estimatedStreamOutputTokens =
+                estimateStreamingOutputTokenUpperBound(streamedOutputText);
+              const projectedCredits = calculateAiPrice({
+                model: modelConfiguration!,
+                usage: {
+                  inputTokens: actualEstimatedInputTokens,
+                  outputTokens: Math.min(
+                    modelConfiguration!.maxOutputTokens,
+                    estimatedStreamOutputTokens +
+                      reasoningEstimateTokens +
+                      pricingSettings.reservationThresholdTokens
+                  ),
+                  webSearchCostUsd: context.webSearchExecuted
+                    ? calculateWebSearchCostUsd(
+                        pricingSettings,
+                        context.webSearchProviderCredits
+                      )
+                    : 0,
+                  ...actualAddonCosts,
+                },
+                ...pricingSettings,
+              }).credits;
+              if (projectedCredits <= reservedCredits) return;
+
+              const additionalCredits = Math.max(
+                pricingSettings.reservationChunk,
+                projectedCredits - reservedCredits
+              );
               extensionCount += 1;
               try {
                 await extendCreditReservation({
                   reservationId: reservation.id,
                   userId: user.id,
-                  additionalCredits: pricingSettings.reservationChunk,
+                  additionalCredits,
                   extensionId: `${reservation.id}:roll:${extensionCount}`,
                 });
-                reservedCredits += pricingSettings.reservationChunk;
+                reservedCredits += additionalCredits;
               } catch (error) {
-                streamFailure = 'INSUFFICIENT_CREDITS_DURING_GENERATION';
+                if (isInsufficientCreditError(error)) {
+                  streamFailure = 'INSUFFICIENT_CREDITS_DURING_GENERATION';
+                } else {
+                  reservationExtensionPlatformFailure = true;
+                  streamFailure = 'CREDIT_RESERVATION_EXTENSION_FAILED';
+                  console.error('AI rolling reservation extension failed', {
+                    reservationId: reservation.id,
+                    userId: user.id,
+                    error: internalErrorMessage(error),
+                  });
+                }
                 abortController.abort(streamFailure);
               }
             },
-            onFinish: async ({ totalUsage }) => {
-              try {
-                const audit = await settle({
-                  usage: totalUsage,
-                  status: streamFailure ? 'interrupted' : 'settled',
-                  failureReason: streamFailure,
-                });
-                if (audit) {
-                  writer.write({
-                    type: 'data-credit-settlement',
-                    id: `credit-settlement:${body.message!.id}`,
-                    data: audit,
-                  });
-                }
-              } finally {
-                await releaseRequestLease();
-              }
+            onFinish: ({ totalUsage }) => {
+              const pendingSettlement = startSettlement({
+                usage: totalUsage,
+                status: streamFailure ? 'interrupted' : 'settled',
+                failureReason: streamFailure,
+              });
+              void pendingSettlement
+                .then((audit) => {
+                  if (audit) {
+                    writer.write({
+                      type: 'data-credit-settlement',
+                      id: `credit-settlement:${body.message!.id}`,
+                      data: audit,
+                    });
+                  }
+                })
+                .finally(releaseRequestLease);
             },
-            onAbort: async ({ steps }) => {
+            onAbort: ({ steps }) => {
+              if (reservationExtensionPlatformFailure) {
+                void handleProviderFailure(streamFailure!, false).finally(
+                  releaseRequestLease
+                );
+                return;
+              }
               const usage = steps.reduce(
                 (total, step) => ({
                   inputTokens:
@@ -770,43 +1115,46 @@ export async function POST(req: Request) {
                   cachedInputTokens: 0,
                 }
               );
-              try {
-                const audit = await settle({
-                  usage,
-                  status: 'interrupted',
-                  failureReason: streamFailure || 'REQUEST_ABORTED',
-                });
-                if (audit) {
-                  writer.write({
-                    type: 'data-credit-settlement',
-                    id: `credit-settlement:${body.message!.id}`,
-                    data: audit,
-                  });
-                }
-              } finally {
-                await releaseRequestLease();
-              }
+              const pendingSettlement = startSettlement({
+                usage,
+                status: 'interrupted',
+                failureReason: streamFailure || 'REQUEST_ABORTED',
+              });
+              void pendingSettlement
+                .then((audit) => {
+                  if (audit) {
+                    writer.write({
+                      type: 'data-credit-settlement',
+                      id: `credit-settlement:${body.message!.id}`,
+                      data: audit,
+                    });
+                  }
+                })
+                .finally(releaseRequestLease);
             },
-            onError: async ({ error }) => {
-              try {
-                streamFailure = publicErrorCode(error);
-                console.error('AI stream failed', {
-                  requestId,
-                  userId: user.id,
-                  error: internalErrorMessage(error),
-                });
-                try {
-                  await handleProviderFailure(streamFailure);
-                } catch (refundError) {
+            onError: ({ error }) => {
+              streamFailure = publicErrorCode(error);
+              console.error('AI stream failed', {
+                requestId,
+                userId: user.id,
+                error: internalErrorMessage(error),
+              });
+              if (finalizationPromise) {
+                void finalizationPromise.finally(releaseRequestLease);
+                return;
+              }
+              void handleProviderFailure(
+                streamFailure,
+                !reservationExtensionPlatformFailure
+              )
+                .catch((refundError) => {
                   console.error('AI stream reservation refund failed', {
                     reservationId: reservation.id,
                     userId: user.id,
                     error: internalErrorMessage(refundError),
                   });
-                }
-              } finally {
-                await releaseRequestLease();
-              }
+                })
+                .finally(releaseRequestLease);
             },
           });
           writer.merge(
@@ -823,7 +1171,11 @@ export async function POST(req: Request) {
             error: internalErrorMessage(error),
           });
           try {
-            await handleProviderFailure(streamFailure);
+            if (finalizationPromise) {
+              await finalizationPromise;
+            } else {
+              await handleProviderFailure(streamFailure);
+            }
           } catch (refundError) {
             console.error('AI stream setup reservation refund failed', {
               reservationId: reservation.id,
@@ -838,6 +1190,24 @@ export async function POST(req: Request) {
       },
       onFinish: async ({ responseMessage, isAborted }) => {
         try {
+          if (!finalizationPromise) {
+            streamFailure =
+              streamFailure || 'AI_TERMINAL_FINALIZATION_NOT_STARTED';
+            startRefundFinalization(
+              streamFailure,
+              `PLATFORM_FAILURE:${streamFailure}`
+            );
+          }
+          try {
+            await finalizationPromise;
+          } catch (error) {
+            streamFailure = streamFailure || 'AI_FINALIZATION_FAILED';
+            console.error('AI request finalization failed', {
+              reservationId: reservation.id,
+              userId: user.id,
+              error: internalErrorMessage(error),
+            });
+          }
           const now = new Date();
           const fallbackOfferPart = responseMessage.parts.find(
             (part) => part.type === 'data-provider-fallback'
@@ -881,22 +1251,32 @@ export async function POST(req: Request) {
               : streamFailure,
           });
           assistantSaved = true;
-          if (chat.projectId && !isAborted && !streamFailure) {
-            const project = await findProjectById(chat.projectId, user.id);
-            if (project?.autoMemoryEnabled) {
-              const question = messageText(requestMessage).slice(0, 240);
-              const conclusion = messageText(responseMessage).slice(0, 500);
-              if (question && conclusion) {
-                await createProjectMemory({
-                  id: generateId().toLowerCase(),
+          if (!isAborted && !streamFailure) {
+            const question = messageText(requestMessage);
+            const conclusion = messageText(responseMessage);
+            if (chat.projectId) {
+              const project = await findProjectById(chat.projectId, user.id);
+              if (project?.autoMemoryEnabled) {
+                await saveProjectMemoryCandidates({
                   userId: user.id,
                   projectId: chat.projectId,
-                  type: 'progress',
-                  content: `问题：${question}\n结论摘要：${conclusion}`,
-                  importance: 1,
                   sourceChatId: chat.id,
                   sourceMessageId: assistantMessageId,
-                  status: 'active',
+                  userSourceMessageId: body.message!.id,
+                  candidates: extractProjectMemoryCandidates(
+                    question,
+                    conclusion
+                  ),
+                });
+              }
+            } else {
+              const memoryOwner = await findUserById(user.id);
+              if (memoryOwner?.globalMemoryEnabled !== false) {
+                await saveGlobalMemoryCandidates({
+                  userId: user.id,
+                  sourceChatId: chat.id,
+                  sourceMessageId: body.message!.id,
+                  contents: extractGlobalMemoryCandidates(question),
                 });
               }
             }
@@ -916,6 +1296,16 @@ export async function POST(req: Request) {
       userId,
       error: internalMessage,
     });
+    if (requestMessageClaimed && userId && requestMessageId) {
+      await failChatMessageRequest(requestMessageId, userId, message).catch(
+        (claimError) => {
+          console.error('AI request claim failure update failed', {
+            userId,
+            error: internalErrorMessage(claimError),
+          });
+        }
+      );
+    }
     if (reservationId && userId && !finalized) {
       try {
         await refundReservedCredits(message);
@@ -945,7 +1335,11 @@ export async function POST(req: Request) {
               ? 503
               : message === 'MODEL_NOT_AVAILABLE'
                 ? 400
-                : 500;
+                : message === 'MODEL_DOES_NOT_SUPPORT_VISION' ||
+                    message === 'INVALID_FALLBACK_CONFIRMATION' ||
+                    message === 'REASONING_NOT_AVAILABLE'
+                  ? 400
+                  : 500;
     return Response.json({ message }, { status });
   }
 }

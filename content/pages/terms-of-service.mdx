@@ -20,19 +20,25 @@ You must provide accurate account information and protect your credentials. You 
 
 Requests may be processed by third-party model, search, storage, authentication, analytics, and payment services disclosed in the Privacy Policy. Provider retention and training terms have not been fully verified; WebTools does not promise that third parties never retain or use submitted content.
 
+Users see model names rather than the underlying Provider. If the configured model channel fails, WebTools will not silently switch to another Provider; a fallback request requires the user's confirmation and may have a different estimated Credit cost.
+
 Skills are neutral workflows. They do not imitate, represent, or imply authorization by any person or organization.
 
 ## 4. Credit and payment
 
-V1 sells one-time Credit packages only and does not sell subscriptions. Package sizes and prices are pending configuration. Credit is a service-use unit, not money or stored value, and cannot be withdrawn or transferred. New-user gift Credit is currently 10 Credit and expires after 30 days. Purchased Credit is intended not to expire, subject to final checkout terms.
+V1 sells one-time Credit packages only and does not sell subscriptions. Current packages are 300 Credit for US$19.99, 800 Credit for US$44.99, and 1,200 Credit for US$64.99. The final checkout price controls. Credit is a service-use unit, not money or stored value, and cannot be withdrawn or transferred. New-user gift Credit is currently 10 Credit and expires after 30 days. Purchased Credit is intended not to expire, subject to final checkout terms.
 
-AI requests reserve Credit before provider use, settle actual usage afterward, and return unused reserved Credit. A request has a minimum charge of 1 Credit. If the balance runs out during generation, output may stop and existing text will remain.
+AI requests reserve Credit before provider use, settle actual usage afterward, and return unused reserved Credit. Model tokens, optional web search, file parsing, file context, and memory context used by the same send are aggregated before final rounding. File storage itself is not separately charged. A successful model request has a minimum charge of 1 Credit. If the balance runs out during generation, output may stop and existing text will remain.
 
 Unused purchased Credit refund requests are handled under applicable law, Creem rules, and the final WebTools refund policy. Consumed Credit and gift Credit are not refundable except where law requires. Chargebacks or abuse may suspend related Credit and generation access.
 
+Referral links have a 30-day attribution window, and each new user may be attributed to only one inviter. Rewards triggered by the referred user's first successful AI settlement or first Credit purchase remain pending for at least 24 hours and undergo basic risk checks. Sign-up rewards are capped at 100 Credit per inviter per calendar month; first-purchase rewards equal 10% of the base package Credit. Refunds, disputes, fraud, or abuse may revoke pending rewards or freeze granted rewards. Referral rewards cannot be withdrawn, transferred, refunded, or exchanged for cash.
+
 ## 5. Data and deletion
 
-Chats, project memory, and files remain private to the owning account unless disclosed by the user. Deleted projects enter a 30-day recycle bin. Permanent deletion removes recoverable business content and file objects, while minimal payment, fraud, chargeback, and audit records may be retained where legally required.
+Chats, project memory, global memory, parsed file content, and files remain private to the owning account unless disclosed by the user. Project memory may be extracted automatically. Outside projects, detected long-term memory is saved as a pending candidate and is not used in model context until the user confirms it. Users can review, edit, confirm, or delete global memory.
+
+Deleted projects enter a 30-day recycle bin. Permanent deletion removes recoverable business content, file objects, parsed text, and retrieval indexes, while minimal payment, fraud, chargeback, and audit records may be retained where legally required.
 
 ## 6. Availability and liability
 

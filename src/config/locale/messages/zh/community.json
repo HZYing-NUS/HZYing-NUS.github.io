@@ -1,0 +1,194 @@
+{
+  "profile": {
+    "articles": "已发布文章",
+    "likes": "获得点赞",
+    "lists": "公开内容夹",
+    "about": "关于我",
+    "emptyAbout": "这位用户还没有公开个人介绍。"
+  },
+  "center": {
+    "title": "个人中心",
+    "description": "管理你的创作、互动、内容、关系和账户。",
+    "modules": [
+      {
+        "title": "我的创作",
+        "description": "管理草稿、翻译、审核和已发布文章。",
+        "href": "/settings/community/articles"
+      },
+      {
+        "title": "评论管理",
+        "description": "处理待审核评论并查看我的评论。",
+        "href": "/settings/community/comments"
+      },
+      {
+        "title": "我的内容",
+        "description": "管理内容夹、收藏和点赞记录。",
+        "href": "/settings/community/content"
+      },
+      {
+        "title": "我的关系",
+        "description": "查看关注和粉丝。",
+        "href": "/settings/community/relationships"
+      },
+      {
+        "title": "隐私设置",
+        "description": "分别控制关注、粉丝、点赞和收藏的公开展示。",
+        "href": "/settings/community/privacy"
+      },
+      {
+        "title": "邮件提醒",
+        "description": "分别管理评论待办、文章审核结果和产品营销邮件。",
+        "href": "/settings/community/email"
+      },
+      {
+        "title": "个人资料编辑",
+        "description": "维护公开资料和 About。",
+        "href": "/settings/community/profile"
+      },
+      {
+        "title": "Credit 与账单",
+        "description": "查看余额、使用记录和账单。",
+        "href": "/settings/credits"
+      }
+    ]
+  },
+  "author": {
+    "authRequired": "请先登录后管理文章。",
+    "eyebrow": "社区 Blog",
+    "title": "我的创作",
+    "description": "保存草稿、提交双语翻译并跟踪审核状态。",
+    "new": "写文章",
+    "newTitle": "新建文章",
+    "editTitle": "编辑文章",
+    "editorHint": "提交后系统先保存原文，再异步翻译并进入审核。",
+    "back": "返回文章列表",
+    "save": "保存草稿",
+    "submit": "提交审核",
+    "loading": "正在加载文章……",
+    "empty": "当前分类还没有文章。",
+    "center": "返回个人中心",
+    "untitled": "未命名文章",
+    "markdownHint": "支持 Markdown、链接、图片和代码块。",
+    "tagsHint": "多个标签使用英文逗号分隔，最多 10 个。",
+    "translationError": "翻译失败",
+    "reviewReason": "审核意见",
+    "blocked": "内容被平台安全策略阻断",
+    "appealStatus": "申诉状态",
+    "appealPlaceholder": "说明为什么你认为这是误判。同一条阻断内容仅可申诉一次。",
+    "submitAppeal": "提交申诉",
+    "allowComments": "允许新增一级评论",
+    "allowReplies": "允许新增回复",
+    "deleteArticle": "删除文章并进入 30 天回收站",
+    "restoreArticle": "恢复文章",
+    "restoreDeadline": "作者恢复截止时间：{date}",
+    "locales": { "zh": "中文原文", "en": "英文原文" },
+    "fields": {
+      "title": "标题",
+      "summary": "摘要",
+      "content": "Markdown 正文",
+      "sourceLocale": "原文语言",
+      "slug": "文章 slug",
+      "cover": "封面图片 URL",
+      "category": "分类",
+      "tags": "标签"
+    },
+    "filters": {
+      "all": "全部",
+      "draft": "草稿",
+      "translating": "翻译中",
+      "translation_failed": "翻译失败",
+      "pending_review": "待审核",
+      "changes_requested": "已退回",
+      "rejected": "已拒绝",
+      "published": "已发布",
+      "deleted": "已删除"
+    },
+    "status": {
+      "draft": "草稿",
+      "revision_draft": "修改草稿",
+      "translating": "翻译中",
+      "translation_failed": "翻译失败",
+      "pending_review": "待审核",
+      "revision_pending_review": "修改稿待审核",
+      "changes_requested": "已退回",
+      "rejected": "已拒绝",
+      "published": "已发布",
+      "deleted_by_author": "已删除",
+      "archived": "已归档"
+    },
+    "messages": {
+      "saved": "草稿已保存。",
+      "submitted": "文章已提交，正在等待翻译。",
+      "appealed": "申诉已提交，复核期间内容仍不可公开。",
+      "interactionsSaved": "文章互动设置已保存。"
+    },
+    "errors": {
+      "REQUEST_FAILED": "请求失败，请稍后重试。",
+      "ARTICLE_NOT_FOUND": "文章不存在。",
+      "ARTICLE_NOT_EDITABLE": "当前状态不能编辑。",
+      "ARTICLE_NOT_SUBMITTABLE": "当前状态不能提交。",
+      "ARTICLE_SOURCE_INCOMPLETE": "请完整填写标题、摘要和正文。",
+      "ARTICLE_SLUG_REQUIRED": "请填写 slug。",
+      "ARTICLE_SLUG_UNAVAILABLE": "该 slug 已被现有文章或历史链接永久占用。",
+      "IDEMPOTENCY_KEY_REUSED": "该提交标识已用于其他内容，请重试。"
+    }
+  },
+  "admin": {
+    "title": "社区文章审核",
+    "description": "审核同一文章的中英文版本。",
+    "pending": "待审核",
+    "featured": "精华",
+    "empty": "暂无待审核文章。",
+    "reviewTitle": "双语文章审核",
+    "source": "作者原文（只读）",
+    "translation": "译文与格式校正",
+    "back": "返回审核列表",
+    "loading": "正在加载……",
+    "saved": "操作已保存。",
+    "failed": "请求失败。",
+    "reasonRequired": "退回修改必须填写原因。",
+    "featuredReasonRequired": "设置精华必须填写推荐理由。",
+    "saveTranslation": "保存译文校正",
+    "slug": "文章 slug",
+    "saveSlug": "保存 slug",
+    "publishedSlugHint": "已发布文章修改 slug 后，所有历史 slug 会永久 301 到新地址。",
+    "featuredReason": "精华推荐理由",
+    "feature": "设为精华",
+    "unfeature": "取消精华",
+    "status": {
+      "draft": "草稿",
+      "translating": "翻译中",
+      "translation_failed": "翻译失败",
+      "pending_review": "待审核",
+      "changes_requested": "已退回",
+      "rejected": "已拒绝",
+      "published": "已发布",
+      "revision_draft": "修改草稿",
+      "revision_pending_review": "修改稿待审核",
+      "deleted_by_author": "已删除",
+      "archived": "已归档"
+    },
+    "errors": {
+      "featuredReasonRequired": "设置精华必须填写推荐理由。",
+      "featuredValueInvalid": "精华状态参数无效。",
+      "notFound": "文章不存在。",
+      "notPendingReview": "该文章当前不在待审核状态。",
+      "notPublished": "只有已发布文章可以设置精华。",
+      "slugRequired": "请填写文章 slug。",
+      "slugUnavailable": "该 slug 已被现有文章或历史链接永久占用。"
+    },
+    "reason": "审核原因或备注",
+    "approve": "通过并发布",
+    "changes": "退回修改",
+    "reject": "拒绝",
+    "archive": "归档",
+    "fields": {
+      "title": "标题",
+      "summary": "摘要",
+      "content": "Markdown 正文",
+      "cover": "封面 URL",
+      "category": "分类",
+      "tags": "标签"
+    }
+  }
+}

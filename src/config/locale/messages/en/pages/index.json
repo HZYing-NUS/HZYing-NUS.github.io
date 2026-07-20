@@ -14,9 +14,9 @@
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "The right tool for every step of building a site",
-        "highlight_text": "right tool",
-        "description": "Idea, design, build, launch, and growth — which tool, template, or service to use at each step, in plain language. Stuck? Just ask the AI.",
+        "title": "The right tools for your first web product.",
+        "highlight_text": "right tools",
+        "description": "From idea to launch, find the right tools, resources, and real-world guidance for every step.",
         "announcement": {
           "badge": "Continuously updated",
           "title": "From zero to launch, without the guesswork",

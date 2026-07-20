@@ -1,5 +1,8 @@
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
+  foreignKey,
   index,
   integer,
   jsonb,
@@ -10,6 +13,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 
 import { envConfigs } from '@/config';
@@ -44,12 +48,16 @@ export const user = table(
     globalMemoryEnabled: boolean('global_memory_enabled')
       .notNull()
       .default(true),
+    registrationReferralClickId: text('registration_referral_click_id'),
   },
   (table) => [
     // Search users by name in admin dashboard
     index('idx_user_name').on(table.name),
     // Order users by registration time for latest users list
     index('idx_user_created_at').on(table.createdAt),
+    index('idx_user_registration_referral').on(
+      table.registrationReferralClickId
+    ),
   ]
 );
 
@@ -272,6 +280,24 @@ export const order = table(
     ),
     // Order orders by creation time for listing
     index('idx_order_created_at').on(table.createdAt),
+    index('idx_order_referral_repair').on(
+      table.status,
+      table.paymentProvider,
+      table.paymentType,
+      table.paidAt
+    ),
+    index('idx_order_referral_first_purchase').on(
+      table.userId,
+      table.status,
+      table.paymentProvider,
+      table.paymentType,
+      table.paidAt
+    ),
+    index('idx_order_payment_identity').on(
+      table.paymentProvider,
+      table.paymentUserId,
+      table.status
+    ),
   ]
 );
 
@@ -389,6 +415,272 @@ export const creditIdentityClaim = table(
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (table) => [index('idx_credit_identity_claim_user').on(table.userId)]
+);
+
+export const paymentIdentityClaim = table(
+  'payment_identity_claim',
+  {
+    id: text('id').primaryKey(),
+    provider: text('provider').notNull(),
+    paymentUserId: text('payment_user_id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    firstOrderNo: text('first_order_no').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_payment_identity_claim_unique').on(
+      table.provider,
+      table.paymentUserId
+    ),
+    index('idx_payment_identity_claim_user').on(table.userId),
+  ]
+);
+
+export const creditPackage = table(
+  'credit_package',
+  {
+    id: text('id').primaryKey(),
+    code: text('code').notNull().unique(),
+    nameZh: text('name_zh').notNull(),
+    nameEn: text('name_en').notNull(),
+    credits: integer('credits').notNull(),
+    amountUsdCents: integer('amount_usd_cents').notNull(),
+    creemSandboxProductId: text('creem_sandbox_product_id'),
+    creemProductionProductId: text('creem_production_product_id'),
+    recommended: boolean('recommended').notNull().default(false),
+    enabled: boolean('enabled').notNull().default(true),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_credit_package_enabled_sort').on(table.enabled, table.sortOrder),
+    uniqueIndex('idx_credit_package_one_recommended')
+      .on(table.recommended)
+      .where(sql`${table.recommended} = true`),
+  ]
+);
+
+export const referralProfile = table(
+  'referral_profile',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    inviteCode: text('invite_code').notNull().unique(),
+    status: text('status').notNull().default('active'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('idx_referral_profile_user').on(table.userId)]
+);
+
+export const referralAttribution = table(
+  'referral_attribution',
+  {
+    id: text('id').primaryKey(),
+    inviterUserId: text('inviter_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    referredUserId: text('referred_user_id')
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    inviteCode: text('invite_code').notNull(),
+    clickedAt: timestamp('clicked_at').notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    attributedAt: timestamp('attributed_at').defaultNow().notNull(),
+    status: text('status').notNull().default('active'),
+    riskMetadata: jsonb('risk_metadata'),
+  },
+  (table) => [
+    index('idx_referral_attribution_inviter').on(
+      table.inviterUserId,
+      table.attributedAt
+    ),
+  ]
+);
+
+export const referralInviteClick = table(
+  'referral_invite_click',
+  {
+    id: text('id').primaryKey(),
+    token: text('token').notNull().unique(),
+    inviterUserId: text('inviter_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    inviteCode: text('invite_code').notNull(),
+    clickedAt: timestamp('clicked_at').defaultNow().notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    claimedByUserId: text('claimed_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    claimedAt: timestamp('claimed_at'),
+  },
+  (table) => [
+    index('idx_referral_invite_click_token_expiry').on(
+      table.token,
+      table.expiresAt
+    ),
+  ]
+);
+
+export const referralReward = table(
+  'referral_reward',
+  {
+    id: text('id').primaryKey(),
+    inviterUserId: text('inviter_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    referredUserId: text('referred_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    attributionId: text('attribution_id')
+      .notNull()
+      .references(() => referralAttribution.id, { onDelete: 'restrict' }),
+    rewardType: text('reward_type').notNull(),
+    credits: integer('credits').notNull(),
+    status: text('status').notNull().default('pending'),
+    idempotencyKey: text('idempotency_key').notNull().unique(),
+    sourceReservationId: text('source_reservation_id'),
+    sourceOrderNo: text('source_order_no'),
+    availableAt: timestamp('available_at').notNull(),
+    grantedAt: timestamp('granted_at'),
+    reviewedAt: timestamp('reviewed_at'),
+    reviewedBy: text('reviewed_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    reviewNote: text('review_note'),
+    riskEventId: text('risk_event_id'),
+    capMonthKey: text('cap_month_key'),
+    capReleasedAt: timestamp('cap_released_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_referral_reward_first_type').on(
+      table.referredUserId,
+      table.rewardType
+    ),
+    uniqueIndex('idx_referral_reward_reservation').on(
+      table.sourceReservationId
+    ),
+    uniqueIndex('idx_referral_reward_source_order').on(table.sourceOrderNo),
+    index('idx_referral_reward_release').on(table.status, table.availableAt),
+    index('idx_referral_reward_inviter').on(
+      table.inviterUserId,
+      table.createdAt
+    ),
+    index('idx_referral_reward_order').on(table.sourceOrderNo),
+  ]
+);
+
+export const referralMonthlyCap = table(
+  'referral_monthly_cap',
+  {
+    id: text('id').primaryKey(),
+    inviterUserId: text('inviter_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    monthKey: text('month_key').notNull(),
+    awardedCredits: integer('awarded_credits').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_referral_monthly_cap_unique').on(
+      table.inviterUserId,
+      table.monthKey
+    ),
+  ]
+);
+
+export const referralRewardClawback = table(
+  'referral_reward_clawback',
+  {
+    id: text('id').primaryKey(),
+    rewardId: text('reward_id')
+      .notNull()
+      .references(() => referralReward.id, { onDelete: 'restrict' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    riskEventId: text('risk_event_id'),
+    reason: text('reason').notNull(),
+    rewardCredits: integer('reward_credits').notNull(),
+    frozenCredits: integer('frozen_credits').notNull().default(0),
+    owedCredits: integer('owed_credits').notNull().default(0),
+    status: text('status').notNull(),
+    idempotencyKey: text('idempotency_key').notNull().unique(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_referral_clawback_reward').on(table.rewardId, table.createdAt),
+    index('idx_referral_clawback_user').on(table.userId, table.status),
+  ]
+);
+
+export const referralEventOutbox = table(
+  'referral_event_outbox',
+  {
+    id: text('id').primaryKey(),
+    eventType: text('event_type').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    idempotencyKey: text('idempotency_key').notNull().unique(),
+    payload: jsonb('payload').notNull(),
+    status: text('status').notNull().default('pending'),
+    attempts: integer('attempts').notNull().default(0),
+    nextAttemptAt: timestamp('next_attempt_at').defaultNow().notNull(),
+    leaseId: text('lease_id'),
+    leaseExpiresAt: timestamp('lease_expires_at'),
+    lastError: text('last_error'),
+    processedAt: timestamp('processed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_referral_event_pending').on(
+      table.status,
+      table.nextAttemptAt,
+      table.createdAt
+    ),
+  ]
+);
+
+export const referralPurchaseTombstone = table(
+  'referral_purchase_tombstone',
+  {
+    id: text('id').primaryKey(),
+    orderNo: text('order_no').notNull().unique(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    riskEventId: text('risk_event_id').notNull(),
+    reason: text('reason').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [index('idx_referral_tombstone_user').on(table.userId)]
 );
 
 export const apikey = table(
@@ -829,6 +1121,8 @@ export const projectMemory = table(
       .references(() => project.id, { onDelete: 'cascade' }),
     type: text('type').notNull(),
     content: text('content').notNull(),
+    dedupeKey: text('dedupe_key'),
+    categoryKey: text('category_key'),
     importance: integer('importance').notNull().default(0),
     sourceChatId: text('source_chat_id').references(() => chat.id, {
       onDelete: 'cascade',
@@ -851,6 +1145,16 @@ export const projectMemory = table(
       table.status
     ),
     index('idx_project_memory_source_chat').on(table.sourceChatId),
+    uniqueIndex('idx_project_memory_dedupe').on(
+      table.userId,
+      table.projectId,
+      table.dedupeKey
+    ),
+    uniqueIndex('idx_project_memory_category').on(
+      table.userId,
+      table.projectId,
+      table.categoryKey
+    ),
   ]
 );
 
@@ -862,6 +1166,7 @@ export const globalMemory = table(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     content: text('content').notNull(),
+    dedupeKey: text('dedupe_key'),
     sourceChatId: text('source_chat_id').references(() => chat.id, {
       onDelete: 'set null',
     }),
@@ -877,7 +1182,10 @@ export const globalMemory = table(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index('idx_global_memory_owner').on(table.userId, table.status)]
+  (table) => [
+    index('idx_global_memory_owner').on(table.userId, table.status),
+    uniqueIndex('idx_global_memory_dedupe').on(table.userId, table.dedupeKey),
+  ]
 );
 
 export const aiFile = table(
@@ -898,6 +1206,11 @@ export const aiFile = table(
     contentHash: text('content_hash').notNull(),
     parseStatus: text('parse_status').notNull().default('pending'),
     parseError: text('parse_error'),
+    parseClaimId: text('parse_claim_id'),
+    parseAttemptId: text('parse_attempt_id'),
+    parseClaimedAt: timestamp('parse_claimed_at'),
+    parseChargedAt: timestamp('parse_charged_at'),
+    parseCostUsd: numeric('parse_cost_usd', { precision: 18, scale: 8 }),
     status: text('status').notNull().default('active'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
@@ -955,6 +1268,11 @@ export const paymentRiskEvent = table(
       table.providerEventId
     ),
     index('idx_payment_risk_event_order').on(table.provider, table.orderNo),
+    index('idx_payment_risk_event_transaction').on(
+      table.provider,
+      table.transactionId,
+      table.eventType
+    ),
   ]
 );
 
@@ -1014,6 +1332,10 @@ export const creditReservation = table(
     ),
     index('idx_credit_reservation_owner').on(table.userId, table.createdAt),
     index('idx_credit_reservation_request').on(table.userId, table.requestId),
+    index('idx_credit_reservation_referral_repair').on(
+      table.status,
+      table.settledAt
+    ),
   ]
 );
 
@@ -1343,4 +1665,905 @@ export const postResource = table(
       .references(() => resource.id, { onDelete: 'cascade' }),
   },
   (table) => [primaryKey({ columns: [table.postId, table.resourceId] })]
+);
+
+// Community Blog is isolated from the legacy post/profile_content domain.
+export const communityUserProfile = table(
+  'community_user_profile',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    username: text('username').notNull(),
+    displayName: text('display_name').notNull(),
+    avatarUrl: text('avatar_url'),
+    headline: text('headline'),
+    aboutZh: text('about_zh'),
+    aboutEn: text('about_en'),
+    experience: jsonb('experience').notNull().default([]),
+    skills: jsonb('skills').notNull().default([]),
+    region: text('region'),
+    websiteUrl: text('website_url'),
+    socialLinks: jsonb('social_links').notNull().default([]),
+    currentPublishedRevisionId: text('current_published_revision_id'),
+    pendingRevisionId: text('pending_revision_id'),
+    moderationStatus: text('moderation_status').notNull().default('pending'),
+    isHidden: boolean('is_hidden').notNull().default(false),
+    hiddenReason: text('hidden_reason'),
+    usernameChangedAt: timestamp('username_changed_at'),
+    allowAiCitation: boolean('allow_ai_citation').notNull().default(false),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_profile_user').on(table.userId),
+    uniqueIndex('idx_community_profile_username').on(table.username),
+    index('idx_community_profile_visibility').on(
+      table.isHidden,
+      table.moderationStatus
+    ),
+    foreignKey({
+      name: 'community_profile_published_revision_owner_fk',
+      columns: [table.id, table.currentPublishedRevisionId],
+      foreignColumns: [
+        communityProfileRevision.profileId,
+        communityProfileRevision.id,
+      ],
+    }).onDelete('restrict'),
+    foreignKey({
+      name: 'community_profile_pending_revision_owner_fk',
+      columns: [table.id, table.pendingRevisionId],
+      foreignColumns: [
+        communityProfileRevision.profileId,
+        communityProfileRevision.id,
+      ],
+    }).onDelete('restrict'),
+    check(
+      'community_profile_moderation_status_valid',
+      sql`${table.moderationStatus} in ('pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed')`
+    ),
+    check(
+      'community_profile_ai_citation_disabled',
+      sql`${table.allowAiCitation} = false`
+    ),
+  ]
+);
+
+export const communityProfileRevision = table(
+  'community_profile_revision',
+  {
+    id: text('id').primaryKey(),
+    profileId: text('profile_id')
+      .notNull()
+      .references((): AnyPgColumn => communityUserProfile.id, {
+        onDelete: 'restrict',
+      }),
+    version: integer('version').notNull(),
+    displayName: text('display_name').notNull(),
+    avatarUrl: text('avatar_url'),
+    headline: text('headline'),
+    aboutZh: text('about_zh'),
+    aboutEn: text('about_en'),
+    experience: jsonb('experience').notNull().default([]),
+    skills: jsonb('skills').notNull().default([]),
+    region: text('region'),
+    websiteUrl: text('website_url'),
+    socialLinks: jsonb('social_links').notNull().default([]),
+    contentFingerprint: text('content_fingerprint').notNull(),
+    moderationStatus: text('moderation_status').notNull().default('pending'),
+    moderationReviewId: text('moderation_review_id').references(
+      (): AnyPgColumn => communityModerationReview.id,
+      { onDelete: 'restrict' }
+    ),
+    createdBy: text('created_by')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    submittedAt: timestamp('submitted_at'),
+    publishedAt: timestamp('published_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_profile_revision_version').on(
+      table.profileId,
+      table.version
+    ),
+    uniqueIndex('idx_community_profile_revision_owner').on(
+      table.profileId,
+      table.id
+    ),
+    index('idx_community_profile_revision_moderation').on(
+      table.moderationStatus,
+      table.createdAt
+    ),
+    check(
+      'community_profile_revision_moderation_status_valid',
+      sql`${table.moderationStatus} in ('pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed')`
+    ),
+  ]
+);
+
+export const communityUsernameHistory = table(
+  'community_username_history',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    username: text('username').notNull(),
+    replacedByUsername: text('replaced_by_username'),
+    releasedAt: timestamp('released_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_username_history_username').on(table.username),
+    index('idx_community_username_history_user').on(table.userId),
+  ]
+);
+
+export const communityReservedUsername = table('community_reserved_username', {
+  username: text('username').primaryKey(),
+  reason: text('reason').notNull(),
+  createdBy: text('created_by').references(() => user.id, {
+    onDelete: 'set null',
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const communityPrivacySetting = table('community_privacy_setting', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  showFollowingList: boolean('show_following_list').notNull().default(true),
+  showFollowerList: boolean('show_follower_list').notNull().default(true),
+  showLikes: boolean('show_likes').notNull().default(true),
+  showBookmarks: boolean('show_bookmarks').notNull().default(true),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const communityBlogArticle = table(
+  'community_blog_article',
+  {
+    id: text('id').primaryKey(),
+    authorId: text('author_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    slug: text('slug').notNull(),
+    status: text('status').notNull().default('draft'),
+    sourceLocale: text('source_locale').notNull(),
+    categorySlug: text('category_slug'),
+    coverImageUrl: text('cover_image_url'),
+    currentPublishedRevisionId: text('current_published_revision_id'),
+    currentWorkingRevisionId: text('current_working_revision_id'),
+    featured: boolean('featured').notNull().default(false),
+    featuredReason: text('featured_reason'),
+    featuredAt: timestamp('featured_at'),
+    featuredBy: text('featured_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    allowComments: boolean('allow_comments').notNull().default(true),
+    allowReplies: boolean('allow_replies').notNull().default(true),
+    allowAiCitation: boolean('allow_ai_citation').notNull().default(false),
+    firstPublishedAt: timestamp('first_published_at'),
+    deletedAt: timestamp('deleted_at'),
+    restoreDeadlineAt: timestamp('restore_deadline_at'),
+    archivedAt: timestamp('archived_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_article_slug').on(table.slug),
+    index('idx_community_article_feed').on(
+      table.status,
+      table.featured,
+      table.firstPublishedAt
+    ),
+    index('idx_community_article_author_status').on(
+      table.authorId,
+      table.status,
+      table.updatedAt
+    ),
+    index('idx_community_article_deleted').on(
+      table.deletedAt,
+      table.restoreDeadlineAt
+    ),
+    foreignKey({
+      name: 'community_article_published_revision_owner_fk',
+      columns: [table.id, table.currentPublishedRevisionId],
+      foreignColumns: [
+        communityArticleRevision.articleId,
+        communityArticleRevision.id,
+      ],
+    }).onDelete('restrict'),
+    foreignKey({
+      name: 'community_article_working_revision_owner_fk',
+      columns: [table.id, table.currentWorkingRevisionId],
+      foreignColumns: [
+        communityArticleRevision.articleId,
+        communityArticleRevision.id,
+      ],
+    }).onDelete('restrict'),
+    check(
+      'community_article_status_valid',
+      sql`${table.status} in ('draft', 'translating', 'translation_failed', 'pending_review', 'changes_requested', 'rejected', 'published', 'revision_draft', 'revision_pending_review', 'deleted_by_author', 'archived')`
+    ),
+    check(
+      'community_article_source_locale_valid',
+      sql`${table.sourceLocale} in ('zh', 'en')`
+    ),
+    check(
+      'community_article_ai_citation_disabled',
+      sql`${table.allowAiCitation} = false`
+    ),
+  ]
+);
+
+export const communityArticleRevision = table(
+  'community_article_revision',
+  {
+    id: text('id').primaryKey(),
+    articleId: text('article_id')
+      .notNull()
+      .references((): AnyPgColumn => communityBlogArticle.id, {
+        onDelete: 'restrict',
+      }),
+    version: integer('version').notNull(),
+    titleZh: text('title_zh'),
+    titleEn: text('title_en'),
+    summaryZh: text('summary_zh'),
+    summaryEn: text('summary_en'),
+    contentZh: text('content_zh'),
+    contentEn: text('content_en'),
+    coverImageUrl: text('cover_image_url'),
+    categorySlug: text('category_slug'),
+    tags: jsonb('tags').notNull().default([]),
+    sourceLocale: text('source_locale').notNull(),
+    translationStatus: text('translation_status').notNull().default('draft'),
+    translationError: text('translation_error'),
+    translationModelId: text('translation_model_id').references(
+      () => aiModel.id,
+      { onDelete: 'restrict' }
+    ),
+    translationProviderId: text('translation_provider_id').references(
+      () => aiProvider.id,
+      { onDelete: 'restrict' }
+    ),
+    translationPromptVersion: text('translation_prompt_version'),
+    translationCompletedAt: timestamp('translation_completed_at'),
+    contentFingerprint: text('content_fingerprint'),
+    reviewStatus: text('review_status').notNull().default('draft'),
+    reviewedBy: text('reviewed_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    reviewReason: text('review_reason'),
+    moderationReviewId: text('moderation_review_id').references(
+      (): AnyPgColumn => communityModerationReview.id,
+      { onDelete: 'restrict' }
+    ),
+    submittedAt: timestamp('submitted_at'),
+    reviewedAt: timestamp('reviewed_at'),
+    publishedAt: timestamp('published_at'),
+    createdBy: text('created_by')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_article_revision_version').on(
+      table.articleId,
+      table.version
+    ),
+    uniqueIndex('idx_community_article_revision_owner').on(
+      table.articleId,
+      table.id
+    ),
+    index('idx_community_article_revision_review').on(
+      table.reviewStatus,
+      table.submittedAt
+    ),
+    index('idx_community_article_revision_translation').on(
+      table.translationStatus,
+      table.updatedAt
+    ),
+    check(
+      'community_revision_source_locale_valid',
+      sql`${table.sourceLocale} in ('zh', 'en')`
+    ),
+    check(
+      'community_revision_translation_status_valid',
+      sql`${table.translationStatus} in ('draft', 'pending', 'running', 'completed', 'failed')`
+    ),
+    check(
+      'community_revision_review_status_valid',
+      sql`${table.reviewStatus} in ('draft', 'pending_review', 'changes_requested', 'rejected', 'approved', 'published')`
+    ),
+  ]
+);
+
+export const communityArticleSlugHistory = table(
+  'community_article_slug_history',
+  {
+    id: text('id').primaryKey(),
+    articleId: text('article_id')
+      .notNull()
+      .references(() => communityBlogArticle.id, { onDelete: 'restrict' }),
+    slug: text('slug').notNull(),
+    replacedBySlug: text('replaced_by_slug'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_article_slug_history_slug').on(table.slug),
+    index('idx_community_article_slug_history_article').on(table.articleId),
+  ]
+);
+
+export const communityBlogTag = table(
+  'community_blog_tag',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull(),
+    nameZh: text('name_zh').notNull(),
+    nameEn: text('name_en').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex('idx_community_blog_tag_slug').on(table.slug)]
+);
+
+export const communityArticleTag = table(
+  'community_article_tag',
+  {
+    articleId: text('article_id')
+      .notNull()
+      .references(() => communityBlogArticle.id, { onDelete: 'cascade' }),
+    tagId: text('tag_id')
+      .notNull()
+      .references(() => communityBlogTag.id, { onDelete: 'restrict' }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.articleId, table.tagId] }),
+    index('idx_community_article_tag_tag').on(table.tagId),
+  ]
+);
+
+export const communityComment = table(
+  'community_comment',
+  {
+    id: text('id').primaryKey(),
+    articleId: text('article_id')
+      .notNull()
+      .references(() => communityBlogArticle.id, { onDelete: 'restrict' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    parentId: text('parent_id').references(
+      (): AnyPgColumn => communityComment.id,
+      { onDelete: 'restrict' }
+    ),
+    depth: integer('depth').notNull().default(0),
+    content: text('content').notNull(),
+    status: text('status').notNull().default('moderation_pending'),
+    featured: boolean('featured').notNull().default(false),
+    moderationReviewId: text('moderation_review_id').references(
+      (): AnyPgColumn => communityModerationReview.id,
+      { onDelete: 'restrict' }
+    ),
+    authorHandledBy: text('author_handled_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    authorHandledAt: timestamp('author_handled_at'),
+    reportedAt: timestamp('reported_at'),
+    closedReason: text('closed_reason'),
+    reminderBatchKey: text('reminder_batch_key'),
+    hiddenAt: timestamp('hidden_at'),
+    deletedAt: timestamp('deleted_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_community_comment_article_status').on(
+      table.articleId,
+      table.status,
+      table.createdAt
+    ),
+    index('idx_community_comment_parent').on(table.parentId, table.createdAt),
+    index('idx_community_comment_author_queue').on(
+      table.status,
+      table.createdAt,
+      table.reminderBatchKey
+    ),
+    index('idx_community_comment_user').on(table.userId, table.createdAt),
+    check(
+      'community_comment_not_self_parent',
+      sql`${table.parentId} <> ${table.id}`
+    ),
+    check('community_comment_depth_valid', sql`${table.depth} in (0, 1)`),
+    check(
+      'community_comment_parent_depth_valid',
+      sql`(${table.depth} = 0 and ${table.parentId} is null) or (${table.depth} = 1 and ${table.parentId} is not null)`
+    ),
+    check(
+      'community_comment_status_valid',
+      sql`${table.status} in ('moderation_pending', 'blocked', 'pending_admin', 'pending_author', 'published', 'rejected', 'reported', 'hidden', 'closed_unhandled', 'deleted')`
+    ),
+  ]
+);
+
+export const communityFollow = table(
+  'community_follow',
+  {
+    followerId: text('follower_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    followedId: text('followed_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.followerId, table.followedId] }),
+    index('idx_community_follow_followed').on(
+      table.followedId,
+      table.createdAt
+    ),
+    check(
+      'community_follow_not_self',
+      sql`${table.followerId} <> ${table.followedId}`
+    ),
+  ]
+);
+
+export const communityArticleLike = table(
+  'community_article_like',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    articleId: text('article_id')
+      .notNull()
+      .references(() => communityBlogArticle.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.articleId] }),
+    index('idx_community_article_like_article').on(table.articleId),
+  ]
+);
+
+export const communityCommentLike = table(
+  'community_comment_like',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    commentId: text('comment_id')
+      .notNull()
+      .references(() => communityComment.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.commentId] }),
+    index('idx_community_comment_like_comment').on(table.commentId),
+  ]
+);
+
+export const communityUserList = table(
+  'community_user_list',
+  {
+    id: text('id').primaryKey(),
+    ownerId: text('owner_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    slug: text('slug').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+    visibility: text('visibility').notNull().default('public'),
+    moderationStatus: text('moderation_status').notNull().default('pending'),
+    moderationReviewId: text('moderation_review_id').references(
+      (): AnyPgColumn => communityModerationReview.id,
+      { onDelete: 'restrict' }
+    ),
+    deletedAt: timestamp('deleted_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_user_list_owner_slug').on(
+      table.ownerId,
+      table.slug
+    ),
+    index('idx_community_user_list_public').on(
+      table.visibility,
+      table.moderationStatus,
+      table.createdAt
+    ),
+    check(
+      'community_user_list_visibility_valid',
+      sql`${table.visibility} in ('public', 'private')`
+    ),
+    check(
+      'community_user_list_moderation_status_valid',
+      sql`${table.moderationStatus} in ('pending', 'published', 'pending_admin', 'blocked', 'hidden')`
+    ),
+  ]
+);
+
+export const communityListResource = table(
+  'community_list_resource',
+  {
+    listId: text('list_id')
+      .notNull()
+      .references(() => communityUserList.id, { onDelete: 'cascade' }),
+    resourceId: text('resource_id')
+      .notNull()
+      .references(() => resource.id, { onDelete: 'cascade' }),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.listId, table.resourceId] })]
+);
+
+export const communityListCollection = table(
+  'community_list_collection',
+  {
+    listId: text('list_id')
+      .notNull()
+      .references(() => communityUserList.id, { onDelete: 'cascade' }),
+    collectionId: text('collection_id')
+      .notNull()
+      .references(() => collection.id, { onDelete: 'cascade' }),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.listId, table.collectionId] })]
+);
+
+export const communityListArticle = table(
+  'community_list_article',
+  {
+    listId: text('list_id')
+      .notNull()
+      .references(() => communityUserList.id, { onDelete: 'cascade' }),
+    articleId: text('article_id')
+      .notNull()
+      .references(() => communityBlogArticle.id, { onDelete: 'cascade' }),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.listId, table.articleId] })]
+);
+
+export const communityResourceBookmark = table(
+  'community_resource_bookmark',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    resourceId: text('resource_id')
+      .notNull()
+      .references(() => resource.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.resourceId] })]
+);
+
+export const communityCollectionBookmark = table(
+  'community_collection_bookmark',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    collectionId: text('collection_id')
+      .notNull()
+      .references(() => collection.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.collectionId] })]
+);
+
+export const communityArticleBookmark = table(
+  'community_article_bookmark',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    articleId: text('article_id')
+      .notNull()
+      .references(() => communityBlogArticle.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.articleId] })]
+);
+
+export const communityListBookmark = table(
+  'community_list_bookmark',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    listId: text('list_id')
+      .notNull()
+      .references(() => communityUserList.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.listId] }),
+    index('idx_community_list_bookmark_list').on(table.listId),
+  ]
+);
+
+export const communityModerationReview = table(
+  'community_moderation_review',
+  {
+    id: text('id').primaryKey(),
+    objectType: text('object_type').notNull(),
+    objectId: text('object_id').notNull(),
+    objectVersion: text('object_version').notNull(),
+    userId: text('user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    rawContent: jsonb('raw_content').notNull(),
+    normalizedContent: jsonb('normalized_content').notNull(),
+    deterministicFindings: jsonb('deterministic_findings')
+      .notNull()
+      .default([]),
+    contentFingerprint: text('content_fingerprint').notNull(),
+    decision: text('decision'),
+    riskLevel: text('risk_level'),
+    categories: jsonb('categories').notNull().default([]),
+    confidence: numeric('confidence', { precision: 5, scale: 4 }),
+    evidence: jsonb('evidence').notNull().default([]),
+    reason: text('reason'),
+    requiresHumanReview: boolean('requires_human_review')
+      .notNull()
+      .default(false),
+    modelId: text('model_id').references(() => aiModel.id, {
+      onDelete: 'restrict',
+    }),
+    providerId: text('provider_id').references(() => aiProvider.id, {
+      onDelete: 'restrict',
+    }),
+    actualModelId: text('actual_model_id'),
+    usage: jsonb('usage'),
+    internalCostUsd: numeric('internal_cost_usd', {
+      precision: 12,
+      scale: 8,
+    }),
+    promptVersion: text('prompt_version').notNull(),
+    ruleVersion: text('rule_version').notNull(),
+    status: text('status').notNull().default('pending'),
+    policyDecision: text('policy_decision'),
+    error: text('error'),
+    retryCount: integer('retry_count').notNull().default(0),
+    startedAt: timestamp('started_at'),
+    completedAt: timestamp('completed_at'),
+    failedAt: timestamp('failed_at'),
+    reviewedBy: text('reviewed_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    reviewedAt: timestamp('reviewed_at'),
+    reviewNote: text('review_note'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_moderation_object_fingerprint').on(
+      table.objectType,
+      table.objectId,
+      table.objectVersion,
+      table.contentFingerprint,
+      table.ruleVersion
+    ),
+    index('idx_community_moderation_queue').on(table.status, table.createdAt),
+    index('idx_community_moderation_object').on(
+      table.objectType,
+      table.objectId,
+      table.createdAt
+    ),
+    check(
+      'community_moderation_status_valid',
+      sql`${table.status} in ('pending', 'running', 'completed', 'failed', 'pending_admin')`
+    ),
+  ]
+);
+
+export const communityModerationAppeal = table(
+  'community_moderation_appeal',
+  {
+    id: text('id').primaryKey(),
+    reviewId: text('review_id')
+      .notNull()
+      .references(() => communityModerationReview.id, {
+        onDelete: 'restrict',
+      }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    statement: text('statement').notNull(),
+    status: text('status').notNull().default('pending'),
+    reviewedBy: text('reviewed_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    reviewedAt: timestamp('reviewed_at'),
+    resultNote: text('result_note'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_moderation_appeal_once').on(table.reviewId),
+    index('idx_community_moderation_appeal_status').on(
+      table.status,
+      table.createdAt
+    ),
+    check(
+      'community_moderation_appeal_status_valid',
+      sql`${table.status} in ('pending', 'confirmed_violation', 'false_positive_recheck')`
+    ),
+  ]
+);
+
+export const communityContentReport = table(
+  'community_content_report',
+  {
+    id: text('id').primaryKey(),
+    reporterId: text('reporter_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    objectType: text('object_type').notNull(),
+    objectId: text('object_id').notNull(),
+    reasonType: text('reason_type').notNull(),
+    description: text('description'),
+    status: text('status').notNull().default('pending'),
+    handledBy: text('handled_by').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    handledAt: timestamp('handled_at'),
+    resultNote: text('result_note'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_content_report_dedupe').on(
+      table.reporterId,
+      table.objectType,
+      table.objectId,
+      table.reasonType
+    ),
+    index('idx_community_content_report_status').on(
+      table.status,
+      table.createdAt
+    ),
+    check(
+      'community_content_report_status_valid',
+      sql`${table.status} in ('pending', 'reviewing', 'resolved', 'dismissed')`
+    ),
+  ]
+);
+
+export const communityAuditLog = table(
+  'community_audit_log',
+  {
+    id: text('id').primaryKey(),
+    actorId: text('actor_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    actorType: text('actor_type').notNull(),
+    action: text('action').notNull(),
+    objectType: text('object_type').notNull(),
+    objectId: text('object_id').notNull(),
+    beforeState: jsonb('before_state'),
+    afterState: jsonb('after_state'),
+    metadata: jsonb('metadata'),
+    requestId: text('request_id'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_community_audit_object').on(
+      table.objectType,
+      table.objectId,
+      table.createdAt
+    ),
+    index('idx_community_audit_actor').on(table.actorId, table.createdAt),
+  ]
+);
+
+export const communityJob = table(
+  'community_job',
+  {
+    id: text('id').primaryKey(),
+    type: text('type').notNull(),
+    businessKey: text('business_key').notNull(),
+    payload: jsonb('payload').notNull(),
+    status: text('status').notNull().default('pending'),
+    attemptCount: integer('attempt_count').notNull().default(0),
+    maxAttempts: integer('max_attempts').notNull().default(5),
+    runAfter: timestamp('run_after').defaultNow().notNull(),
+    lockedBy: text('locked_by'),
+    lockedAt: timestamp('locked_at'),
+    leaseExpiresAt: timestamp('lease_expires_at'),
+    claimToken: text('claim_token'),
+    lastError: text('last_error'),
+    completedAt: timestamp('completed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_job_business_key').on(
+      table.type,
+      table.businessKey
+    ),
+    index('idx_community_job_claim').on(
+      table.status,
+      table.runAfter,
+      table.leaseExpiresAt
+    ),
+    check(
+      'community_job_status_valid',
+      sql`${table.status} in ('pending', 'processing', 'completed', 'failed')`
+    ),
+    check(
+      'community_job_attempts_valid',
+      sql`${table.attemptCount} >= 0 and ${table.maxAttempts} > 0 and ${table.attemptCount} <= ${table.maxAttempts}`
+    ),
+  ]
+);
+
+export const communityEmailPreference = table('community_email_preference', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  pendingCommentReminder: boolean('pending_comment_reminder')
+    .notNull()
+    .default(true),
+  articleReviewResult: boolean('article_review_result').notNull().default(true),
+  productMarketing: boolean('product_marketing').notNull().default(true),
+  marketingUnsubscribedAt: timestamp('marketing_unsubscribed_at'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const communityEmailDelivery = table(
+  'community_email_delivery',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    emailType: text('email_type').notNull(),
+    businessEventId: text('business_event_id').notNull(),
+    idempotencyKey: text('idempotency_key').notNull(),
+    locale: text('locale').notNull(),
+    templateVersion: text('template_version').notNull(),
+    providerMessageId: text('provider_message_id'),
+    status: text('status').notNull().default('pending'),
+    attemptCount: integer('attempt_count').notNull().default(0),
+    error: text('error'),
+    scheduledAt: timestamp('scheduled_at'),
+    sentAt: timestamp('sent_at'),
+    failedAt: timestamp('failed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_community_email_delivery_idempotency').on(
+      table.idempotencyKey
+    ),
+    index('idx_community_email_delivery_queue').on(
+      table.status,
+      table.scheduledAt,
+      table.createdAt
+    ),
+    check(
+      'community_email_delivery_locale_valid',
+      sql`${table.locale} in ('zh', 'en')`
+    ),
+    check(
+      'community_email_delivery_status_valid',
+      sql`${table.status} in ('pending', 'processing', 'sent', 'failed', 'skipped')`
+    ),
+  ]
 );

@@ -10,7 +10,6 @@ import {
   deleteAiFile,
   getChatFiles,
   getProjectFiles,
-  replaceFileChunks,
 } from '@/shared/models/ai_file';
 import { findChatById } from '@/shared/models/chat';
 import { findProjectById } from '@/shared/models/project';
@@ -27,14 +26,6 @@ const MIME_TYPES = new Set([
   'image/webp',
 ]);
 const MAX_FILE_BYTES = 20 * 1024 * 1024;
-
-function splitText(content: string) {
-  const chunks: string[] = [];
-  for (let offset = 0; offset < content.length; offset += 3000) {
-    chunks.push(content.slice(offset, offset + 3500));
-  }
-  return chunks;
-}
 
 export async function GET(req: Request) {
   const user = await getUserInfo();
@@ -115,46 +106,11 @@ export async function POST(req: Request) {
       if (!storageResult.success)
         throw new Error(storageResult.error || 'UPLOAD_FAILED');
 
-      const isText =
-        file.type === 'text/plain' || file.type === 'text/markdown';
-      const isPdf = file.type === 'application/pdf';
-      let parsedText = isText ? new TextDecoder().decode(bytes) : '';
-      let parseStatus = isText ? 'parsed' : isPdf ? 'pending' : 'visual';
-      let parseError: string | null = null;
-      if (isPdf) {
-        let parser: import('pdf-parse').PDFParse | undefined;
-        try {
-          const { PDFParse } = await import('pdf-parse');
-          parser = new PDFParse({ data: bytes });
-          parsedText = (await parser.getText()).text.trim();
-          if (!parsedText) throw new Error('PDF_TEXT_EMPTY');
-          parseStatus = 'parsed';
-        } catch (error) {
-          parseStatus = 'failed';
-          parseError =
-            error instanceof Error ? error.message : 'PDF_PARSE_FAILED';
-        } finally {
-          await parser?.destroy().catch(() => undefined);
-        }
-      }
+      const parseStatus = file.type.startsWith('image/') ? 'visual' : 'pending';
       const activeRecord = await activateAiFile(record.id, user.id, {
         parseStatus,
-        parseError,
+        parseError: null,
       });
-      if (parsedText) {
-        const chunks = splitText(parsedText);
-        await replaceFileChunks(
-          user.id,
-          record.id,
-          chunks.map((content, chunkIndex) => ({
-            id: generateId().toLowerCase(),
-            chunkIndex,
-            content,
-            tokenCount: Math.ceil(content.length / 3),
-            status: 'active',
-          }))
-        );
-      }
       uploaded.push(activeRecord);
     }
   } catch (error) {

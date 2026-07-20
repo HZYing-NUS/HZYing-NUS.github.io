@@ -51,6 +51,21 @@
               "url": "/admin/posts"
             },
             {
+              "title": "社区文章审核",
+              "icon": "FileCheck",
+              "url": "/admin/community/articles"
+            },
+            {
+              "title": "社区举报与治理",
+              "icon": "ShieldCheck",
+              "url": "/admin/community/comments"
+            },
+            {
+              "title": "社区邮件记录",
+              "icon": "Mail",
+              "url": "/admin/community/emails"
+            },
+            {
               "title": "资源",
               "icon": "Boxes",
               "url": "/admin/resources"

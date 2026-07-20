@@ -18,7 +18,7 @@ export async function retrieveAssistantSources(
     getPublishedResources({ locale, allowAiCitation: true }),
     getPublishedCollections(locale, true),
     searchPublishedPosts({ locale, limit: 50 }),
-    getPublishedProfile(locale),
+    Promise.resolve(null),
   ]);
   const terms = Array.from(
     new Set(

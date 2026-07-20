@@ -51,6 +51,21 @@
               "url": "/admin/posts"
             },
             {
+              "title": "Community Review",
+              "icon": "FileCheck",
+              "url": "/admin/community/articles"
+            },
+            {
+              "title": "Community Governance",
+              "icon": "ShieldCheck",
+              "url": "/admin/community/comments"
+            },
+            {
+              "title": "Community Emails",
+              "icon": "Mail",
+              "url": "/admin/community/emails"
+            },
+            {
               "title": "Resources",
               "icon": "Boxes",
               "url": "/admin/resources"

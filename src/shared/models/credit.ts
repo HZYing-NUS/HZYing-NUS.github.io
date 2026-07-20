@@ -13,6 +13,7 @@ import {
 
 import { db } from '@/core/db';
 import {
+  aiFile,
   credit,
   creditIdentityClaim,
   creditReservation,
@@ -634,6 +635,11 @@ export interface UsageSettlement {
   status?: string;
   failureReason?: string;
   metadata?: Record<string, unknown>;
+  fileParseCharges?: Array<{
+    fileId: string;
+    attemptId: string;
+    actualCostUsd: string;
+  }>;
 }
 
 export async function settleCreditReservation({
@@ -785,6 +791,26 @@ export async function settleCreditReservation({
       priceSnapshot: reservation.priceSnapshot,
       metadata: usage.metadata,
     });
+
+    for (const charge of usage.fileParseCharges || []) {
+      const [marked] = await tx
+        .update(aiFile)
+        .set({
+          parseCostUsd: charge.actualCostUsd,
+          parseChargedAt: settledAt,
+        })
+        .where(
+          and(
+            eq(aiFile.id, charge.fileId),
+            eq(aiFile.userId, userId),
+            eq(aiFile.parseAttemptId, charge.attemptId)
+          )
+        )
+        .returning({ id: aiFile.id });
+      if (!marked) {
+        throw new Error(`File parse charge target not found: ${charge.fileId}`);
+      }
+    }
 
     if (refundCredits > 0) {
       await tx.insert(usageLedger).values({

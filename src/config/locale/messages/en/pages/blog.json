@@ -17,6 +17,12 @@
     "all": "All",
     "no_content": "No Content",
     "crumb": "Blog",
-    "toc": "Table of Contents"
+    "toc": "Table of Contents",
+    "featured": "Featured",
+    "following": "Following",
+    "write": "Write article",
+    "followingSignIn": "Sign in to see articles from authors you follow.",
+    "signIn": "Sign in",
+    "communityAuthor": "Community author"
   }
 }

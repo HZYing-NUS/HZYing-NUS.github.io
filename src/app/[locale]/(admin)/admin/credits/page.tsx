@@ -23,12 +23,27 @@ import {
   getCredits,
   grantCreditsForUser,
 } from '@/shared/models/credit';
+import {
+  CreditPackage,
+  getAllCreditPackages,
+  updateCreditPackage,
+} from '@/shared/models/credit_package';
 import { getPaymentRiskEvents } from '@/shared/models/payment_risk';
+import {
+  adminReviewReferralReward,
+  getAdminReferralRewards,
+  ReferralReward,
+} from '@/shared/models/referral';
 import {
   getAdminCreditReservations,
   getAdminUsageLedger,
 } from '@/shared/models/usage';
-import { findUserById, getUsers, updateUser } from '@/shared/models/user';
+import {
+  findUserById,
+  getUserInfo,
+  getUsers,
+  updateUser,
+} from '@/shared/models/user';
 import { Crumb } from '@/shared/types/blocks/common';
 
 function requiredText(data: FormData, name: string) {
@@ -53,6 +68,25 @@ function nonNegativeInteger(data: FormData, name: string) {
   return value;
 }
 
+type ReferralRewardAction = 'approve' | 'freeze' | 'unfreeze' | 'revoke';
+
+function getReferralRewardActions({
+  status,
+  riskEventId,
+  owedCredits,
+}: {
+  status: string;
+  riskEventId: string | null;
+  owedCredits: number;
+}): ReferralRewardAction[] {
+  if (status === 'pending') return ['approve', 'freeze', 'revoke'];
+  if (status === 'granted') return ['freeze', 'revoke'];
+  if (status === 'frozen') {
+    return riskEventId || owedCredits > 0 ? ['revoke'] : ['unfreeze', 'revoke'];
+  }
+  return [];
+}
+
 export default async function AdminCreditsPage({
   params,
   searchParams,
@@ -69,12 +103,22 @@ export default async function AdminCreditsPage({
     locale,
   });
   const isZh = locale === 'zh';
-  const [users, reservations, usage, risks, transactions] = await Promise.all([
+  const [
+    users,
+    reservations,
+    usage,
+    risks,
+    transactions,
+    packages,
+    referralRewards,
+  ] = await Promise.all([
     getUsers({ limit: 100 }),
     getAdminCreditReservations({ userId, limit: 100 }),
     getAdminUsageLedger({ userId, limit: 100 }),
     getPaymentRiskEvents({ userId, limit: 100 }),
     getCredits({ userId, getUser: true, limit: 100 }),
+    getAllCreditPackages(),
+    getAdminReferralRewards(100),
   ]);
   const selectedUser = userId
     ? users.find((item) => item.id === userId)
@@ -147,6 +191,40 @@ export default async function AdminCreditsPage({
     revalidatePath(`/${locale}/admin/credits`);
   }
 
+  async function updatePackage(data: FormData) {
+    'use server';
+    await requireAllPermissions({
+      codes: [PERMISSIONS.CREDITS_READ, PERMISSIONS.CREDITS_WRITE],
+      locale,
+    });
+    await updateCreditPackage(requiredText(data, 'packageId'), {
+      creemSandboxProductId:
+        String(data.get('creemSandboxProductId') || '').trim() || null,
+      creemProductionProductId:
+        String(data.get('creemProductionProductId') || '').trim() || null,
+      enabled: data.get('enabled') === 'on',
+      recommended: data.get('recommended') === 'on',
+    });
+    revalidatePath(`/${locale}/admin/credits`);
+  }
+
+  async function reviewReferralReward(data: FormData) {
+    'use server';
+    await requireAllPermissions({
+      codes: [PERMISSIONS.CREDITS_READ, PERMISSIONS.CREDITS_WRITE],
+      locale,
+    });
+    const admin = await getUserInfo();
+    if (!admin) throw new Error('User not authenticated');
+    await adminReviewReferralReward({
+      rewardId: requiredText(data, 'rewardId'),
+      action: requiredText(data, 'action') as ReferralRewardAction,
+      reviewerUserId: admin.id,
+      note: String(data.get('note') || '').trim(),
+    });
+    revalidatePath(`/${locale}/admin/credits`);
+  }
+
   return (
     <>
       <Header crumbs={crumbs} />
@@ -214,6 +292,151 @@ export default async function AdminCreditsPage({
                   {isZh ? '更新 AI 权限' : 'Update AI access'}
                 </Button>
               </form>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>
+              {isZh ? '充值套餐配置' : 'Credit package configuration'}
+            </CardTitle>
+            <CardDescription>
+              {isZh
+                ? '金额和 Credit 数量由迁移固定；这里只配置当前 Creem 环境的 Product ID 和展示状态。'
+                : 'Amounts and Credit quantities are migration-controlled. Configure Creem product IDs and availability here.'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {packages.map((item: CreditPackage) => (
+              <form
+                key={item.id}
+                action={updatePackage}
+                className="grid gap-3 border-t pt-5 md:grid-cols-2 xl:grid-cols-6"
+              >
+                <input type="hidden" name="packageId" value={item.id} />
+                <div>
+                  <p className="font-medium">
+                    {isZh ? item.nameZh : item.nameEn}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {item.credits} Credit · $
+                    {(item.amountUsdCents / 100).toFixed(2)}
+                  </p>
+                </div>
+                <Field label="Creem sandbox Product ID">
+                  <Input
+                    name="creemSandboxProductId"
+                    defaultValue={item.creemSandboxProductId || ''}
+                  />
+                </Field>
+                <Field label="Creem production Product ID">
+                  <Input
+                    name="creemProductionProductId"
+                    defaultValue={item.creemProductionProductId || ''}
+                  />
+                </Field>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    name="enabled"
+                    type="checkbox"
+                    defaultChecked={item.enabled}
+                  />
+                  {isZh ? '启用' : 'Enabled'}
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    name="recommended"
+                    type="checkbox"
+                    defaultChecked={item.recommended}
+                  />
+                  {isZh ? '推荐' : 'Recommended'}
+                </label>
+                <Button type="submit">{isZh ? '保存' : 'Save'}</Button>
+              </form>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>
+              {isZh ? '邀请奖励审核' : 'Referral reward review'}
+            </CardTitle>
+            <CardDescription>
+              {isZh
+                ? '可释放、冻结、解冻或撤回奖励。全部操作保留审核人、时间和备注。'
+                : 'Release, freeze, unfreeze, or revoke rewards with an audit trail.'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {referralRewards.map(
+              ({
+                reward,
+                clawback,
+              }: {
+                reward: ReferralReward;
+                clawback: {
+                  rewardId: string;
+                  id: string;
+                  owedCredits: number;
+                  status: string;
+                  reason: string;
+                } | null;
+              }) => {
+                const allowedActions = getReferralRewardActions({
+                  status: reward.status,
+                  riskEventId: reward.riskEventId,
+                  owedCredits: clawback?.owedCredits || 0,
+                });
+                return (
+                  <form
+                    key={reward.id}
+                    action={reviewReferralReward}
+                    className="grid gap-3 border-t pt-4 md:grid-cols-[1fr_auto_auto_auto]"
+                  >
+                    <input type="hidden" name="rewardId" value={reward.id} />
+                    <div className="text-sm">
+                      <p className="font-medium">
+                        {reward.rewardType} · {reward.credits} Credit ·{' '}
+                        {reward.status}
+                      </p>
+                      <p className="text-muted-foreground font-mono text-xs">
+                        {reward.inviterUserId} ← {reward.referredUserId}
+                      </p>
+                      {clawback ? (
+                        <p className="text-destructive mt-1 text-xs">
+                          {isZh ? '未追回' : 'Owed'}：{clawback.owedCredits}{' '}
+                          Credit
+                        </p>
+                      ) : null}
+                    </div>
+                    {allowedActions.length ? (
+                      <>
+                        <Input
+                          name="note"
+                          placeholder={isZh ? '审核备注' : 'Review note'}
+                        />
+                        <select
+                          name="action"
+                          className="border-input bg-background h-9 rounded-md border px-3 text-sm"
+                        >
+                          {allowedActions.map((action) => (
+                            <option key={action} value={action}>
+                              {action}
+                            </option>
+                          ))}
+                        </select>
+                        <Button type="submit">{isZh ? '执行' : 'Apply'}</Button>
+                      </>
+                    ) : (
+                      <p className="text-muted-foreground md:col-span-3 md:self-center md:text-right">
+                        {isZh ? '无可用操作' : 'No available actions'}
+                      </p>
+                    )}
+                  </form>
+                );
+              }
             )}
           </CardContent>
         </Card>

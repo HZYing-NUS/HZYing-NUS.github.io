@@ -3,6 +3,11 @@
   "nav": {
     "items": [
       {
+        "title": "个人中心",
+        "url": "/settings/community",
+        "icon": "LayoutDashboard"
+      },
+      {
         "title": "个人资料",
         "url": "/settings/profile",
         "icon": "User"

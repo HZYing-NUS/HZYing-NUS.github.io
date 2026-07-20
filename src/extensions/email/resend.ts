@@ -81,7 +81,10 @@ export class ResendProvider implements EmailProvider {
       }
 
       const result = await this.client.emails.send(
-        resendEmail as CreateEmailOptions
+        resendEmail as CreateEmailOptions,
+        email.idempotencyKey
+          ? { idempotencyKey: email.idempotencyKey }
+          : undefined
       );
 
       console.log('resend email result', result);

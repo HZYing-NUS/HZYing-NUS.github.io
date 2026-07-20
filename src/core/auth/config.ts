@@ -14,8 +14,11 @@ import {
 import { isCloudflareWorker } from '@/shared/lib/env';
 import { getUuid } from '@/shared/lib/hash';
 import { getClientIp } from '@/shared/lib/ip';
+import { ensureCommunityProfile } from '@/shared/models/community';
+import { claimReferralInvite } from '@/shared/models/referral';
 import { getEmailService } from '@/shared/services/email';
 import { grantRoleForNewUser } from '@/shared/services/rbac';
+import { verifyReferralCookie } from '@/shared/services/referral-cookie';
 
 // Best-effort dedupe to prevent sending verification emails too frequently.
 // This is especially helpful in dev/hot reload, transient network conditions,
@@ -58,6 +61,11 @@ const authOptions = {
         input: false,
         required: false,
         defaultValue: true,
+      },
+      registrationReferralClickId: {
+        type: 'string',
+        input: false,
+        required: false,
       },
     },
   },
@@ -118,36 +126,65 @@ export async function getAuthOptions(configs: Record<string, string>) {
                 user.locale = locale.slice(0, 20);
               }
 
-              // Only set on first creation; never overwrite later.
-              if (user?.utmSource) return user;
-
               const raw = getCookieFromCtx(ctx, 'utm_source');
-              if (!raw || typeof raw !== 'string') return user;
+              if (!user?.utmSource && raw && typeof raw === 'string') {
+                const decoded = decodeURIComponent(raw).trim();
+                const sanitized = decoded
+                  .replace(/[^\w\-.:]/g, '')
+                  .slice(0, 100);
+                if (sanitized) {
+                  user.utmSource = sanitized;
+                }
+              }
 
-              // Keep it small & safe.
-              const decoded = decodeURIComponent(raw).trim();
-              const sanitized = decoded
-                .replace(/[^\w\-.:]/g, '') // allow a-zA-Z0-9_ - . :
-                .slice(0, 100);
-
-              if (sanitized) {
-                user.utmSource = sanitized;
+              const signedReferral = getCookieFromCtx(ctx, 'webtools_referral');
+              const referralPayload = signedReferral
+                ? verifyReferralCookie(
+                    signedReferral,
+                    envConfigs.referral_cookie_secret
+                  )
+                : null;
+              if (referralPayload) {
+                user.registrationReferralClickId = referralPayload.clickId;
               }
             } catch {
               // best-effort only
             }
             return user;
           },
-          after: async (user: any) => {
-            try {
-              if (!user.id) {
-                throw new Error('user id is required');
-              }
+          after: async (user: any, ctx: any) => {
+            if (!user.id) {
+              console.error(
+                'new user initialization failed: user id is required'
+              );
+              return;
+            }
 
-              // grant role for new user
+            try {
               await grantRoleForNewUser(user);
-            } catch (e) {
-              console.log('grant credits or role for new user failed', e);
+            } catch (error) {
+              console.error('grant role for new user failed', error);
+            }
+
+            try {
+              await ensureCommunityProfile({
+                userId: user.id,
+                name: user.name,
+                image: user.image,
+              });
+            } catch (error) {
+              console.error('initialize community profile failed', error);
+            }
+
+            try {
+              if (user.registrationReferralClickId) {
+                await claimReferralInvite({
+                  clickId: user.registrationReferralClickId,
+                  referredUserId: user.id,
+                });
+              }
+            } catch (error) {
+              console.error('claim referral attribution failed', error);
             }
           },
         },

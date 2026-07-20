@@ -14,9 +14,9 @@
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "建站工具，该用哪个，这里告诉你",
-        "highlight_text": "该用哪个",
-        "description": "需求、设计、开发、上线、推广，每一步该用什么工具、模板和服务，一次说清。看不懂就直接问 AI。",
+        "title": "第一次做 Web 产品，用对工具。",
+        "highlight_text": "用对工具",
+        "description": "从想法、开发到上线，按步骤找到合适的工具、资源和实战经验。",
         "announcement": {
           "badge": "持续更新",
           "title": "从零到上线，帮你少走弯路",

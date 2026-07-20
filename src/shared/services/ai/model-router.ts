@@ -81,7 +81,7 @@ export function getReasoningBudgetTokens(model: {
   );
 }
 
-export async function resolveAiModel(
+export async function resolveAiModelConfiguration(
   publicId: string,
   channel: 'primary' | 'fallback' = 'primary'
 ) {
@@ -111,40 +111,48 @@ export async function resolveAiModel(
         : 'MODEL_PROVIDER_NOT_CONFIGURED'
     );
   }
-  const apiKey = process.env[apiKeyEnvName];
+  return {
+    ...model,
+    providerId,
+    providerModelId,
+    providerCode,
+    apiBaseUrl,
+    apiKeyEnvName,
+    inputPricePerMillion:
+      channel === 'fallback' && model.fallbackInputPricePerMillion
+        ? model.fallbackInputPricePerMillion
+        : model.inputPricePerMillion,
+    outputPricePerMillion:
+      channel === 'fallback' && model.fallbackOutputPricePerMillion
+        ? model.fallbackOutputPricePerMillion
+        : model.outputPricePerMillion,
+    cacheReadPricePerMillion:
+      channel === 'fallback' && model.fallbackCacheReadPricePerMillion
+        ? model.fallbackCacheReadPricePerMillion
+        : model.cacheReadPricePerMillion,
+    cacheWritePricePerMillion:
+      channel === 'fallback' && model.fallbackCacheWritePricePerMillion
+        ? model.fallbackCacheWritePricePerMillion
+        : model.cacheWritePricePerMillion,
+  };
+}
+
+export async function resolveAiModel(
+  publicId: string,
+  channel: 'primary' | 'fallback' = 'primary'
+) {
+  const configuration = await resolveAiModelConfiguration(publicId, channel);
+  const apiKey = process.env[configuration.apiKeyEnvName];
   if (!apiKey) throw new Error('MODEL_PROVIDER_NOT_CONFIGURED');
 
   return {
-    configuration: {
-      ...model,
-      providerId,
-      providerModelId,
-      providerCode,
-      apiBaseUrl,
-      apiKeyEnvName,
-      inputPricePerMillion:
-        channel === 'fallback' && model.fallbackInputPricePerMillion
-          ? model.fallbackInputPricePerMillion
-          : model.inputPricePerMillion,
-      outputPricePerMillion:
-        channel === 'fallback' && model.fallbackOutputPricePerMillion
-          ? model.fallbackOutputPricePerMillion
-          : model.outputPricePerMillion,
-      cacheReadPricePerMillion:
-        channel === 'fallback' && model.fallbackCacheReadPricePerMillion
-          ? model.fallbackCacheReadPricePerMillion
-          : model.cacheReadPricePerMillion,
-      cacheWritePricePerMillion:
-        channel === 'fallback' && model.fallbackCacheWritePricePerMillion
-          ? model.fallbackCacheWritePricePerMillion
-          : model.cacheWritePricePerMillion,
-    },
+    configuration,
     channel,
     languageModel: createLanguageModel({
-      apiBaseUrl,
+      apiBaseUrl: configuration.apiBaseUrl,
       apiKey,
-      providerCode,
-      providerModelId,
+      providerCode: configuration.providerCode,
+      providerModelId: configuration.providerModelId,
     }),
   };
 }

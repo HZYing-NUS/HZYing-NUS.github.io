@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { getTranslations } from 'next-intl/server';
 
 import { getThemeLayout } from '@/core/theme';
+import { envConfigs } from '@/config';
 import { LocaleDetector, TopBanner } from '@/shared/blocks/common';
 import {
   Footer as FooterType,
@@ -22,6 +23,17 @@ export default async function LandingLayout({
   // header and footer to display
   const header: HeaderType = t.raw('header');
   const footer: FooterType = t.raw('footer');
+  if (envConfigs.community_about_username) {
+    if (header.nav?.items)
+      header.nav.items = header.nav.items.filter(
+        (item) => item.url !== '/about'
+      );
+    if (footer.nav?.items)
+      footer.nav.items = footer.nav.items.map((group) => ({
+        ...group,
+        children: group.children?.filter((item) => item.url !== '/about'),
+      }));
+  }
 
   return (
     <Layout header={header} footer={footer}>

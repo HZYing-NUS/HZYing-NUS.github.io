@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { permanentRedirect } from 'next/navigation';
 import { ExternalLink, Github, Mail, MapPin } from 'lucide-react';
 
+import { envConfigs } from '@/config';
 import { legacyProfileContent } from '@/config/seed/legacy-content';
 import { getPublishedProfile } from '@/shared/models/profile';
 
@@ -176,7 +178,9 @@ function ProfileRecord({
       <div className="flex items-center gap-3 sm:block">
         <span className="bg-primary hidden size-2 rounded-full sm:absolute sm:top-[2.4rem] sm:-left-[1.1rem] sm:block" />
         {showOrganizationAbovePeriod && organization ? (
-          <p className="text-foreground mb-1 text-sm font-semibold">{organization}</p>
+          <p className="text-foreground mb-1 text-sm font-semibold">
+            {organization}
+          </p>
         ) : null}
         <p className="text-muted-foreground shrink-0 text-sm tabular-nums">
           {period}
@@ -192,7 +196,9 @@ function ProfileRecord({
             {authorSupport ? (
               <>
                 {' · '}
-                <strong className="text-foreground font-semibold">{authorSupport}</strong>
+                <strong className="text-foreground font-semibold">
+                  {authorSupport}
+                </strong>
               </>
             ) : null}
           </p>
@@ -260,7 +266,10 @@ function AwardRecord({
           <h3 className="leading-snug font-medium">{title}</h3>
           {tag ? (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-700/15 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
-              <span aria-hidden="true" className="size-1 rounded-full bg-emerald-600 dark:bg-emerald-300" />
+              <span
+                aria-hidden="true"
+                className="size-1 rounded-full bg-emerald-600 dark:bg-emerald-300"
+              />
               {tag}
             </span>
           ) : null}
@@ -303,6 +312,8 @@ export default async function AboutPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  if (envConfigs.community_about_username)
+    permanentRedirect(`/${locale}/u/${envConfigs.community_about_username}`);
   const profile = await getPublishedProfile(locale);
   const publishedContent =
     profile.content && typeof profile.content === 'object'
@@ -387,7 +398,10 @@ export default async function AboutPage({
           <div className="flex items-start gap-5 sm:block">
             {avatar ? (
               <Image
-                alt={profile.title || (locale === 'zh' ? '黄梓颖的头像' : "Ziying Huang's portrait")}
+                alt={
+                  profile.title ||
+                  (locale === 'zh' ? '黄梓颖的头像' : "Ziying Huang's portrait")
+                }
                 className="border-border size-20 rounded-full border object-cover sm:size-32"
                 height={320}
                 priority

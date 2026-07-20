@@ -57,6 +57,11 @@
           "icon": "User"
         },
         {
+          "title": "My writing",
+          "url": "/settings/community/articles",
+          "icon": "FilePenLine"
+        },
+        {
           "title": "Submit",
           "url": "/submit",
           "icon": "Send"

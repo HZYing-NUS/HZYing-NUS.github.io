@@ -58,6 +58,8 @@ export async function buildAiContext({
   message,
   fileIds,
   includeWebSearch = true,
+  allowParsing = false,
+  allowBinaryLoading = true,
 }: {
   userId: string;
   projectId?: string | null;
@@ -69,6 +71,8 @@ export async function buildAiContext({
   message: UIMessage;
   fileIds: string[];
   includeWebSearch?: boolean;
+  allowParsing?: boolean;
+  allowBinaryLoading?: boolean;
 }) {
   const question = getTextFromMessage(message);
   const siteSources = await retrieveAssistantSources(question, locale);
@@ -110,6 +114,7 @@ export async function buildAiContext({
     .slice(0, 10);
 
   const fileSources: AiSource[] = [];
+  let fileContextTokens = 0;
   const imageParts: Array<{
     type: 'file';
     url: string;
@@ -117,7 +122,7 @@ export async function buildAiContext({
     filename: string;
   }> = [];
   for (const fileId of fileIds.slice(0, 10)) {
-    const file = await findAiFile(fileId, userId);
+    let file = await findAiFile(fileId, userId);
     if (!file) throw new Error('FILE_NOT_FOUND');
     const belongsToContext = projectId
       ? file.projectId === projectId || file.chatId === chatId
@@ -126,6 +131,15 @@ export async function buildAiContext({
       throw new Error('FILE_NOT_AVAILABLE_IN_CHAT');
     }
     if (file.mimeType.startsWith('image/')) {
+      if (!allowBinaryLoading) {
+        imageParts.push({
+          type: 'file',
+          url: '',
+          mediaType: file.mimeType,
+          filename: file.originalName,
+        });
+        continue;
+      }
       const object = await (
         await getStorageService()
       ).getObject({ key: file.objectKey });
@@ -142,6 +156,10 @@ export async function buildAiContext({
       });
       continue;
     }
+    if (file.parseStatus !== 'parsed') {
+      if (!allowParsing) continue;
+      throw new Error('FILE_PARSE_REQUIRED');
+    }
     const chunks = (await getFileChunks(userId, file.id))
       .map((chunk: FileChunkRecord) => ({
         ...chunk,
@@ -156,6 +174,7 @@ export async function buildAiContext({
       )
       .slice(0, 6);
     for (const chunk of chunks) {
+      fileContextTokens += chunk.tokenCount;
       fileSources.push({
         type: 'file',
         title: file.originalName,
@@ -202,6 +221,11 @@ export async function buildAiContext({
       ? `${locale === 'en' ? `Current Skill: ${skillName}` : `当前 Skill：${skillName}`}\n${skillContext}`
       : '',
   ].filter(Boolean);
+  const memoryContextTokens = [...globalMemories, ...projectMemories].reduce(
+    (total, memory) =>
+      total + Math.max(1, Math.ceil(memory.content.length / 3)),
+    0
+  );
 
   return {
     question,
@@ -210,6 +234,8 @@ export async function buildAiContext({
     webSearchExecuted,
     webSearchProviderCredits,
     webSearchDepth,
+    fileContextTokens,
+    memoryContextTokens,
     system: [
       locale === 'en'
         ? 'You are the WebTools AI assistant. Help users build their first Web product.'

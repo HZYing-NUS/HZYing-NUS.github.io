@@ -11,6 +11,7 @@ import {
 } from '@/extensions/payment/types';
 import { getSnowId, getUuid } from '@/shared/lib/hash';
 import { Configs, getAllConfigs } from '@/shared/models/config';
+import { updateUser } from '@/shared/models/user';
 
 import {
   calculateCreditExpirationTime,
@@ -29,6 +30,8 @@ import {
   updateOrderInTransaction,
   updateSubscriptionInTransaction,
 } from '../models/order';
+import { recordPaymentValidationRisk } from '../models/payment_risk';
+import { enqueueReferralEventBestEffort } from '../models/referral';
 import {
   NewSubscription,
   Subscription,
@@ -36,6 +39,8 @@ import {
   UpdateSubscription,
   updateSubscriptionBySubscriptionNo,
 } from '../models/subscription';
+import { validateCreditPayment } from './payment-validation';
+import { referralEventKey } from './referral-policy';
 
 /**
  * get payment service with configs
@@ -157,6 +162,35 @@ export async function handleCheckoutSuccess({
 
   // payment success
   if (session.paymentStatus === PaymentStatus.SUCCESS) {
+    if (order.paymentType === PaymentType.ONE_TIME && order.creditsAmount) {
+      const validationError = validateCreditPayment({ order, session });
+      if (validationError) {
+        await updateOrderByOrderNo(orderNo, {
+          status: OrderStatus.FAILED,
+          paymentResult: JSON.stringify({
+            validationError,
+            providerResult: session.paymentResult,
+          }),
+        });
+        await recordPaymentValidationRisk({
+          provider: order.paymentProvider,
+          providerEventId: `validation:${orderNo}:${session.paymentInfo?.transactionId || 'unknown'}`,
+          orderNo,
+          transactionId: session.paymentInfo?.transactionId,
+          userId: order.userId,
+          reason: validationError,
+          payload: {
+            expectedAmount: order.amount,
+            actualAmount: session.paymentInfo?.paymentAmount,
+            expectedCurrency: order.currency,
+            actualCurrency: session.paymentInfo?.paymentCurrency,
+            expectedProductId: order.paymentProductId,
+            actualProductId: session.productId,
+          },
+        });
+        throw new Error(validationError);
+      }
+    }
     // update order status to be paid
     const updateOrder: UpdateOrder = {
       status: OrderStatus.PAID,
@@ -250,12 +284,49 @@ export async function handleCheckoutSuccess({
       };
     }
 
-    await updateOrderInTransaction({
+    const result = await updateOrderInTransaction({
       orderNo,
       updateOrder,
       newSubscription,
       newCredit,
+      paymentIdentity:
+        order.paymentType === PaymentType.ONE_TIME &&
+        order.creditsAmount &&
+        session.paymentInfo?.paymentUserId
+          ? {
+              provider: order.paymentProvider,
+              paymentUserId: session.paymentInfo.paymentUserId,
+              userId: order.userId,
+            }
+          : undefined,
     });
+    if (result?.rejectionReason) {
+      await recordPaymentValidationRisk({
+        provider: order.paymentProvider,
+        providerEventId: `validation:${orderNo}:${session.paymentInfo?.transactionId || 'unknown'}`,
+        orderNo,
+        transactionId: session.paymentInfo?.transactionId,
+        userId: order.userId,
+        reason: result.rejectionReason,
+        payload: { paymentUserId: session.paymentInfo?.paymentUserId },
+      });
+      await updateUser(order.userId, {
+        aiAccessStatus: 'blocked_payment_risk',
+      });
+      throw new Error(result.rejectionReason);
+    }
+    if (
+      result?.order &&
+      order.paymentType === PaymentType.ONE_TIME &&
+      order.creditsAmount
+    ) {
+      await enqueueReferralEventBestEffort({
+        eventType: 'first_purchase',
+        userId: order.userId,
+        idempotencyKey: referralEventKey('first_purchase', order.userId),
+        payload: {},
+      });
+    }
   } else if (
     session.paymentStatus === PaymentStatus.FAILED ||
     session.paymentStatus === PaymentStatus.CANCELED

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 
+import { envConfigs } from '@/config';
 import { getMetadata } from '@/shared/lib/seo';
 import { getPublishedCollections } from '@/shared/models/collection';
 import { searchPublishedPosts } from '@/shared/models/post';
@@ -29,7 +30,9 @@ export default async function SearchPage({
     getPublishedResources({ locale, query: keyword }),
     getPublishedCollections(locale),
     searchPublishedPosts({ locale, query: keyword }),
-    getPublishedProfile(locale),
+    envConfigs.community_about_username
+      ? Promise.resolve(null)
+      : getPublishedProfile(locale),
   ]);
   const profileMatches = Boolean(
     profile &&

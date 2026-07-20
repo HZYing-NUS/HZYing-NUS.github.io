@@ -1,0 +1,194 @@
+{
+  "profile": {
+    "articles": "Published articles",
+    "likes": "Likes received",
+    "lists": "Public lists",
+    "about": "About",
+    "emptyAbout": "This user has not published an introduction yet."
+  },
+  "center": {
+    "title": "User center",
+    "description": "Manage your writing, interactions, saved content, relationships, and account.",
+    "modules": [
+      {
+        "title": "My writing",
+        "description": "Manage drafts, translation, review, and published articles.",
+        "href": "/settings/community/articles"
+      },
+      {
+        "title": "Comments",
+        "description": "Review pending comments and view your comments.",
+        "href": "/settings/community/comments"
+      },
+      {
+        "title": "My content",
+        "description": "Manage lists, bookmarks, and likes.",
+        "href": "/settings/community/content"
+      },
+      {
+        "title": "Relationships",
+        "description": "View accounts you follow and your followers.",
+        "href": "/settings/community/relationships"
+      },
+      {
+        "title": "Privacy",
+        "description": "Control public following, followers, likes, and bookmarks independently.",
+        "href": "/settings/community/privacy"
+      },
+      {
+        "title": "Email notifications",
+        "description": "Manage comment tasks, article review results, and product marketing separately.",
+        "href": "/settings/community/email"
+      },
+      {
+        "title": "Edit profile",
+        "description": "Maintain your public profile and About.",
+        "href": "/settings/community/profile"
+      },
+      {
+        "title": "Credits and billing",
+        "description": "View your balance, usage, and billing.",
+        "href": "/settings/credits"
+      }
+    ]
+  },
+  "author": {
+    "authRequired": "Sign in to manage your articles.",
+    "eyebrow": "Community Blog",
+    "title": "My writing",
+    "description": "Save drafts, submit bilingual translations, and track review status.",
+    "new": "Write article",
+    "newTitle": "New article",
+    "editTitle": "Edit article",
+    "editorHint": "Submission saves the source first, then translates asynchronously before review.",
+    "back": "Back to articles",
+    "save": "Save draft",
+    "submit": "Submit for review",
+    "loading": "Loading articles...",
+    "empty": "There are no articles in this category.",
+    "center": "Back to user center",
+    "untitled": "Untitled article",
+    "markdownHint": "Markdown, links, images, and code blocks are supported.",
+    "tagsHint": "Separate tags with commas. Maximum 10 tags.",
+    "translationError": "Translation error",
+    "reviewReason": "Review feedback",
+    "blocked": "Blocked by the platform safety policy",
+    "appealStatus": "Appeal status",
+    "appealPlaceholder": "Explain why you believe this is a false positive. Each blocked item can be appealed once.",
+    "submitAppeal": "Submit appeal",
+    "allowComments": "Allow new first-level comments",
+    "allowReplies": "Allow new replies",
+    "deleteArticle": "Delete article and move it to the 30-day recycle bin",
+    "restoreArticle": "Restore article",
+    "restoreDeadline": "Author restore deadline: {date}",
+    "locales": { "zh": "Chinese source", "en": "English source" },
+    "fields": {
+      "title": "Title",
+      "summary": "Summary",
+      "content": "Markdown content",
+      "sourceLocale": "Source language",
+      "slug": "Article slug",
+      "cover": "Cover image URL",
+      "category": "Category",
+      "tags": "Tags"
+    },
+    "filters": {
+      "all": "All",
+      "draft": "Drafts",
+      "translating": "Translating",
+      "translation_failed": "Translation failed",
+      "pending_review": "Pending review",
+      "changes_requested": "Changes requested",
+      "rejected": "Rejected",
+      "published": "Published",
+      "deleted": "Deleted"
+    },
+    "status": {
+      "draft": "Draft",
+      "revision_draft": "Revision draft",
+      "translating": "Translating",
+      "translation_failed": "Translation failed",
+      "pending_review": "Pending review",
+      "revision_pending_review": "Revision pending review",
+      "changes_requested": "Changes requested",
+      "rejected": "Rejected",
+      "published": "Published",
+      "deleted_by_author": "Deleted",
+      "archived": "Archived"
+    },
+    "messages": {
+      "saved": "Draft saved.",
+      "submitted": "Article submitted and queued for translation.",
+      "appealed": "Appeal submitted. The content remains unavailable during review.",
+      "interactionsSaved": "Article interaction settings saved."
+    },
+    "errors": {
+      "REQUEST_FAILED": "Request failed. Please try again.",
+      "ARTICLE_NOT_FOUND": "Article not found.",
+      "ARTICLE_NOT_EDITABLE": "This article cannot be edited in its current state.",
+      "ARTICLE_NOT_SUBMITTABLE": "This article cannot be submitted in its current state.",
+      "ARTICLE_SOURCE_INCOMPLETE": "Complete the title, summary, and content.",
+      "ARTICLE_SLUG_REQUIRED": "Enter an article slug.",
+      "ARTICLE_SLUG_UNAVAILABLE": "This slug is permanently reserved by an existing article or historical URL.",
+      "IDEMPOTENCY_KEY_REUSED": "This submission key was already used for other content. Try again."
+    }
+  },
+  "admin": {
+    "title": "Community article review",
+    "description": "Review both language versions of each article.",
+    "pending": "Pending review",
+    "featured": "Featured",
+    "empty": "No articles are waiting for review.",
+    "reviewTitle": "Bilingual article review",
+    "source": "Author source (read-only)",
+    "translation": "Translation and formatting",
+    "back": "Back to review queue",
+    "loading": "Loading...",
+    "saved": "Changes saved.",
+    "failed": "Request failed.",
+    "reasonRequired": "A reason is required when requesting changes.",
+    "featuredReasonRequired": "A recommendation reason is required to feature an article.",
+    "saveTranslation": "Save translation",
+    "slug": "Article slug",
+    "saveSlug": "Save slug",
+    "publishedSlugHint": "Changing a published article slug permanently redirects every historical slug to the new URL.",
+    "featuredReason": "Featured recommendation reason",
+    "feature": "Feature article",
+    "unfeature": "Remove featured status",
+    "status": {
+      "draft": "Draft",
+      "translating": "Translating",
+      "translation_failed": "Translation failed",
+      "pending_review": "Pending review",
+      "changes_requested": "Changes requested",
+      "rejected": "Rejected",
+      "published": "Published",
+      "revision_draft": "Revision draft",
+      "revision_pending_review": "Revision pending review",
+      "deleted_by_author": "Deleted",
+      "archived": "Archived"
+    },
+    "errors": {
+      "featuredReasonRequired": "A recommendation reason is required to feature an article.",
+      "featuredValueInvalid": "The featured status is invalid.",
+      "notFound": "Article not found.",
+      "notPendingReview": "This article is not pending review.",
+      "notPublished": "Only published articles can be featured.",
+      "slugRequired": "Enter an article slug.",
+      "slugUnavailable": "This slug is permanently reserved by an existing article or historical URL."
+    },
+    "reason": "Review reason or note",
+    "approve": "Approve and publish",
+    "changes": "Request changes",
+    "reject": "Reject",
+    "archive": "Archive",
+    "fields": {
+      "title": "Title",
+      "summary": "Summary",
+      "content": "Markdown content",
+      "cover": "Cover URL",
+      "category": "Category",
+      "tags": "Tags"
+    }
+  }
+}

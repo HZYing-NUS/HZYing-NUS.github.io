@@ -7,7 +7,7 @@ import {
 import { getTrustedCreditIdentity, getUserInfo } from '@/shared/models/user';
 import { hasPermission } from '@/shared/services/rbac';
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     // get sign user info
     const user = await getUserInfo();

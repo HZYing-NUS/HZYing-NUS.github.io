@@ -57,6 +57,11 @@
           "icon": "User"
         },
         {
+          "title": "我的创作",
+          "url": "/settings/community/articles",
+          "icon": "FilePenLine"
+        },
+        {
           "title": "投稿建议",
           "url": "/submit",
           "icon": "Send"

@@ -3,6 +3,11 @@
   "nav": {
     "items": [
       {
+        "title": "User center",
+        "url": "/settings/community",
+        "icon": "LayoutDashboard"
+      },
+      {
         "title": "Profile",
         "url": "/settings/profile",
         "icon": "User"

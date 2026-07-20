@@ -1,17 +1,29 @@
 import { getTranslations } from 'next-intl/server';
 
 import { Empty } from '@/shared/blocks/common';
+import { CommunityUsernameForm } from '@/shared/blocks/community/username-form';
 import { FormCard } from '@/shared/blocks/form';
+import { ensureCommunityProfile } from '@/shared/models/community';
 import { getUserInfo, UpdateUser, updateUser } from '@/shared/models/user';
 import { Form as FormType } from '@/shared/types/blocks/form';
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const user = await getUserInfo();
   if (!user) {
     return <Empty message="no auth" />;
   }
 
   const t = await getTranslations('settings.profile');
+  const communityProfile = await ensureCommunityProfile({
+    userId: user.id,
+    name: user.name,
+    image: user.image,
+  });
 
   const form: FormType = {
     fields: [
@@ -77,6 +89,10 @@ export default async function ProfilePage() {
         title={t('edit.title')}
         description={t('edit.description')}
         form={form}
+      />
+      <CommunityUsernameForm
+        current={communityProfile.username}
+        isZh={locale === 'zh'}
       />
     </div>
   );

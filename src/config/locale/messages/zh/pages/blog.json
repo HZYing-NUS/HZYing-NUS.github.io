@@ -17,6 +17,13 @@
     "all": "全部",
     "no_content": "暂无内容",
     "crumb": "博客",
-    "toc": "目录"
+    "toc": "目录",
+    "all": "全部",
+    "featured": "精华",
+    "following": "关注",
+    "write": "写文章",
+    "followingSignIn": "登录后可查看你关注的作者发布的文章。",
+    "signIn": "前往登录",
+    "communityAuthor": "社区作者"
   }
 }

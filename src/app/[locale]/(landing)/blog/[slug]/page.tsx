@@ -1,15 +1,18 @@
-import { permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { legacyPosts } from '@/config/seed/legacy-content';
-
-import { getThemePage } from '@/core/theme';
+import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
-import { Empty } from '@/shared/blocks/common';
+import { CommunityArticleInteractions } from '@/shared/blocks/community/article-interactions';
+import { CommunityContentActions } from '@/shared/blocks/community/content-actions';
+import { CommunitySafeMarkdown } from '@/shared/blocks/community/safe-markdown';
+import { findPublishedCommunityArticle } from '@/shared/models/community';
 import { getPost } from '@/shared/models/post';
-import { DynamicPage } from '@/shared/types/blocks/landing';
+import { getSignUser } from '@/shared/models/user';
+import { getCommunityInteractionState } from '@/shared/services/community/interactions';
+import { getCommunityArticleHttpStatus } from '@/shared/services/community/public-visibility';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -17,66 +20,147 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const t = await getTranslations('pages.blog.metadata');
-
-  const canonicalUrl =
-    locale !== envConfigs.locale
-      ? `${envConfigs.app_url}/${locale}/blog/${slug}`
-      : `${envConfigs.app_url}/blog/${slug}`;
-
-  const legacyPost = legacyPosts.find((item) => item.locale === locale && (item.slug === slug || item.legacyFileName.replace(/\.md$/, '') === slug));
-  const post = await getPost({ slug, locale });
-  if (!post && legacyPost && legacyPost.slug !== slug) {
-    return { alternates: { canonical: `${envConfigs.app_url}/${locale}/blog/${legacyPost.slug}` } };
-  }
-  if (!post) {
-    return {
-      title: `${slug} | ${t('title')}`,
-      description: t('description'),
-      alternates: {
-        canonical: canonicalUrl,
-      },
-    };
-  }
-
+  const row = await findPublishedCommunityArticle(slug);
+  const legacy = row ? null : await getPost({ slug, locale });
+  const prefix = locale === envConfigs.locale ? '' : `/${locale}`;
+  const canonical = `${envConfigs.app_url}${prefix}/blog/${slug}`;
+  if (row && getCommunityArticleHttpStatus(row.article) !== 200) return {};
+  if (!row)
+    return legacy
+      ? {
+          title: legacy.title,
+          description: legacy.description,
+          alternates: { canonical },
+        }
+      : {};
   return {
-    title: `${post.title} | ${t('title')}`,
-    description: post.description,
+    title: locale === 'zh' ? row.revision.titleZh : row.revision.titleEn,
+    description:
+      locale === 'zh' ? row.revision.summaryZh : row.revision.summaryEn,
     alternates: {
-      canonical: canonicalUrl,
+      canonical,
+      languages: {
+        zh: `${envConfigs.app_url}/zh/blog/${slug}`,
+        en: `${envConfigs.app_url}/blog/${slug}`,
+      },
     },
   };
 }
 
-export default async function BlogDetailPage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-
-  const post = await getPost({ slug, locale });
-
-  if (!post) {
-    const legacyPost = legacyPosts.find((item) => item.locale === locale && item.legacyFileName.replace(/\.md$/, '') === slug);
-    if (legacyPost) permanentRedirect(`/${locale}/blog/${legacyPost.slug}`);
-    return <Empty message={`Post not found`} />;
+  const [row, currentUser] = await Promise.all([
+    findPublishedCommunityArticle(slug),
+    getSignUser(),
+  ]);
+  if (!row) {
+    const legacy = await getPost({ slug, locale });
+    if (!legacy) notFound();
+    return (
+      <main className="mx-auto max-w-4xl px-5 py-16">
+        <h1 className="text-4xl font-semibold">{legacy.title}</h1>
+        <div className="mt-10">{legacy.body}</div>
+      </main>
+    );
   }
-
-  // build page sections
-  const page: DynamicPage = {
-    sections: {
-      blogDetail: {
-        block: 'blog-detail',
-        data: {
-          post,
-        },
-      },
-    },
-  };
-
-  const Page = await getThemePage('dynamic-page');
-
-  return <Page locale={locale} page={page} />;
+  if (row.article.deletedAt) {
+    if (
+      row.article.restoreDeadlineAt &&
+      row.article.restoreDeadlineAt < new Date()
+    )
+      return (
+        <main className="mx-auto max-w-3xl px-5 py-24">
+          <h1 className="text-3xl font-semibold">410 Gone</h1>
+        </main>
+      );
+    notFound();
+  }
+  if (getCommunityArticleHttpStatus(row.article) !== 200) notFound();
+  const interactionState = currentUser
+    ? await getCommunityInteractionState({
+        userId: currentUser.id,
+        targetType: 'article',
+        targetId: row.article.id,
+      })
+    : { liked: false, bookmarked: false };
+  const title = locale === 'zh' ? row.revision.titleZh : row.revision.titleEn;
+  const summary =
+    locale === 'zh' ? row.revision.summaryZh : row.revision.summaryEn;
+  const content =
+    locale === 'zh' ? row.revision.contentZh : row.revision.contentEn;
+  return (
+    <main className="mx-auto max-w-4xl px-5 py-16 md:py-24">
+      <p className="text-muted-foreground text-sm">
+        {row.revision.categorySlug ? (
+          <Link href={`/blog/category/${row.revision.categorySlug}`}>
+            {row.revision.categorySlug}
+          </Link>
+        ) : (
+          'WebTools'
+        )}
+      </p>
+      <h1 className="mt-3 text-4xl leading-tight font-semibold md:text-5xl">
+        {title}
+      </h1>
+      <p className="text-muted-foreground mt-5 text-lg leading-8">{summary}</p>
+      {row.profile?.username && (
+        <Link
+          href={`/u/${row.profile.username}`}
+          className="mt-7 inline-block text-sm font-medium"
+        >
+          {row.profile.displayName || row.profile.username}
+        </Link>
+      )}
+      {Array.isArray(row.revision.tags) && row.revision.tags.length > 0 && (
+        <div className="mt-5 flex flex-wrap gap-2 text-sm">
+          {(row.revision.tags as unknown[]).map((tag: unknown) => (
+            <Link
+              key={String(tag)}
+              href={`/blog/tag/${String(tag)}`}
+              className="text-muted-foreground rounded-full border px-3 py-1"
+            >
+              #{String(tag)}
+            </Link>
+          ))}
+        </div>
+      )}
+      {!row.profile && (
+        <p className="text-muted-foreground mt-7 text-sm">
+          {locale === 'zh' ? '社区作者' : 'Community author'}
+        </p>
+      )}
+      {row.revision.coverImageUrl && (
+        <img
+          src={row.revision.coverImageUrl}
+          alt=""
+          className="mt-10 aspect-video w-full rounded-2xl object-cover"
+        />
+      )}
+      <article className="mt-12">
+        <CommunitySafeMarkdown content={content || ''} />
+      </article>
+      <CommunityContentActions
+        targetId={row.article.id}
+        targetType="article"
+        canInteract={Boolean(currentUser)}
+        canLike
+        initialLiked={interactionState.liked}
+        initialBookmarked={interactionState.bookmarked}
+        locale={locale}
+      />
+      <CommunityArticleInteractions
+        articleId={row.article.id}
+        currentUserIsAuthor={currentUser?.id === row.article.authorId}
+        currentUserId={currentUser?.id}
+        allowComments={row.article.allowComments}
+        allowReplies={row.article.allowReplies}
+        locale={locale}
+      />
+    </main>
+  );
 }

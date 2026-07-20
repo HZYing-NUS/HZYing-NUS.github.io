@@ -1,6 +1,7 @@
 import { respData, respErr } from '@/shared/lib/resp';
 import { ChatStatus, getChats, getChatsCount } from '@/shared/models/chat';
 import {
+  ChatMessageStatus,
   getChatMessages,
   getChatMessagesCount,
   toPublicChatMessage,
@@ -29,12 +30,14 @@ export async function POST(req: Request) {
     const messages = await getChatMessages({
       userId: user.id,
       chatId,
+      status: ChatMessageStatus.CREATED,
       page,
       limit,
     });
     const total = await getChatMessagesCount({
       userId: user.id,
       chatId,
+      status: ChatMessageStatus.CREATED,
     });
 
     return respData({

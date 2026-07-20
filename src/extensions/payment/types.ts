@@ -180,6 +180,7 @@ export interface CheckoutSession {
  */
 export interface PaymentSession {
   provider: string;
+  productId?: string;
 
   // payment info
   paymentStatus?: PaymentStatus; // payment status

@@ -1,0 +1,1 @@
+ALTER TABLE "ai_file" ADD COLUMN "parse_attempt_id" text;

@@ -1,12 +1,50 @@
-import { and, desc, eq, gt } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray } from 'drizzle-orm';
 
 import { db } from '@/core/db';
 import { credit, order, paymentRiskEvent, user } from '@/config/db/schema';
 import { getSnowId, getUuid } from '@/shared/lib/hash';
 
 import { CreditStatus, CreditTransactionType } from './credit';
+import { handleReferralPaymentRisk } from './referral';
 
 export type PaymentRiskEvent = typeof paymentRiskEvent.$inferSelect;
+
+export async function recordPaymentValidationRisk({
+  provider,
+  providerEventId,
+  orderNo,
+  transactionId,
+  userId,
+  reason,
+  payload,
+}: {
+  provider: string;
+  providerEventId: string;
+  orderNo: string;
+  transactionId?: string;
+  userId: string;
+  reason: string;
+  payload: Record<string, unknown>;
+}) {
+  const [event] = await db()
+    .insert(paymentRiskEvent)
+    .values({
+      id: getUuid(),
+      provider,
+      providerEventId,
+      eventType: 'payment.validation_failed',
+      orderNo,
+      transactionId,
+      userId,
+      status: 'blocked',
+      payload: { reason, ...payload },
+    })
+    .onConflictDoNothing({
+      target: [paymentRiskEvent.provider, paymentRiskEvent.providerEventId],
+    })
+    .returning();
+  return event;
+}
 
 export async function handlePaymentRiskEvent({
   provider,
@@ -55,7 +93,7 @@ export async function handlePaymentRiskEvent({
           .for('update');
     if (!riskEvent || riskEvent.status === 'processed') return riskEvent;
 
-    const [matchedOrder] = await tx
+    const [matchedOrderCandidate] = await tx
       .select()
       .from(order)
       .where(
@@ -70,7 +108,7 @@ export async function handlePaymentRiskEvent({
       )
       .limit(1);
 
-    if (!matchedOrder) {
+    if (!matchedOrderCandidate) {
       const [unmatched] = await tx
         .update(paymentRiskEvent)
         .set({ status: 'unmatched' })
@@ -78,6 +116,28 @@ export async function handlePaymentRiskEvent({
         .returning();
       return unmatched;
     }
+
+    await tx
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.id, matchedOrderCandidate.userId))
+      .for('update');
+    const [matchedOrder] = await tx
+      .select()
+      .from(order)
+      .where(eq(order.id, matchedOrderCandidate.id))
+      .for('update');
+    if (!matchedOrder) throw new Error('Payment risk order disappeared');
+
+    await tx
+      .update(order)
+      .set({ status: 'failed' })
+      .where(
+        and(
+          eq(order.id, matchedOrder.id),
+          inArray(order.status, ['created', 'pending'])
+        )
+      );
 
     const grants = await tx
       .select()
@@ -130,6 +190,14 @@ export async function handlePaymentRiskEvent({
         })
         .onConflictDoNothing({ target: credit.idempotencyKey });
     }
+
+    await handleReferralPaymentRisk({
+      tx,
+      orderNo: matchedOrder.orderNo,
+      riskEventId: riskEvent.id,
+      userId: matchedOrder.userId,
+      reason: eventType,
+    });
 
     await tx
       .update(user)

@@ -3,8 +3,11 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 
 import { envConfigs } from '@/config';
+import { CommunityContentActions } from '@/shared/blocks/community/content-actions';
 import { getPublishedCollections } from '@/shared/models/collection';
 import { getPublishedResourceBySlug } from '@/shared/models/resource';
+import { getSignUser } from '@/shared/models/user';
+import { getCommunityInteractionState } from '@/shared/services/community/interactions';
 
 export async function generateMetadata({
   params,
@@ -29,11 +32,19 @@ export default async function ResourceDetailPage({
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const [resource, collections] = await Promise.all([
+  const [resource, collections, currentUser] = await Promise.all([
     getPublishedResourceBySlug(slug, locale),
     getPublishedCollections(locale),
+    getSignUser(),
   ]);
   if (!resource) notFound();
+  const interactionState = currentUser
+    ? await getCommunityInteractionState({
+        userId: currentUser.id,
+        targetType: 'resource',
+        targetId: resource.id,
+      })
+    : { liked: false, bookmarked: false };
 
   const isZh = locale === 'zh';
   const relatedCollections = collections.filter((collection) =>
@@ -116,6 +127,14 @@ export default async function ResourceDetailPage({
             {isZh ? '访问官网' : 'Visit website'}
           </Link>
         ) : null}
+        {currentUser && (
+          <CommunityContentActions
+            targetId={resource.id}
+            targetType="resource"
+            initialBookmarked={interactionState.bookmarked}
+            locale={locale}
+          />
+        )}
       </article>
       <section className="mt-16 grid gap-6 md:grid-cols-2">
         {resource.reason ? (

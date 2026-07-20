@@ -1,10 +1,20 @@
-import { and, count, desc, eq, or } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, or } from 'drizzle-orm';
 
 import { db } from '@/core/db';
-import { credit, order, subscription } from '@/config/db/schema';
+import {
+  credit,
+  order,
+  paymentIdentityClaim,
+  paymentRiskEvent,
+  referralPurchaseTombstone,
+  subscription,
+  user,
+} from '@/config/db/schema';
 import { PaymentType } from '@/extensions/payment/types';
+import { getUuid } from '@/shared/lib/hash';
 
 import { NewCredit } from './credit';
+import { reconcileReferralPurchaseAfterSettlement } from './referral';
 import {
   NewSubscription,
   UpdateSubscription,
@@ -208,11 +218,17 @@ export async function updateOrderInTransaction({
   updateOrder,
   newSubscription,
   newCredit,
+  paymentIdentity,
 }: {
   orderNo: string;
   updateOrder: UpdateOrder;
   newSubscription?: NewSubscription;
   newCredit?: NewCredit;
+  paymentIdentity?: {
+    provider: string;
+    paymentUserId: string;
+    userId: string;
+  };
 }) {
   if (!orderNo || !updateOrder) {
     throw new Error('orderNo and updateOrder are required');
@@ -229,7 +245,133 @@ export async function updateOrderInTransaction({
       order: null,
       subscription: null,
       credit: null,
+      rejectionReason: null,
     };
+
+    if (updateOrder.status === OrderStatus.PAID) {
+      const [settlementTarget] = await tx
+        .select({ userId: order.userId })
+        .from(order)
+        .where(eq(order.orderNo, orderNo));
+      if (!settlementTarget) return result;
+      await tx
+        .select({ id: user.id })
+        .from(user)
+        .where(eq(user.id, settlementTarget.userId))
+        .for('update');
+      const [currentOrder] = await tx
+        .select({
+          status: order.status,
+          paymentProvider: order.paymentProvider,
+        })
+        .from(order)
+        .where(eq(order.orderNo, orderNo))
+        .for('update');
+      if (
+        !currentOrder ||
+        (currentOrder.status !== OrderStatus.CREATED &&
+          currentOrder.status !== OrderStatus.PENDING)
+      ) {
+        return result;
+      }
+      const transactionId = updateOrder.transactionId;
+      const [riskEvent] = await tx
+        .select({ id: paymentRiskEvent.id })
+        .from(paymentRiskEvent)
+        .where(
+          and(
+            eq(paymentRiskEvent.provider, currentOrder.paymentProvider),
+            inArray(paymentRiskEvent.eventType, [
+              'payment.refunded',
+              'payment.disputed',
+            ]),
+            or(
+              eq(paymentRiskEvent.orderNo, orderNo),
+              transactionId
+                ? eq(paymentRiskEvent.transactionId, transactionId)
+                : undefined
+            )
+          )
+        )
+        .limit(1);
+      const [tombstone] = await tx
+        .select({ id: referralPurchaseTombstone.id })
+        .from(referralPurchaseTombstone)
+        .where(eq(referralPurchaseTombstone.orderNo, orderNo))
+        .limit(1);
+      if (riskEvent || tombstone) {
+        const [blockedOrder] = await tx
+          .update(order)
+          .set({ status: OrderStatus.FAILED })
+          .where(
+            and(
+              eq(order.orderNo, orderNo),
+              or(
+                eq(order.status, OrderStatus.CREATED),
+                eq(order.status, OrderStatus.PENDING)
+              )
+            )
+          )
+          .returning();
+        result.order = blockedOrder;
+        result.rejectionReason = 'PAYMENT_RISK_ALREADY_RECORDED';
+        return result;
+      }
+
+      if (paymentIdentity) {
+        const [claimed] = await tx
+          .insert(paymentIdentityClaim)
+          .values({
+            id: getUuid(),
+            provider: paymentIdentity.provider,
+            paymentUserId: paymentIdentity.paymentUserId,
+            userId: paymentIdentity.userId,
+            firstOrderNo: orderNo,
+          })
+          .onConflictDoNothing({
+            target: [
+              paymentIdentityClaim.provider,
+              paymentIdentityClaim.paymentUserId,
+            ],
+          })
+          .returning();
+        const identityOwner = claimed
+          ? claimed
+          : (
+              await tx
+                .select()
+                .from(paymentIdentityClaim)
+                .where(
+                  and(
+                    eq(paymentIdentityClaim.provider, paymentIdentity.provider),
+                    eq(
+                      paymentIdentityClaim.paymentUserId,
+                      paymentIdentity.paymentUserId
+                    )
+                  )
+                )
+                .for('update')
+            )[0];
+        if (!identityOwner || identityOwner.userId !== paymentIdentity.userId) {
+          const [blockedOrder] = await tx
+            .update(order)
+            .set({ status: OrderStatus.FAILED })
+            .where(
+              and(
+                eq(order.orderNo, orderNo),
+                or(
+                  eq(order.status, OrderStatus.CREATED),
+                  eq(order.status, OrderStatus.PENDING)
+                )
+              )
+            )
+            .returning();
+          result.order = blockedOrder;
+          result.rejectionReason = 'PAYMENT_IDENTITY_ALREADY_USED';
+          return result;
+        }
+      }
+    }
 
     const [orderResult] = await tx
       .update(order)
@@ -250,6 +392,19 @@ export async function updateOrderInTransaction({
       return result;
     }
     result.order = orderResult;
+
+    if (
+      orderResult &&
+      updateOrder.status === OrderStatus.PAID &&
+      orderResult.paymentType === PaymentType.ONE_TIME &&
+      orderResult.paymentProvider === 'creem' &&
+      Number(orderResult.creditsAmount) > 0
+    ) {
+      await reconcileReferralPurchaseAfterSettlement({
+        tx,
+        userId: orderResult.userId,
+      });
+    }
 
     // deal with subscription
     if (newSubscription) {

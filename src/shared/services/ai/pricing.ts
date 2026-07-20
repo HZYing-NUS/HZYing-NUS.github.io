@@ -2,6 +2,11 @@ import 'server-only';
 
 import { getAllConfigs } from '@/shared/models/config';
 
+import {
+  calculateAddonOnlyPrice,
+  calculateContextAddonCosts as calculateContextAddonCostsPure,
+  calculateFileParseCostUsd as calculateFileParseCostUsdPure,
+} from './cost-calculation';
 import type { ResolvedAiModel } from './model-router';
 
 export interface AiUsageInput {
@@ -19,6 +24,13 @@ export interface AiPriceResult {
   retailCostUsd: number;
   rawCredits: number;
   credits: number;
+}
+
+export const AI_ESTIMATED_BASE_OUTPUT_TOKENS = 1500;
+
+function optionalNonNegativeConfig(value: string | undefined) {
+  const normalized = value?.trim();
+  return normalized ? Number(normalized) : 0;
 }
 
 export async function getAiPricingSettings() {
@@ -51,14 +63,48 @@ export async function getAiPricingSettings() {
         process.env.AI_IMAGE_INPUT_TOKENS ||
         '1200'
     ),
+    fileContextCostPerMillionTokens: optionalNonNegativeConfig(
+      configs.ai_file_context_cost_per_million_tokens ||
+        process.env.AI_FILE_CONTEXT_COST_PER_MILLION_TOKENS
+    ),
+    memoryContextCostPerMillionTokens: optionalNonNegativeConfig(
+      configs.ai_memory_context_cost_per_million_tokens ||
+        process.env.AI_MEMORY_CONTEXT_COST_PER_MILLION_TOKENS
+    ),
+    fileParseCostPerMbUsd: optionalNonNegativeConfig(
+      configs.ai_file_parse_cost_per_mb_usd ||
+        process.env.AI_FILE_PARSE_COST_PER_MB_USD
+    ),
   };
   if (
+    ![
+      settings.multiplier,
+      settings.creditValueUsd,
+      settings.minimumMarginUsd,
+      settings.minimumCredits,
+      settings.reservationChunk,
+      settings.reservationThresholdTokens,
+      settings.webSearchCreditCostUsd,
+      settings.webSearchEstimatedCostUsd,
+      settings.imageInputTokens,
+      settings.fileContextCostPerMillionTokens,
+      settings.memoryContextCostPerMillionTokens,
+      settings.fileParseCostPerMbUsd,
+    ].every(Number.isFinite) ||
     settings.multiplier <= 0 ||
     settings.creditValueUsd <= 0 ||
+    settings.minimumMarginUsd < 0 ||
+    !Number.isInteger(settings.minimumCredits) ||
     settings.minimumCredits < 1 ||
+    !Number.isInteger(settings.reservationChunk) ||
     settings.reservationChunk < 1 ||
+    !Number.isInteger(settings.reservationThresholdTokens) ||
     settings.reservationThresholdTokens < 1 ||
+    !Number.isInteger(settings.imageInputTokens) ||
     settings.imageInputTokens < 1 ||
+    settings.fileContextCostPerMillionTokens < 0 ||
+    settings.memoryContextCostPerMillionTokens < 0 ||
+    settings.fileParseCostPerMbUsd < 0 ||
     settings.webSearchCreditCostUsd < 0 ||
     (settings.webSearchPricingConfigured &&
       settings.webSearchCreditCostUsd === 0)
@@ -66,6 +112,34 @@ export async function getAiPricingSettings() {
     throw new Error('INVALID_AI_PRICING_CONFIGURATION');
   }
   return settings;
+}
+
+export function calculateFileParseCostUsd(
+  sizeBytes: number,
+  settings: Awaited<ReturnType<typeof getAiPricingSettings>>
+) {
+  return calculateFileParseCostUsdPure(
+    sizeBytes,
+    settings.fileParseCostPerMbUsd
+  );
+}
+
+export function calculateContextAddonCosts({
+  fileContextTokens,
+  memoryContextTokens,
+  settings,
+}: {
+  fileContextTokens: number;
+  memoryContextTokens: number;
+  settings: Awaited<ReturnType<typeof getAiPricingSettings>>;
+}) {
+  return calculateContextAddonCostsPure({
+    fileContextTokens,
+    memoryContextTokens,
+    fileContextCostPerMillionTokens: settings.fileContextCostPerMillionTokens,
+    memoryContextCostPerMillionTokens:
+      settings.memoryContextCostPerMillionTokens,
+  });
 }
 
 export function calculateWebSearchCostUsd(
@@ -133,6 +207,12 @@ export function calculateAiPrice({
   };
 }
 
+export { calculateAddonOnlyPrice };
+
 export function estimateTokenCount(text: string) {
   return Math.max(1, Math.ceil(text.length / 3));
+}
+
+export function estimateStreamingOutputTokenUpperBound(text: string) {
+  return Math.max(1, new TextEncoder().encode(text).byteLength);
 }

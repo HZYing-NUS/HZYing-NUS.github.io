@@ -8,23 +8,27 @@ created_at: 2026-07-17
 
 ## 1. Data we process
 
-WebTools processes account and authentication data, service and device logs, chat messages, projects, project and global memory, uploaded files and private parsed chunks, model selections, source records, token and Credit usage, payment and anti-fraud records, and support submissions.
+WebTools processes account and authentication data, service and device logs, chat messages, projects, project and global memory, uploaded files and private parsed chunks, model selections, source records, token and Credit usage, payment and anti-fraud records, referral clicks, attribution and reward-review records, and support submissions.
 
 ## 2. Why we process it
 
 We use data to authenticate users, provide public content and AI features, retrieve relevant WebTools knowledge, load user-selected project context, operate optional web search and Skills, store private files, calculate and audit Credit, process payments, prevent abuse, secure the service, and improve reliability.
 
-Global memory is written only after user confirmation. Project memory may be extracted automatically when enabled and retains source chat and message references.
+Project memory may be extracted automatically when enabled and retains source chat and message references. Outside projects, WebTools may create a pending global-memory candidate from an explicit long-term preference or background statement. Pending candidates are visible for review but are not loaded into model context until the user confirms them.
 
 ## 3. Third-party processing
 
 Depending on enabled features and configuration, data may be processed by model providers, web-search providers, Cloudflare R2 or another configured storage provider, authentication and hosting services, analytics services, and Creem for one-time payments. Exact vendors and international transfer safeguards require confirmation before launch.
 
+The product displays user-facing model names separately from the configured Provider. If a model channel fails, content is sent to a fallback Provider only after the user confirms that fallback request.
+
 Provider retention and training terms have not been fully verified. Do not submit secrets or sensitive personal information unless necessary and appropriate for the selected provider.
 
 ## 4. Files and security
 
-Files use non-guessable private object keys and are served only after account ownership checks. TXT and Markdown may be parsed into private chunks; PDF parsing remains pending until a parser is configured; images may be sent to a selected vision-capable model. Files are not added to the public knowledge base.
+Files use non-guessable private object keys and are served only after account ownership checks. PDF, TXT, and Markdown files are parsed into private chunks when first used in an actual chat; estimates do not trigger parsing. PNG, JPG, and WebP images may be sent only when the selected model is configured as vision-capable. Files are not added to the public knowledge base.
+
+Only file parsing, file context, and memory context actually included in a request contribute to that request's Credit calculation. File storage itself is not separately charged. Failed or duplicate processing is settled or refunded according to the request ledger and the Credit rules described in the Terms of Service.
 
 WebTools uses access controls and reasonable security measures, but no Internet service can guarantee absolute security.
 
@@ -36,7 +40,7 @@ Retention periods for account logs, analytics, and support records: To be confir
 
 ## 6. Rights, cookies, and contact
 
-Available privacy rights depend on the user's jurisdiction and may include access, correction, deletion, portability, restriction, or objection. Essential cookies support authentication and security; analytics technologies, if enabled, must be disclosed through the deployed consent experience.
+Available privacy rights depend on the user's jurisdiction and may include access, correction, deletion, portability, restriction, or objection. Essential cookies support authentication and security. Visiting a referral link sets an HttpOnly referral-attribution cookie for up to 30 days so a one-time attribution can be created after registration. Analytics technologies, if enabled, must be disclosed through the deployed consent experience.
 
 Operator: **To be confirmed**
 

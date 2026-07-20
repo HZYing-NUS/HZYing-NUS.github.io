@@ -290,7 +290,9 @@ export async function getPublishedSkills(): Promise<PublishedSkill[]> {
   const publishedVersions = db()
     .select({
       skillId: skillVersion.skillId,
-      version: sql<number>`max(${skillVersion.version})`.as('version'),
+      latestVersionNumber: sql<number>`max(${skillVersion.version})`.as(
+        'latest_version_number'
+      ),
     })
     .from(skillVersion)
     .where(eq(skillVersion.status, 'published'))
@@ -305,7 +307,8 @@ export async function getPublishedSkills(): Promise<PublishedSkill[]> {
       skillVersion,
       and(
         eq(skillVersion.skillId, skill.id),
-        eq(skillVersion.version, publishedVersions.version)
+        // Drizzle 0.44 drops the subquery qualifier for aliased aggregate fields.
+        sql`${skillVersion.version} = ${sql.identifier('published_versions')}.${sql.identifier('latest_version_number')}`
       )
     )
     .where(and(eq(skill.status, 'published'), eq(skill.userEnabled, true)))

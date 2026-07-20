@@ -1,0 +1,37 @@
+import { NextRequest } from 'next/server';
+
+import { respData, respErr } from '@/shared/lib/resp';
+import {
+  listOwnCommunityLists,
+  saveCommunityUserList,
+} from '@/shared/services/community/interactions';
+import { requireCommunityUser } from '@/shared/services/community/permissions';
+
+export async function GET() {
+  try {
+    const user = await requireCommunityUser();
+    return respData(await listOwnCommunityLists(user.id));
+  } catch (error) {
+    return respErr(error instanceof Error ? error.message : 'REQUEST_FAILED');
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const [user, body] = await Promise.all([
+      requireCommunityUser(),
+      request.json(),
+    ]);
+    return respData(
+      await saveCommunityUserList({
+        ownerId: user.id,
+        title: String(body.title || ''),
+        slug: String(body.slug || ''),
+        description: body.description,
+        visibility: body.visibility === 'private' ? 'private' : 'public',
+      })
+    );
+  } catch (error) {
+    return respErr(error instanceof Error ? error.message : 'REQUEST_FAILED');
+  }
+}

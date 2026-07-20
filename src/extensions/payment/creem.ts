@@ -1,3 +1,5 @@
+import { extractCreemProductId } from '@/shared/services/creem-payload';
+
 import {
   CheckoutSession,
   PaymentBilling,
@@ -394,6 +396,7 @@ export class CreemProvider implements PaymentProvider {
 
     const result: PaymentSession = {
       provider: this.name,
+      productId: extractCreemProductId(session.product) || session.product_id,
       paymentStatus: this.mapCreemStatus(session),
       paymentInfo: {
         transactionId: order?.transaction || order?.id,
@@ -449,6 +452,11 @@ export class CreemProvider implements PaymentProvider {
 
     const result: PaymentSession = {
       provider: this.name,
+      productId:
+        extractCreemProductId(invoice.product) ||
+        invoice.product_id ||
+        extractCreemProductId(subscription.product) ||
+        subscription.product_id,
       paymentStatus: this.mapCreemStatus(invoice),
       paymentInfo: {
         description: order?.description,

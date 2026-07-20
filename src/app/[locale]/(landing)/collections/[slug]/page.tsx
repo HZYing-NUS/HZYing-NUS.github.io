@@ -10,7 +10,10 @@ import {
 import { setRequestLocale } from 'next-intl/server';
 
 import { envConfigs } from '@/config';
+import { CommunityContentActions } from '@/shared/blocks/community/content-actions';
 import { getPublishedCollectionBySlug } from '@/shared/models/collection';
+import { getSignUser } from '@/shared/models/user';
+import { getCommunityInteractionState } from '@/shared/services/community/interactions';
 
 export const revalidate = 3600;
 
@@ -41,9 +44,19 @@ export default async function CollectionDetailPage({
   setRequestLocale(locale);
 
   const isZh = locale === 'zh';
-  const collection = await getPublishedCollectionBySlug(slug, locale);
+  const [collection, currentUser] = await Promise.all([
+    getPublishedCollectionBySlug(slug, locale),
+    getSignUser(),
+  ]);
 
   if (!collection) notFound();
+  const interactionState = currentUser
+    ? await getCommunityInteractionState({
+        userId: currentUser.id,
+        targetType: 'collection',
+        targetId: collection.id,
+      })
+    : { liked: false, bookmarked: false };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -92,6 +105,14 @@ export default async function CollectionDetailPage({
           </div>
         ) : null}
       </section>
+      {currentUser && (
+        <CommunityContentActions
+          targetId={collection.id}
+          targetType="collection"
+          initialBookmarked={interactionState.bookmarked}
+          locale={locale}
+        />
+      )}
 
       <section className="mt-12 grid gap-5 md:grid-cols-2">
         <div className="bg-muted/30 rounded-2xl border p-6">

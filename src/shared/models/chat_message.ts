@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 
 import { db } from '@/core/db';
 import { chat, chatMessage } from '@/config/db/schema';
@@ -7,7 +7,9 @@ import { Chat } from './chat';
 import { appendUserToResult, User } from './user';
 
 export enum ChatMessageStatus {
+  PROCESSING = 'processing',
   CREATED = 'created',
+  FAILED = 'failed',
   DELETED = 'deleted',
 }
 
@@ -25,6 +27,7 @@ export type UpdateChatMessage = Partial<
     | 'content'
     | 'model'
     | 'provider'
+    | 'skillVersionId'
     | 'webSearchEnabled'
     | 'inputTokens'
     | 'outputTokens'
@@ -104,6 +107,43 @@ export async function createChatMessage(
       .returning();
     return result;
   });
+}
+
+export async function claimChatMessageRequest(
+  message: NewChatMessage
+): Promise<boolean> {
+  const [claimed] = await db()
+    .insert(chatMessage)
+    .values(message)
+    .onConflictDoNothing({ target: chatMessage.id })
+    .returning({ id: chatMessage.id });
+  return Boolean(claimed);
+}
+
+export async function failChatMessageRequest(
+  id: string,
+  userId: string,
+  errorReason: string
+) {
+  const [failed] = await db()
+    .update(chatMessage)
+    .set({
+      status: sql`case when ${chatMessage.status} = ${ChatMessageStatus.PROCESSING} then ${ChatMessageStatus.FAILED} else ${ChatMessageStatus.CREATED} end`,
+      errorReason,
+      metadata: JSON.stringify({ requestState: 'failed' }),
+    })
+    .where(
+      and(
+        eq(chatMessage.id, id),
+        eq(chatMessage.userId, userId),
+        inArray(chatMessage.status, [
+          ChatMessageStatus.PROCESSING,
+          ChatMessageStatus.CREATED,
+        ])
+      )
+    )
+    .returning();
+  return failed;
 }
 
 export async function getChatMessages({

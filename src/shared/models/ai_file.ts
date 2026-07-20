@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, lte, ne, or } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, lte, ne, or } from 'drizzle-orm';
 
 import { db } from '@/core/db';
 import { aiFile, chat, fileChunk, project } from '@/config/db/schema';
@@ -55,6 +55,162 @@ export async function findAiFile(id: string, userId: string) {
       )
     );
   return result;
+}
+
+export async function getAiFilesByIds(ids: string[], userId: string) {
+  if (!ids.length) return [];
+  return db()
+    .select()
+    .from(aiFile)
+    .where(
+      and(
+        eq(aiFile.userId, userId),
+        eq(aiFile.status, 'active'),
+        inArray(aiFile.id, ids)
+      )
+    );
+}
+
+export async function claimAiFileParsing(
+  id: string,
+  userId: string,
+  claimId: string,
+  claimTtlMs: number
+) {
+  const expiredBefore = new Date(Date.now() - claimTtlMs);
+  const [claimed] = await db()
+    .update(aiFile)
+    .set({
+      parseStatus: 'parsing',
+      parseClaimId: claimId,
+      parseAttemptId: claimId,
+      parseClaimedAt: new Date(),
+      parseError: null,
+    })
+    .where(
+      and(
+        eq(aiFile.id, id),
+        eq(aiFile.userId, userId),
+        eq(aiFile.status, 'active'),
+        or(
+          inArray(aiFile.parseStatus, ['pending', 'failed']),
+          and(
+            eq(aiFile.parseStatus, 'parsing'),
+            lte(aiFile.parseClaimedAt, expiredBefore)
+          )
+        )
+      )
+    )
+    .returning();
+  return claimed;
+}
+
+export async function completeAiFileParsing({
+  id,
+  userId,
+  claimId,
+  parseStatus,
+  parseError,
+  parseCostUsd,
+  chargeable,
+}: {
+  id: string;
+  userId: string;
+  claimId: string;
+  parseStatus: 'parsed' | 'failed';
+  parseError: string | null;
+  parseCostUsd: string;
+  chargeable: boolean;
+}) {
+  const [updated] = await db()
+    .update(aiFile)
+    .set({
+      parseStatus,
+      parseError,
+      parseCostUsd,
+      parseChargedAt: chargeable ? new Date() : undefined,
+      parseClaimId: null,
+      parseClaimedAt: null,
+    })
+    .where(
+      and(
+        eq(aiFile.id, id),
+        eq(aiFile.userId, userId),
+        eq(aiFile.parseClaimId, claimId)
+      )
+    )
+    .returning();
+  return updated;
+}
+
+export async function commitAiFileParsingForClaim({
+  id,
+  userId,
+  claimId,
+  chunks,
+}: {
+  id: string;
+  userId: string;
+  claimId: string;
+  chunks: CreateFileChunk[];
+}) {
+  return db().transaction(async (tx: any) => {
+    const [ownedClaim] = await tx
+      .select({ id: aiFile.id })
+      .from(aiFile)
+      .where(
+        and(
+          eq(aiFile.id, id),
+          eq(aiFile.userId, userId),
+          eq(aiFile.parseStatus, 'parsing'),
+          eq(aiFile.parseClaimId, claimId)
+        )
+      )
+      .for('update');
+    if (!ownedClaim) return undefined;
+    await tx
+      .delete(fileChunk)
+      .where(and(eq(fileChunk.fileId, id), eq(fileChunk.userId, userId)));
+    if (chunks.length) {
+      await tx
+        .insert(fileChunk)
+        .values(chunks.map((chunk) => ({ ...chunk, userId, fileId: id })));
+    }
+    const [updated] = await tx
+      .update(aiFile)
+      .set({
+        parseStatus: 'parsed',
+        parseError: null,
+        parseClaimId: null,
+        parseClaimedAt: null,
+      })
+      .where(
+        and(
+          eq(aiFile.id, id),
+          eq(aiFile.userId, userId),
+          eq(aiFile.parseClaimId, claimId)
+        )
+      )
+      .returning();
+    return updated;
+  });
+}
+
+export async function markAiFileParseCharged({
+  id,
+  userId,
+  actualCostUsd,
+}: {
+  id: string;
+  userId: string;
+  actualCostUsd: string;
+}) {
+  const [updated] = await db()
+    .update(aiFile)
+    .set({ parseCostUsd: actualCostUsd, parseChargedAt: new Date() })
+    .where(and(eq(aiFile.id, id), eq(aiFile.userId, userId)))
+    .returning();
+  return updated;
 }
 
 export async function findAiFileForCleanup(id: string, userId: string) {

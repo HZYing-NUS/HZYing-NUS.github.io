@@ -1,27 +1,13 @@
-import moment from 'moment';
+import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { getThemePage } from '@/core/theme';
+import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
-import { Empty } from '@/shared/blocks/common';
-import {
-  PostType as DBPostType,
-  getPosts,
-  PostStatus,
-} from '@/shared/models/post';
-import {
-  findTaxonomy,
-  getTaxonomies,
-  TaxonomyStatus,
-  TaxonomyType,
-} from '@/shared/models/taxonomy';
-import {
-  Category as CategoryType,
-  Post as PostType,
-} from '@/shared/types/blocks/blog';
-import { DynamicPage } from '@/shared/types/blocks/landing';
+import { listPublishedCommunityArticles } from '@/shared/models/community';
+import { getPosts, PostStatus, PostType } from '@/shared/models/post';
+import { findTaxonomy, TaxonomyStatus } from '@/shared/models/taxonomy';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -29,112 +15,91 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const t = await getTranslations('pages.blog.metadata');
-
+  const prefix = locale === envConfigs.locale ? '' : `/${locale}`;
   return {
-    title: `${slug} | ${t('title')}`,
-    description: t('description'),
+    title: slug,
     alternates: {
-      canonical:
-        locale !== envConfigs.locale
-          ? `${envConfigs.app_url}/${locale}/blog/category/${slug}`
-          : `${envConfigs.app_url}/blog/category/${slug}`,
+      canonical: `${envConfigs.app_url}${prefix}/blog/category/${slug}`,
+      languages: {
+        zh: `${envConfigs.app_url}/zh/blog/category/${slug}`,
+        en: `${envConfigs.app_url}/blog/category/${slug}`,
+      },
     },
   };
 }
 
 export default async function CategoryBlogPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
-  searchParams: Promise<{ page?: number; pageSize?: number }>;
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
+  const [t, community, legacyCategory] = await Promise.all([
+    getTranslations('pages.blog'),
+    listPublishedCommunityArticles({ categorySlug: slug }),
+    findTaxonomy({ slug, status: TaxonomyStatus.PUBLISHED }),
+  ]);
+  const legacy = legacyCategory
+    ? await getPosts({
+        category: legacyCategory.id,
+        type: PostType.ARTICLE,
+        status: PostStatus.PUBLISHED,
+      })
+    : [];
+  if (community.length === 0 && legacy.length === 0) notFound();
+  return (
+    <main className="mx-auto max-w-6xl px-5 py-16 md:py-24">
+      <Link href="/blog" className="text-muted-foreground text-sm">
+        {t('messages.all')}
+      </Link>
+      <h1 className="mt-4 text-4xl font-semibold">{slug}</h1>
+      <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {community.map(({ article, revision, profile }) => (
+          <ArticleCard
+            key={article.id}
+            href={`/blog/${article.slug}`}
+            title={locale === 'zh' ? revision.titleZh : revision.titleEn}
+            summary={locale === 'zh' ? revision.summaryZh : revision.summaryEn}
+            author={
+              profile?.displayName ||
+              profile?.username ||
+              (locale === 'zh' ? '社区作者' : 'Community author')
+            }
+          />
+        ))}
+        {legacy.map((post) => (
+          <ArticleCard
+            key={`legacy:${post.id}`}
+            href={`/blog/${post.slug}`}
+            title={post.title}
+            summary={post.description}
+            author={post.authorName}
+          />
+        ))}
+      </div>
+    </main>
+  );
+}
 
-  // load blog data
-  const t = await getTranslations('pages.blog');
-
-  const { page: pageNum, pageSize } = await searchParams;
-  const page = pageNum || 1;
-  const limit = pageSize || 30;
-
-  // get current category
-  const categoryData = await findTaxonomy({
-    slug,
-    status: TaxonomyStatus.PUBLISHED,
-  });
-  if (!categoryData) {
-    return <Empty message={`category not found`} />;
-  }
-
-  // get posts data
-  const postsData = await getPosts({
-    category: categoryData.id,
-    type: DBPostType.ARTICLE,
-    status: PostStatus.PUBLISHED,
-    page,
-    limit,
-  });
-
-  // get categories data
-  const categoriesData = await getTaxonomies({
-    type: TaxonomyType.CATEGORY,
-    status: TaxonomyStatus.PUBLISHED,
-  });
-
-  // current category data
-  const currentCategory: CategoryType = {
-    id: categoryData.id,
-    slug: categoryData.slug,
-    title: categoryData.title,
-    url: `/blog/category/${categoryData.slug}`,
-  };
-
-  // build category
-  const categories: CategoryType[] = categoriesData.map((category) => ({
-    id: category.id,
-    slug: category.slug,
-    title: category.title,
-    url: `/blog/category/${category.slug}`,
-  }));
-  categories.unshift({
-    id: 'all',
-    slug: 'all',
-    title: t('messages.all'),
-    url: `/blog`,
-  });
-
-  // build posts
-  const posts: PostType[] = postsData.map((post) => ({
-    id: post.id,
-    title: post.title || '',
-    description: post.description || '',
-    author_name: post.authorName || '',
-    author_image: post.authorImage || '',
-    created_at: moment(post.createdAt).format('MMM D, YYYY') || '',
-    image: post.image || '',
-    url: `/blog/${post.slug}`,
-  }));
-
-  // build page sections
-  const _page: DynamicPage = {
-    title: t('page.title'),
-    sections: {
-      blog: {
-        ...t.raw('page.sections.blog'),
-        data: {
-          categories,
-          currentCategory,
-          posts,
-        },
-      },
-    },
-  };
-
-  // load page component
-  const Page = await getThemePage('dynamic-page');
-
-  return <Page locale={locale} page={_page} />;
+function ArticleCard({
+  href,
+  title,
+  summary,
+  author,
+}: {
+  href: string;
+  title?: string | null;
+  summary?: string | null;
+  author?: string | null;
+}) {
+  return (
+    <Link href={href} className="rounded-2xl border p-5">
+      <h2 className="text-xl font-semibold">{title}</h2>
+      <p className="text-muted-foreground mt-3 line-clamp-3 text-sm">
+        {summary}
+      </p>
+      {author && <p className="text-muted-foreground mt-5 text-xs">{author}</p>}
+    </Link>
+  );
 }
