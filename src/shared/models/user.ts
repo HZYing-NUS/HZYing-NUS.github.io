@@ -143,10 +143,11 @@ export async function purgeExpiredUnverifiedUsers({
   const deleted: string[] = [];
 
   for (const candidate of candidates) {
-    const accounts = await db()
-      .select({ providerId: account.providerId })
-      .from(account)
-      .where(eq(account.userId, candidate.id));
+    const accounts: Array<Pick<typeof account.$inferSelect, 'providerId'>> =
+      await db()
+        .select({ providerId: account.providerId })
+        .from(account)
+        .where(eq(account.userId, candidate.id));
 
     // Keep accounts that were later linked to a social provider.
     if (accounts.some((item) => item.providerId !== 'credential')) {
