@@ -32,6 +32,7 @@
     "credits_title": "Credits: {credits}",
     "verify_email_sent": "Verification email sent. Please check your inbox.",
     "verify_email_required": "Please verify your email address before signing in.",
+    "pending_email_signup": "This email has not been verified yet. We sent a new verification email.",
     "resend_verification": "Resend verification email",
     "resend_verification_sent": "Verification email resent. Please check your inbox.",
     "verify_email_page_title": "Check your email",

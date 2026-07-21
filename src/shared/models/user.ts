@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { headers } from 'next/headers';
-import { and, count, desc, eq, inArray } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, lt } from 'drizzle-orm';
 
 import { getAuth } from '@/core/auth';
 import { db } from '@/core/db';
@@ -98,10 +98,15 @@ export async function getSignUser() {
 }
 
 export async function isEmailVerified(email: string): Promise<boolean> {
+  const { emailVerified } = await getEmailVerificationStatus(email);
+  return emailVerified;
+}
+
+export async function getEmailVerificationStatus(email: string) {
   const normalized = String(email || '')
     .trim()
     .toLowerCase();
-  if (!normalized) return false;
+  if (!normalized) return { exists: false, emailVerified: false };
 
   const [row] = await db()
     .select({ emailVerified: user.emailVerified })
@@ -109,7 +114,55 @@ export async function isEmailVerified(email: string): Promise<boolean> {
     .where(eq(user.email, normalized))
     .limit(1);
 
-  return !!row?.emailVerified;
+  return {
+    exists: Boolean(row),
+    emailVerified: Boolean(row?.emailVerified),
+  };
+}
+
+export async function purgeExpiredUnverifiedUsers({
+  olderThan,
+  limit = 100,
+}: {
+  olderThan: Date;
+  limit?: number;
+}) {
+  const candidates = await db()
+    .select({ id: user.id })
+    .from(user)
+    .innerJoin(account, eq(account.userId, user.id))
+    .where(
+      and(
+        eq(user.emailVerified, false),
+        eq(account.providerId, 'credential'),
+        lt(user.createdAt, olderThan)
+      )
+    )
+    .limit(limit);
+
+  const deleted: string[] = [];
+
+  for (const candidate of candidates) {
+    const accounts = await db()
+      .select({ providerId: account.providerId })
+      .from(account)
+      .where(eq(account.userId, candidate.id));
+
+    // Keep accounts that were later linked to a social provider.
+    if (accounts.some((item) => item.providerId !== 'credential')) {
+      continue;
+    }
+
+    try {
+      await db().delete(user).where(eq(user.id, candidate.id));
+      deleted.push(candidate.id);
+    } catch (error) {
+      // Restricting foreign keys protect any account that became referenced elsewhere.
+      console.warn('purge unverified user skipped:', candidate.id, error);
+    }
+  }
+
+  return deleted;
 }
 
 export async function isTrustedUser(userId: string) {

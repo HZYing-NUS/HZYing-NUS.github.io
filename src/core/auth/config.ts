@@ -87,7 +87,43 @@ const authOptions = {
 // get auth options with configs
 export async function getAuthOptions(configs: Record<string, string>) {
   const emailVerificationEnabled =
-    configs.email_verification_enabled === 'true' && !!configs.resend_api_key;
+    configs.email_verification_enabled === 'true' &&
+    !!configs.resend_api_key &&
+    !!configs.resend_sender_email;
+
+  const initializeVerifiedUser = async (user: any) => {
+    if (!user?.id) {
+      console.error('user initialization failed: user id is required');
+      return;
+    }
+
+    try {
+      await grantRoleForNewUser(user);
+    } catch (error) {
+      console.error('grant role for user failed', error);
+    }
+
+    try {
+      await ensureCommunityProfile({
+        userId: user.id,
+        name: user.name,
+        image: user.image,
+      });
+    } catch (error) {
+      console.error('initialize community profile failed', error);
+    }
+
+    try {
+      if (user.registrationReferralClickId) {
+        await claimReferralInvite({
+          clickId: user.registrationReferralClickId,
+          referredUserId: user.id,
+        });
+      }
+    } catch (error) {
+      console.error('claim referral attribution failed', error);
+    }
+  };
 
   return {
     ...authOptions,
@@ -153,38 +189,8 @@ export async function getAuthOptions(configs: Record<string, string>) {
             return user;
           },
           after: async (user: any, ctx: any) => {
-            if (!user.id) {
-              console.error(
-                'new user initialization failed: user id is required'
-              );
-              return;
-            }
-
-            try {
-              await grantRoleForNewUser(user);
-            } catch (error) {
-              console.error('grant role for new user failed', error);
-            }
-
-            try {
-              await ensureCommunityProfile({
-                userId: user.id,
-                name: user.name,
-                image: user.image,
-              });
-            } catch (error) {
-              console.error('initialize community profile failed', error);
-            }
-
-            try {
-              if (user.registrationReferralClickId) {
-                await claimReferralInvite({
-                  clickId: user.registrationReferralClickId,
-                  referredUserId: user.id,
-                });
-              }
-            } catch (error) {
-              console.error('claim referral attribution failed', error);
+            if (!emailVerificationEnabled || user.emailVerified) {
+              await initializeVerifiedUser(user);
             }
           },
         },
@@ -207,37 +213,38 @@ export async function getAuthOptions(configs: Record<string, string>) {
             autoSignInAfterVerification: true,
             // 24 hours
             expiresIn: 60 * 60 * 24,
+            afterEmailVerification: async (user: any) => {
+              await initializeVerifiedUser(user);
+            },
             sendVerificationEmail: async (
               { user, url }: { user: any; url: string; token: string },
               _request: Request
             ) => {
-              try {
-                const key = String(user?.email || '').toLowerCase();
-                const now = Date.now();
-                const last = recentVerificationEmailSentAt.get(key) || 0;
-                if (key && now - last < VERIFICATION_EMAIL_MIN_INTERVAL_MS) {
-                  return;
-                }
-                if (key) {
-                  recentVerificationEmailSentAt.set(key, now);
-                }
+              const key = String(user?.email || '').toLowerCase();
+              const now = Date.now();
+              const last = recentVerificationEmailSentAt.get(key) || 0;
+              if (key && now - last < VERIFICATION_EMAIL_MIN_INTERVAL_MS) {
+                return;
+              }
 
-                const emailService = await getEmailService(configs as any);
-                const logoUrl = envConfigs.app_logo?.startsWith('http')
-                  ? envConfigs.app_logo
-                  : `${envConfigs.app_url}${envConfigs.app_logo?.startsWith('/') ? '' : '/'}${envConfigs.app_logo || ''}`;
-                // Avoid blocking auth response on email sending.
-                await emailService.sendEmail({
-                  to: user.email,
-                  subject: `Verify your email - ${envConfigs.app_name}`,
-                  react: VerifyEmail({
-                    appName: envConfigs.app_name,
-                    logoUrl,
-                    url,
-                  }),
-                });
-              } catch (e) {
-                console.log('send verification email failed:', e);
+              const emailService = await getEmailService(configs as any);
+              const logoUrl = envConfigs.app_logo?.startsWith('http')
+                ? envConfigs.app_logo
+                : `${envConfigs.app_url}${envConfigs.app_logo?.startsWith('/') ? '' : '/'}${envConfigs.app_logo || ''}`;
+              const result = await emailService.sendEmail({
+                to: user.email,
+                subject: `Verify your email - ${envConfigs.app_name}`,
+                react: VerifyEmail({
+                  appName: envConfigs.app_name,
+                  logoUrl,
+                  url,
+                }),
+              });
+              if (!result.success) {
+                throw new Error(result.error || 'verification email failed');
+              }
+              if (key) {
+                recentVerificationEmailSentAt.set(key, now);
               }
             },
           },

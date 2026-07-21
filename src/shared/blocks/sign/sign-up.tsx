@@ -107,6 +107,7 @@ export function SignUp({
           email,
           password,
           name,
+          callbackURL: `${base}${stripLocalePrefix(callbackUrl) || '/'}`,
         },
         {
           onRequest: (ctx) => {
@@ -128,13 +129,6 @@ export function SignUp({
                 email
               )}&callbackUrl=${encodeURIComponent(normalizedCallbackUrl)}`;
 
-            // IMPORTANT: callbackURL must not contain its own '&' query params.
-            // We redirect to home/callbackUrl after verification; verify page is just the waiting UI.
-              void authClient.sendVerificationEmail({
-                email,
-              callbackURL: `${base}${normalizedCallbackUrl || '/'}`,
-              });
-
               // next/navigation router expects fully qualified path (including locale when non-default)
               router.push(`${base}${verifyPath}`);
               return;
@@ -143,7 +137,52 @@ export function SignUp({
             router.push(callbackUrl);
           },
           onError: (e: any) => {
-            toast.error(e?.error?.message || 'sign up failed');
+            const errorCode = e?.error?.code || '';
+            const errorMessage = e?.error?.message || '';
+            const isExistingUser =
+              errorCode === 'USER_ALREADY_EXISTS' ||
+              errorMessage.includes('User already exists');
+
+            if (emailVerificationEnabled && isExistingUser) {
+              void (async () => {
+                try {
+                  const statusResponse = await fetch('/api/user/is-email-verified', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                  });
+                  const statusResult = await statusResponse.json();
+                  const status = statusResult?.data;
+
+                  if (!status?.emailVerified) {
+                    const normalizedCallbackUrl = stripLocalePrefix(callbackUrl);
+                    const verifyPath = `/verify-email?sent=1&email=${encodeURIComponent(
+                      email
+                    )}&callbackUrl=${encodeURIComponent(normalizedCallbackUrl)}`;
+                    const resendResult = await authClient.sendVerificationEmail({
+                      email,
+                      callbackURL: `${base}${normalizedCallbackUrl || '/'}`,
+                    });
+                    if (resendResult?.error) {
+                      throw new Error(resendResult.error.message);
+                    }
+                    toast.success(t('pending_email_signup'));
+                    router.push(`${base}${verifyPath}`);
+                    return;
+                  }
+                } catch (error: any) {
+                  toast.error(error?.message || 'send verification email failed');
+                  setLoading(false);
+                  return;
+                }
+
+                toast.error(errorMessage || 'sign up failed');
+                setLoading(false);
+              })();
+              return;
+            }
+
+            toast.error(errorMessage || 'sign up failed');
             setLoading(false);
           },
         }

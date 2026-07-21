@@ -1,5 +1,6 @@
 import { getExpiredStandaloneChats } from '@/shared/models/chat';
 import { getExpiredProjects } from '@/shared/models/project';
+import { purgeExpiredUnverifiedUsers } from '@/shared/models/user';
 import {
   purgeProjectContent,
   purgeStandaloneChatContent,
@@ -54,10 +55,17 @@ export async function GET(request: Request) {
     }
   }
 
-  const detachedFiles = await retryDetachedFileCleanups();
+  const [detachedFiles, unverifiedUsers] = await Promise.all([
+    retryDetachedFileCleanups(),
+    purgeExpiredUnverifiedUsers({
+      olderThan: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      limit: 100,
+    }),
+  ]);
   return Response.json({
     projects: projectResults,
     chats: chatResults,
     detachedFiles,
+    unverifiedUsers,
   });
 }

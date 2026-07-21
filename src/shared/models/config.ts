@@ -142,7 +142,15 @@ export async function getPublicConfigs(): Promise<Configs> {
   // get public configs
   for (const key in allConfigs) {
     if (publicSettingNames.includes(key)) {
-      publicConfigs[key] = String(allConfigs[key]);
+      if (key === 'email_verification_enabled') {
+        publicConfigs[key] = String(
+          allConfigs[key] === 'true' &&
+            Boolean(allConfigs.resend_api_key) &&
+            Boolean(allConfigs.resend_sender_email)
+        );
+      } else {
+        publicConfigs[key] = String(allConfigs[key]);
+      }
     }
   }
 
