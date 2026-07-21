@@ -23,6 +23,15 @@
     "write": "Write article",
     "followingSignIn": "Sign in to see articles from authors you follow.",
     "signIn": "Sign in",
-    "communityAuthor": "Community author"
+    "communityAuthor": "Community author",
+    "webtoolsEditorial": "WebTools Editorial",
+    "eyebrow": "Builder community",
+    "categories": "Article categories",
+    "feedFilter": "Article filters",
+    "contributeTitle": "Share what you learned",
+    "contributeDescription": "Write about the mistakes, practical methods, and honest lessons from building your web product.",
+    "startWriting": "Start writing",
+    "ranking": "Featured articles",
+    "rankingHint": "Recent"
   }
 }

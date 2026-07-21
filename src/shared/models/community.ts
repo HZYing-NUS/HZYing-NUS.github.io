@@ -45,6 +45,11 @@ export type PublicCommunityArticleRow = {
   article: CommunityBlogArticle;
   revision: CommunityArticleRevision;
   profile: CommunityUserProfile | null;
+  metrics: {
+    likes: number;
+    comments: number;
+    bookmarks: number;
+  };
 };
 
 export function getCommunityPublicArticleConditions() {
@@ -317,6 +322,24 @@ export async function listPublishedCommunityArticles({
       article: communityBlogArticle,
       revision: communityArticleRevision,
       profile: communityUserProfile,
+      metrics: {
+        likes: sql<number>`(
+          select count(*)::int
+          from ${communityArticleLike}
+          where ${communityArticleLike.articleId} = ${communityBlogArticle.id}
+        )`,
+        comments: sql<number>`(
+          select count(*)::int
+          from ${communityComment}
+          where ${communityComment.articleId} = ${communityBlogArticle.id}
+            and ${communityComment.status} = 'published'
+        )`,
+        bookmarks: sql<number>`(
+          select count(*)::int
+          from ${communityArticleBookmark}
+          where ${communityArticleBookmark.articleId} = ${communityBlogArticle.id}
+        )`,
+      },
     })
     .from(communityBlogArticle)
     .innerJoin(

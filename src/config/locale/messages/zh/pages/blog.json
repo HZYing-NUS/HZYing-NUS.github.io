@@ -14,7 +14,6 @@
     }
   },
   "messages": {
-    "all": "全部",
     "no_content": "暂无内容",
     "crumb": "博客",
     "toc": "目录",
@@ -24,6 +23,15 @@
     "write": "写文章",
     "followingSignIn": "登录后可查看你关注的作者发布的文章。",
     "signIn": "前往登录",
-    "communityAuthor": "社区作者"
+    "communityAuthor": "社区作者",
+    "webtoolsEditorial": "WebTools 编辑部",
+    "eyebrow": "创作者社区",
+    "categories": "文章分类",
+    "feedFilter": "文章筛选",
+    "contributeTitle": "分享你的实战经验",
+    "contributeDescription": "把你做 Web 产品时踩过的坑、跑通的方法和真实复盘分享给更多创作者。",
+    "startWriting": "开始写作",
+    "ranking": "精选文章榜",
+    "rankingHint": "近期"
   }
 }
