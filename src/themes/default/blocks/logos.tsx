@@ -36,7 +36,9 @@ export function Logos({
         className
       )}
     >
-      <div className={`mx-auto max-w-5xl px-6`}>
+      <div
+        className={cn('mx-auto px-6', 是流体步骤 ? 'max-w-7xl' : 'max-w-5xl')}
+      >
         <ScrollAnimation>
           <p
             className={cn(
@@ -52,7 +54,8 @@ export function Logos({
           <div
             className={cn(
               'mx-auto mt-12 flex max-w-4xl flex-wrap items-center justify-center gap-x-10 gap-y-8 sm:gap-x-16 sm:gap-y-10',
-              是流体步骤 && 'gap-3 sm:gap-4'
+              是流体步骤 &&
+                'grid w-full max-w-6xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5'
             )}
           >
             {section.items?.map((item, idx) => (
@@ -62,7 +65,7 @@ export function Logos({
                 className={cn(
                   'text-muted-foreground flex flex-col items-center gap-3',
                   是流体步骤 &&
-                    'webtools-flow-step-card group w-[9.5rem] px-4 py-5'
+                    'webtools-flow-step-card group h-40 w-full min-w-0 justify-center px-3 py-5'
                 )}
               >
                 {item.icon ? (
@@ -85,7 +88,7 @@ export function Logos({
                   <span
                     className={cn(
                       'text-foreground text-sm font-medium',
-                      是流体步骤 && 'relative z-10'
+                      是流体步骤 && 'relative z-10 whitespace-nowrap'
                     )}
                   >
                     {item.title}
