@@ -16,25 +16,25 @@
         "id": "hero",
         "title": "第一次做 Web 产品，用对工具。",
         "highlight_text": "用对工具",
-        "description": "从想法、开发到上线，按步骤找到合适的工具、资源和实战经验。",
+        "description": "从发现需求、验证想法到开发上线，按当前阶段找到经过整理的工具、行动路线和实战经验。",
         "announcement": {
-          "badge": "持续更新",
-          "title": "从零到上线，帮你少走弯路",
-          "url": "/about"
+          "badge": "首批路线",
+          "title": "3 条可执行的行动专题已经上线",
+          "url": "/collections"
         },
-        "tip": "工具、模板、服务和实战经验持续补充中。",
+        "tip": "公开资源与行动专题无需登录，先找到你现在要完成的下一步。",
         "buttons": [
           {
-            "title": "浏览建站步骤",
+            "title": "按阶段找资源",
             "icon": "Box",
             "url": "/resources",
             "target": "_self",
             "variant": "default"
           },
           {
-            "title": "直接问 AI",
-            "icon": "RiMessage2Line",
-            "url": "/chat",
+            "title": "按目标开始行动",
+            "icon": "RiRouteLine",
+            "url": "/collections",
             "target": "_self",
             "variant": "outline"
           }
@@ -47,40 +47,40 @@
       "logos": {
         "id": "logos",
         "variant": "flow-steps",
-        "title": "搭一个网站，大概要走这几步",
+        "title": "从想法到增长，先确认你现在在哪个阶段",
         "items": [
           {
-            "title": "想清楚做什么",
+            "title": "发现并验证需求",
             "icon": "RiCompass3Line"
           },
           {
-            "title": "设计长什么样",
+            "title": "设计可测试原型",
             "icon": "RiPaletteLine"
           },
           {
-            "title": "把网站做出来",
+            "title": "开发核心产品",
             "icon": "RiCodeSSlashLine"
           },
           {
-            "title": "接入 AI 能力",
-            "icon": "RiRobot2Line"
+            "title": "部署并正式上线",
+            "icon": "RiRocketLine"
           },
           {
-            "title": "上线和推广",
-            "icon": "RiRocketLine"
+            "title": "分析、运营和增长",
+            "icon": "RiLineChartLine"
           }
         ]
       },
       "introduce": {
         "block": "features-list",
         "id": "introduce",
-        "title": "为什么不自己一个个去搜？",
-        "label": "这里帮你做的事",
-        "description": "网上的工具、模板、教程太多太散，光是挑选就够头疼。我们把它们按「搭站要走的步骤」理好，你不用再对着一堆链接发愁。",
+        "title": "这里不是再给你一堆链接",
+        "label": "WebTools 如何帮你",
+        "description": "真正困难的不是找不到工具，而是不知道当前该做什么、为什么选它，以及做到什么程度才能继续。WebTools 把分散的信息整理成可以判断和执行的下一步。",
         "items": [
           {
-            "title": "按步骤找，不用瞎搜",
-            "description": "从有想法到上线推广，每一步该看什么，都归好了类，照着走就行。",
+            "title": "按 7 个产品阶段找资源",
+            "description": "从发现需求到运营增长，先定位当前阶段，再筛选真正相关的工具和服务。",
             "icon": "RiCompass3Line",
             "image": {
               "src": "/imgs/features/1.png",
@@ -88,8 +88,8 @@
             }
           },
           {
-            "title": "现成的清单，照抄就能用",
-            "description": "「做个人博客」「做落地页」这类常见需求，我们打包好一整套推荐，拿来就能开始。",
+            "title": "按明确结果执行行动专题",
+            "description": "每条路线都写清先做什么、留下什么证据，以及什么时候可以进入下一步。",
             "icon": "RiStackLine",
             "image": {
               "src": "/imgs/features/2.png",
@@ -97,8 +97,8 @@
             }
           },
           {
-            "title": "真人踩过的坑，写成了文章",
-            "description": "不只是列工具，还有实际做下来的经验和教训，帮你避开常见的坑。",
+            "title": "看实际用法，不只看简介",
+            "description": "资源条目会说明它解决什么问题、怎样开始使用，以及选型时需要注意什么。",
             "icon": "RiArticleLine",
             "image": {
               "src": "/imgs/features/3.png",
@@ -106,8 +106,8 @@
             }
           },
           {
-            "title": "AI 回答有出处，不瞎编",
-            "description": "问 AI 时，它只根据站内真实内容回答，并给出处；答不上来会直说，不糊弄你。",
+            "title": "带着项目背景继续问 AI",
+            "description": "登录后可以把问题、文件和项目进度放进同一个工作区，并查看回答使用的站内来源。",
             "icon": "RiRobot2Line",
             "image": {
               "src": "/imgs/features/4.png",
@@ -120,23 +120,23 @@
       "benefits": {
         "block": "features-accordion",
         "id": "benefits",
-        "title": "我们帮你省掉的三件麻烦事",
-        "label": "对你有什么用",
-        "description": "新手搭站最容易卡在「不知道用什么、不知道好不好、不知道怎么问」这三件事上，这里一次帮你解决。",
+        "title": "根据你现在的问题，进入正确入口",
+        "label": "从哪里开始",
+        "description": "不需要从头读完整个网站。先判断你缺的是一个工具、一条执行路线，还是结合项目背景的建议。",
         "items": [
           {
-            "title": "不用再纠结「到底该用哪个」",
-            "description": "同类工具我们只推靠谱的几个，并写清楚各自适合谁，省掉你反复比价踩雷的时间。",
+            "title": "知道要做什么，只是不知道用哪个工具",
+            "description": "进入资源库，按发现需求、验证想法、设计原型、开发搭建、部署上线、分析优化或运营增长筛选。",
             "icon": "RiDatabase2Line"
           },
           {
-            "title": "每个推荐都告诉你「为什么」",
-            "description": "不是干巴巴甩个链接，而是标清楚它用在哪一步、适合什么场景、大概多少钱。",
+            "title": "有目标，但不知道具体先做哪一步",
+            "description": "进入行动专题，跟着步骤完成任务，并保留用户原话、最危险假设、核心流程等可继续使用的结果。",
             "icon": "RiMap2Line"
           },
           {
-            "title": "有问题随时问，答案有依据",
-            "description": "不知道从哪下手，直接问 AI 助手，它基于站内内容回答并附来源，比到处搜靠谱。",
+            "title": "问题与自己的项目有关，需要连续讨论",
+            "description": "登录 AI 工作区，把对话关联到项目；系统会结合站内知识、可选联网搜索、文件和项目记忆继续回答。",
             "icon": "RiVerifiedBadgeLine"
           }
         ]
@@ -144,8 +144,8 @@
       "usage": {
         "block": "features-step",
         "id": "usage",
-        "title": "跟着做：从想法到上线的四步",
-        "description": "不知道从哪开始？按这四步走，每一步该用什么这里都帮你备好了。",
+        "title": "先把最早期的三个关键问题做扎实",
+        "description": "首批行动专题先覆盖从问题发现到可测试原型。每一步都有明确产出，不用靠感觉判断是否完成。",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "usage"
@@ -154,32 +154,32 @@
         "text_align": "center",
         "items": [
           {
-            "title": "第一步：想清楚做什么",
-            "description": "先弄明白你要做个什么站、给谁用。这里帮你找灵感、看别人怎么做的。",
+            "title": "找到值得验证的问题",
+            "description": "从真实讨论和现有产品中收集重复出现的问题，留下至少 10 条带上下文的用户原话。",
             "image": {
               "src": "/imgs/features/5.png",
               "alt": "usage"
             }
           },
           {
-            "title": "第二步：设计和搭建",
-            "description": "挑现成的 UI 模板和组件库，不用从零画界面，配合 AI 编程工具，不会写太多代码也能搭出来。",
+            "title": "验证想法是否真的有需求",
+            "description": "检查替代方案、流量和收入信号，写下最危险假设与反证条件，再决定继续、调整还是停止。",
             "image": {
               "src": "/imgs/features/6.png",
               "alt": "usage"
             }
           },
           {
-            "title": "第三步：接功能和 AI",
-            "description": "要登录、要存数据（数据库）、要收款、要接 AI 模型？该用哪些服务，这里帮你比好了。",
+            "title": "做出可以交给用户测试的原型",
+            "description": "只实现最关键的用户路径，确定核心流程和页面顺序，让目标用户可以理解、点击并暴露问题。",
             "image": {
               "src": "/imgs/features/7.png",
               "alt": "usage"
             }
           },
           {
-            "title": "第四步：上线和推广",
-            "description": "把网站部署上线，再做 SEO（让别人在百度、谷歌能搜到你），需要的工具都给你理好了。",
+            "title": "再按阶段继续推进产品",
+            "description": "验证成立后，回到资源库寻找开发、数据库、支付、部署、分析、SEO 和运营增长所需工具。",
             "image": {
               "src": "/imgs/features/8.png",
               "alt": "usage"
@@ -190,53 +190,53 @@
       },
       "features": {
         "id": "features",
-        "title": "你在这里能拿到什么",
-        "description": "顶部导航栏的几个入口，就是你会用到的全部功能：",
+        "title": "每条资源都要回答实际选型问题",
+        "description": "资源库不是批量收录目录。每条内容都围绕真实任务整理，让你在打开官网之前先知道它是否值得用。",
         "items": [
           {
-            "title": "资源库",
-            "description": "网站、工具、插件、UI 模板、组件库、Starter 脚手架、AI 模型，按用途分好类，挑着用。",
+            "title": "它是什么",
+            "description": "先用简洁说明建立正确预期，不复制官网宣传语。",
             "icon": "RiBox3Line"
           },
           {
-            "title": "行动专题",
-            "description": "围绕一个具体目标（比如做个落地页），把该用的东西打包成一份现成清单。",
+            "title": "它解决什么问题",
+            "description": "把工具能力对应到发现需求、做原型、开发或增长等具体任务。",
             "icon": "RiFoldersLine"
           },
           {
-            "title": "文章",
-            "description": "真实做项目的经验、教程和复盘，不只列工具，还告诉你怎么少踩坑。",
+            "title": "什么时候使用",
+            "description": "说明适用阶段和触发条件，避免过早引入不必要的工具。",
             "icon": "RiArticleLine"
           },
           {
-            "title": "投稿建议",
-            "description": "发现好东西或者哪里写错了？登录后就能推荐资源、纠错或提建议。",
+            "title": "怎样开始使用",
+            "description": "给出可以立即执行的第一步，而不是让你自己重新研究。",
             "icon": "RiSendPlaneLine"
           },
           {
-            "title": "关于我",
-            "description": "看看这个站背后是谁、做过什么，以及为什么想帮新手把建站这件事讲清楚。",
+            "title": "选择时注意什么",
+            "description": "提示价格、能力边界、维护状态或其他需要核验的风险。",
             "icon": "RiUser3Line"
           },
           {
-            "title": "AI 助手",
-            "description": "搭站、设计、开发、上线、推广、选 AI 模型，有问题直接问它，答案带出处。",
+            "title": "下一步可以去哪里",
+            "description": "通过相关阶段、分类和行动专题，把单个工具接回完整产品流程。",
             "icon": "RiRobot2Line"
           }
         ]
       },
       "stats": {
         "id": "stats",
-        "title": "现在已经有什么",
-        "description": "内容还在持续补充，先把最常用的备齐。",
+        "title": "当前内容范围",
+        "description": "内容持续核验和补充，优先保证每条资源真正能帮助用户做决定。",
         "items": [
           {
-            "title": "5",
-            "description": "个建站步骤全覆盖"
+            "title": "7",
+            "description": "个产品阶段"
           },
           {
-            "title": "免费",
-            "description": "浏览 · 问 AI 都免费"
+            "title": "公开",
+            "description": "资源与专题免费浏览"
           },
           {
             "title": "中英",
@@ -247,72 +247,72 @@
       },
       "testimonials": {
         "id": "testimonials",
-        "title": "常见的几类需求，这里都能帮上忙",
-        "description": "不管你想做哪种网站，都能在这里找到对应的工具和思路。",
+        "title": "从一条可以完成的行动路线开始",
+        "description": "每条专题只解决一个任务，并告诉你预计时间、执行步骤和完成后应该留下什么。",
         "items": [
           {
-            "title": "先看别人怎么做的",
-            "description": "找灵感、看同类产品和市场需求：Product Hunt、榜单、关键词工具该去哪些地方看，帮你找齐。",
-            "name": "找灵感 · 看竞品",
-            "role": "常见需求",
+            "title": "找到一个值得验证的产品问题",
+            "description": "从真实讨论和现有产品中提取重复问题，约 90 分钟完成 4 个执行环节。",
+            "name": "问题发现",
+            "role": "留下至少 10 条用户原话",
             "icon": "RiSearchEyeLine"
           },
           {
-            "title": "用 AI 帮你写代码",
-            "description": "不会写代码也能上手，教你用 Claude Code 这类 AI 编程工具，把网站一步步做出来。",
-            "name": "AI 编程 · 少写代码",
-            "role": "常见需求",
-            "icon": "RiRobot2Line"
+            "title": "验证一个产品想法有没有人需要",
+            "description": "用问题、替代方案、流量和收入信号做判断，约 2 小时完成 4 个执行环节。",
+            "name": "需求验证",
+            "role": "留下最危险假设和反证条件",
+            "icon": "RiVerifiedBadgeLine"
           },
           {
-            "title": "上线后让更多人看到",
-            "description": "部署上线、做 SEO 让人搜到你、做推广引流，Vercel、域名邮箱、分析工具都帮你整理好了。",
-            "name": "上线 · 推广 · 引流",
-            "role": "常见需求",
-            "icon": "RiRocketLine"
+            "title": "把想法做成可测试的产品原型",
+            "description": "只做最关键的用户路径，半天到 1 天完成 5 个执行环节。",
+            "name": "快速原型",
+            "role": "留下核心流程和页面顺序",
+            "icon": "RiLayoutLine"
           }
         ]
       },
       "faq": {
         "id": "faq",
-        "title": "新手常问的几个问题",
-        "description": "怕自己搞不定？下面这些先看看。",
+        "title": "开始之前，你可能还想确认这些",
+        "description": "公开内容可以直接浏览；需要连续项目支持时，再进入 AI 工作区。",
         "items": [
           {
-            "title": "我完全不会写代码，能用吗？",
-            "description": "能。这里就是为不太懂技术的人准备的，会告诉你每一步用什么，很多环节还能借助 AI 工具，不用你自己从零写代码。"
+            "title": "我已经会用 AI 编程工具，还适合用 WebTools 吗？",
+            "description": "适合。WebTools 主要帮助已经能使用 AI 编程工具、但还没有独立跑通需求验证、设计、开发、上线和增长完整流程的用户。"
           },
           {
             "title": "我该怎么开始？",
-            "description": "如果你有明确目标，直接翻「工具和模板库」按步骤找；如果还没想好，就用 AI 助手把你的想法说给它听，它会告诉你大概需要什么。"
+            "description": "已经知道当前任务，就去资源库按阶段筛选；不知道具体步骤，就从行动专题开始；需要结合自己的项目持续讨论，再登录 AI 工作区。"
           },
           {
-            "title": "这里的东西要花钱吗？",
-            "description": "浏览资源、看文章、问 AI 都是免费的。至于推荐的工具本身，我们会标清楚哪些免费、哪些收费，你自己按需选。"
+            "title": "资源库和行动专题需要登录或付费吗？",
+            "description": "不需要。首页、资源库、行动专题、文章和关于我都是公开内容。AI 对话、项目记忆和文件上传需要登录，并按 Credit 使用。"
           },
           {
-            "title": "AI 助手靠谱吗，会不会瞎编？",
-            "description": "它只根据站内真实内容回答，并给出参考来源；如果站里没有相关内容，它会直接说找不到，而不是编一个答案给你。"
+            "title": "AI 助手会使用哪些信息？",
+            "description": "站内知识库会按问题自动检索；联网搜索和 Skill 只有在你主动启用后才会使用。回答还可以结合项目记忆和你上传的文件，并展示实际使用的来源。"
           }
         ]
       },
       "cta": {
         "id": "cta",
-        "title": "现在就开始，搭出你的第一个网站",
-        "description": "不知道从哪下手？浏览建站步骤，或者直接把你的想法告诉 AI 助手。",
+        "title": "不要先收藏更多工具，先完成下一步",
+        "description": "知道当前任务，就按阶段找资源；还不知道怎么推进，就选一条行动专题开始执行。",
         "buttons": [
           {
-            "title": "浏览建站步骤",
+            "title": "按阶段找资源",
             "url": "/resources",
             "target": "_self",
             "icon": "Zap"
           },
           {
-            "title": "直接问 AI",
-            "url": "/chat",
+            "title": "查看行动专题",
+            "url": "/collections",
             "target": "_self",
             "variant": "outline",
-            "icon": "RiMessage2Line"
+            "icon": "RiRouteLine"
           }
         ],
         "className": "bg-muted"

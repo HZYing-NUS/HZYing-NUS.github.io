@@ -16,25 +16,25 @@
         "id": "hero",
         "title": "The right tools for your first web product.",
         "highlight_text": "right tools",
-        "description": "From idea to launch, find the right tools, resources, and real-world guidance for every step.",
+        "description": "From demand discovery and idea validation to building and launch, find field-tested tools, action guides, and practical experience for your current stage.",
         "announcement": {
-          "badge": "Continuously updated",
-          "title": "From zero to launch, without the guesswork",
-          "url": "/about"
+          "badge": "Starting guides",
+          "title": "Three step-by-step action guides are now live",
+          "url": "/collections"
         },
-        "tip": "Tools, templates, services, and hands-on notes are added continuously.",
+        "tip": "Public resources and action guides require no sign-in. Start with the next step you need to finish.",
         "buttons": [
           {
-            "title": "Browse the steps",
+            "title": "Find resources by stage",
             "icon": "Box",
             "url": "/resources",
             "target": "_self",
             "variant": "default"
           },
           {
-            "title": "Ask the AI",
-            "icon": "RiMessage2Line",
-            "url": "/chat",
+            "title": "Start an action guide",
+            "icon": "RiRouteLine",
+            "url": "/collections",
             "target": "_self",
             "variant": "outline"
           }
@@ -47,40 +47,40 @@
       "logos": {
         "id": "logos",
         "variant": "flow-steps",
-        "title": "Building a website usually goes through these steps",
+        "title": "From idea to growth, first locate the stage you are in",
         "items": [
           {
-            "title": "Figure out what to build",
+            "title": "Discover and validate demand",
             "icon": "RiCompass3Line"
           },
           {
-            "title": "Design how it looks",
+            "title": "Design a testable prototype",
             "icon": "RiPaletteLine"
           },
           {
-            "title": "Build it",
+            "title": "Build the core product",
             "icon": "RiCodeSSlashLine"
           },
           {
-            "title": "Add AI",
-            "icon": "RiRobot2Line"
+            "title": "Deploy and launch",
+            "icon": "RiRocketLine"
           },
           {
-            "title": "Launch and grow",
-            "icon": "RiRocketLine"
+            "title": "Measure, operate, and grow",
+            "icon": "RiLineChartLine"
           }
         ]
       },
       "introduce": {
         "block": "features-list",
         "id": "introduce",
-        "title": "Why dig through endless search results yourself?",
-        "label": "What we do for you",
-        "description": "There are too many tools, templates, and tutorials out there, and just picking is exhausting. We sort them by the steps of building a site, so you're not left staring at a pile of links.",
+        "title": "This is not another pile of links",
+        "label": "How WebTools helps",
+        "description": "The hard part is not finding more tools. It is knowing what to do now, why a tool fits, and what evidence means you are ready to move on. WebTools turns scattered information into a next step you can judge and execute.",
         "items": [
           {
-            "title": "Find by step, not by guessing",
-            "description": "From first idea to launch and growth, what to look at in each step is grouped and ready to follow.",
+            "title": "Browse resources across seven stages",
+            "description": "Locate your current stage, from demand discovery to operating and growth, then filter for tools relevant to that task.",
             "icon": "RiCompass3Line",
             "image": {
               "src": "/imgs/features/1.png",
@@ -88,8 +88,8 @@
             }
           },
           {
-            "title": "Ready-made lists you can copy",
-            "description": "Common goals like a personal blog or a landing page come as a full packaged set you can start from right away.",
+            "title": "Follow action guides built around an outcome",
+            "description": "Each guide tells you what to do first, what evidence to keep, and when you are ready for the next step.",
             "icon": "RiStackLine",
             "image": {
               "src": "/imgs/features/2.png",
@@ -97,8 +97,8 @@
             }
           },
           {
-            "title": "Real lessons, written down",
-            "description": "Not just a list of tools, but hands-on experience and mistakes, so you can avoid the common traps.",
+            "title": "See practical use, not just a summary",
+            "description": "Resource entries explain the problem a tool solves, how to start using it, and what to check before choosing it.",
             "icon": "RiArticleLine",
             "image": {
               "src": "/imgs/features/3.png",
@@ -106,8 +106,8 @@
             }
           },
           {
-            "title": "AI answers with sources, no made-up facts",
-            "description": "The assistant answers only from real site content and gives sources. If it can't find one, it says so.",
+            "title": "Keep asking with your project context",
+            "description": "After signing in, keep questions, files, and project progress in one workspace and see which site sources informed each answer.",
             "icon": "RiRobot2Line",
             "image": {
               "src": "/imgs/features/4.png",
@@ -120,23 +120,23 @@
       "benefits": {
         "block": "features-accordion",
         "id": "benefits",
-        "title": "Three headaches we take off your plate",
-        "label": "What you get",
-        "description": "Beginners usually get stuck on three things: not knowing what to use, whether it's any good, and how to even ask. We handle all three.",
+        "title": "Use the right entry point for the problem you have",
+        "label": "Where to start",
+        "description": "You do not need to read the whole site. First decide whether you need one tool, a complete execution path, or advice grounded in your own project.",
         "items": [
           {
-            "title": "No more agonizing over which one to pick",
-            "description": "For each type of tool we recommend only a few reliable options and explain who each one suits, saving you endless comparison.",
+            "title": "You know the task, but not which tool to use",
+            "description": "Open the resource library and filter by demand discovery, idea validation, prototyping, building, launch, optimization, or growth.",
             "icon": "RiDatabase2Line"
           },
           {
-            "title": "Every pick comes with a why",
-            "description": "Not a bare link, but a clear note on which step it is for, what it suits, and roughly how much it costs.",
+            "title": "You have a goal, but not a concrete first step",
+            "description": "Open an action guide, complete the steps, and keep reusable outputs such as user quotes, the riskiest assumption, or the core product flow.",
             "icon": "RiMap2Line"
           },
           {
-            "title": "Ask anytime, answers you can trust",
-            "description": "Not sure where to start? Just ask the AI assistant. It answers from site content with sources, more reliable than searching around.",
+            "title": "Your question depends on your project context",
+            "description": "Sign in to the AI workspace and connect the conversation to a project. It can combine site knowledge, optional web search, files, and project memory.",
             "icon": "RiVerifiedBadgeLine"
           }
         ]
@@ -144,8 +144,8 @@
       "usage": {
         "block": "features-step",
         "id": "usage",
-        "title": "Follow along: from idea to launch in four steps",
-        "description": "Not sure where to start? Follow these four steps — what to use at each one is ready for you here.",
+        "title": "Get the three earliest product decisions right",
+        "description": "The first action guides cover the path from problem discovery to a testable prototype. Each step leaves a concrete output, so progress is not based on guesswork.",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "usage"
@@ -154,32 +154,32 @@
         "text_align": "center",
         "items": [
           {
-            "title": "Step 1: Figure out what to build",
-            "description": "First get clear on what kind of site you want and who it's for. We help you find ideas and see how others did it.",
+            "title": "Find a problem worth validating",
+            "description": "Collect recurring problems from real discussions and existing products, leaving at least ten user quotes with context.",
             "image": {
               "src": "/imgs/features/5.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Step 2: Design and build",
-            "description": "Pick ready-made UI templates and component kits instead of designing from scratch; paired with AI coding tools, you can build it with little code.",
+            "title": "Validate whether the idea has demand",
+            "description": "Check alternatives, traffic, and revenue signals. Write down the riskiest assumption and disconfirming condition before deciding to continue, adjust, or stop.",
             "image": {
               "src": "/imgs/features/6.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Step 3: Add features and AI",
-            "description": "Need login, data storage (a database), payments, or an AI model? We have compared the services so you know which to use.",
+            "title": "Build something users can test",
+            "description": "Implement only the critical user path, define the screen order, and let target users understand, click, and expose problems.",
             "image": {
               "src": "/imgs/features/7.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Step 4: Launch and grow",
-            "description": "Deploy your site, then do SEO (so people can find you on Google) — the tools you need are all sorted here.",
+            "title": "Continue through the remaining stages",
+            "description": "Once the evidence holds, return to the resource library for development, databases, payments, deployment, analytics, SEO, and growth tools.",
             "image": {
               "src": "/imgs/features/8.png",
               "alt": "usage"
@@ -190,53 +190,53 @@
       },
       "features": {
         "id": "features",
-        "title": "What you get here",
-        "description": "The entries in the top nav are all the features you'll use:",
+        "title": "Every resource must answer a real selection question",
+        "description": "This is not a bulk directory. Each entry is organized around a real task, so you know whether a tool is worth opening before you reach its homepage.",
         "items": [
           {
-            "title": "Resources",
-            "description": "Websites, tools, plugins, UI templates, component kits, Starter boilerplates, and AI models, sorted by purpose.",
+            "title": "What it is",
+            "description": "A concise explanation that sets the right expectation instead of repeating homepage claims.",
             "icon": "RiBox3Line"
           },
           {
-            "title": "Collections",
-            "description": "Around one specific goal, like a landing page, the things you need are packaged into a ready-made list.",
+            "title": "What problem it solves",
+            "description": "The capability is tied to a concrete task such as research, prototyping, building, or growth.",
             "icon": "RiFoldersLine"
           },
           {
-            "title": "Articles",
-            "description": "Real project experience, tutorials, and retrospectives — not just a tool list, but how to avoid the pitfalls.",
+            "title": "When to use it",
+            "description": "Stage and trigger conditions help you avoid adopting tools before they are needed.",
             "icon": "RiArticleLine"
           },
           {
-            "title": "Submit",
-            "description": "Found something great or spotted a mistake? Sign in to suggest resources, fixes, or ideas.",
+            "title": "How to get started",
+            "description": "A concrete first move lets you act without starting the research again from scratch.",
             "icon": "RiSendPlaneLine"
           },
           {
-            "title": "About",
-            "description": "See who is behind this site, what they've built, and why they want to make website-building clear for beginners.",
+            "title": "What to check before choosing",
+            "description": "Pricing, capability limits, maintenance status, and other risks are called out when relevant.",
             "icon": "RiUser3Line"
           },
           {
-            "title": "AI assistant",
-            "description": "Building, design, development, launch, growth, choosing an AI model — just ask, and answers come with sources.",
+            "title": "Where to go next",
+            "description": "Related stages, categories, and action guides reconnect a single tool to the full product journey.",
             "icon": "RiRobot2Line"
           }
         ]
       },
       "stats": {
         "id": "stats",
-        "title": "What is here already",
-        "description": "Content keeps growing; the most-used essentials come first.",
+        "title": "Current coverage",
+        "description": "Content is continuously checked and expanded, with usefulness prioritized over entry count.",
         "items": [
           {
-            "title": "5",
-            "description": "building steps covered"
+            "title": "7",
+            "description": "product stages"
           },
           {
-            "title": "Free",
-            "description": "browse & ask, all free"
+            "title": "Public",
+            "description": "resources and guides are free to browse"
           },
           {
             "title": "EN / 中文",
@@ -247,72 +247,72 @@
       },
       "testimonials": {
         "id": "testimonials",
-        "title": "A few common needs we can help with",
-        "description": "Whatever kind of site you want to build, you can find the right tools and approach here.",
+        "title": "Start with one action path you can finish",
+        "description": "Each guide solves one task and states the expected time, execution steps, and evidence you should keep.",
         "items": [
           {
-            "title": "See how others did it first",
-            "description": "Find ideas, similar products, and market demand: where to look on Product Hunt, rankings, and keyword tools, gathered for you.",
-            "name": "Ideas · Competitors",
-            "role": "Common need",
+            "title": "Find a product problem worth validating",
+            "description": "Extract recurring problems from real discussions and existing products in about 90 minutes across four steps.",
+            "name": "Problem discovery",
+            "role": "Keep at least ten user quotes",
             "icon": "RiSearchEyeLine"
           },
           {
-            "title": "Let AI write the code",
-            "description": "You can get going even without coding. Learn to use AI coding tools like Claude Code to build your site step by step.",
-            "name": "AI coding · Less code",
-            "role": "Common need",
-            "icon": "RiRobot2Line"
+            "title": "Validate whether people need the product idea",
+            "description": "Use problem, alternative, traffic, and revenue signals to make a decision in about two hours across four steps.",
+            "name": "Demand validation",
+            "role": "Keep the riskiest assumption and disconfirming condition",
+            "icon": "RiVerifiedBadgeLine"
           },
           {
-            "title": "Get seen after launch",
-            "description": "Deploy your site, do SEO so people can find you, and promote it — Vercel, domains, email, and analytics are all organized.",
-            "name": "Launch · Promote · Traffic",
-            "role": "Common need",
-            "icon": "RiRocketLine"
+            "title": "Turn the idea into a testable product prototype",
+            "description": "Build only the critical user path in half a day to one day across five steps.",
+            "name": "Rapid prototype",
+            "role": "Keep the core flow and screen order",
+            "icon": "RiLayoutLine"
           }
         ]
       },
       "faq": {
         "id": "faq",
-        "title": "Questions beginners often ask",
-        "description": "Worried you can't pull it off? Read these first.",
+        "title": "A few things to confirm before you begin",
+        "description": "Public content is ready to browse. Use the AI workspace when you need ongoing support for a specific project.",
         "items": [
           {
-            "title": "I can't code at all — can I still use this?",
-            "description": "Yes. This is made for people who aren't very technical. It tells you what to use at each step, and many parts can be done with AI tools, so you don't have to write code from scratch."
+            "title": "I already use AI coding tools. Is WebTools still for me?",
+            "description": "Yes. WebTools is primarily for people who can use AI coding tools but have not yet completed the full path from demand validation and design to development, launch, and growth on their own."
           },
           {
             "title": "How do I get started?",
-            "description": "If you have a clear goal, browse the tools and templates by step. If you're not sure yet, tell the AI assistant your idea and it will tell you roughly what you need."
+            "description": "If you know the task, browse resources by stage. If you do not know the steps, start with an action guide. If the answer depends on your project, sign in to the AI workspace."
           },
           {
-            "title": "Does any of this cost money?",
-            "description": "Browsing resources, reading articles, and asking the AI are all free. For the recommended tools themselves, we mark which are free and which are paid, so you choose as needed."
+            "title": "Do resources and action guides require sign-in or payment?",
+            "description": "No. The homepage, resource library, action guides, articles, and about page are public. AI conversations, project memory, and file uploads require sign-in and use Credits."
           },
           {
-            "title": "Is the AI assistant reliable, or does it make things up?",
-            "description": "It answers only from real site content and gives sources. If nothing relevant exists on the site, it simply says it can't find it, rather than inventing an answer."
+            "title": "What information can the AI assistant use?",
+            "description": "The site knowledge base is retrieved automatically. Web search and Skills are used only when you enable them. Answers can also use project memory and uploaded files, with the actual sources shown."
           }
         ]
       },
       "cta": {
         "id": "cta",
-        "title": "Start now and build your first website",
-        "description": "Not sure where to begin? Browse the steps, or just tell the AI assistant your idea.",
+        "title": "Do not collect more tools. Finish the next step.",
+        "description": "If you know the task, find resources by stage. If you do not know how to proceed, choose an action guide and start executing.",
         "buttons": [
           {
-            "title": "Browse the steps",
+            "title": "Find resources by stage",
             "url": "/resources",
             "target": "_self",
             "icon": "Zap"
           },
           {
-            "title": "Ask the AI",
-            "url": "/chat",
+            "title": "Browse action guides",
+            "url": "/collections",
             "target": "_self",
             "variant": "outline",
-            "icon": "RiMessage2Line"
+            "icon": "RiRouteLine"
           }
         ],
         "className": "bg-muted"
