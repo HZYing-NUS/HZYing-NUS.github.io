@@ -8,6 +8,7 @@ import { Highlighter } from '@/shared/components/ui/highlighter';
 import { cn } from '@/shared/lib/utils';
 import { Section } from '@/shared/types/blocks/landing';
 
+import { FlowFieldBackground } from './flow-field-background';
 import { SocialAvatars } from './social-avatars';
 
 export function Hero({
@@ -32,16 +33,7 @@ export function Hero({
         className
       )}
     >
-      {section.background_effect === 'flow-field' && (
-        <div className="webtools-flow-field" aria-hidden="true">
-          <div className="webtools-flow-field__wash" />
-          <div className="webtools-flow-field__orb webtools-flow-field__orb--one" />
-          <div className="webtools-flow-field__orb webtools-flow-field__orb--two" />
-          <div className="webtools-flow-field__orb webtools-flow-field__orb--three" />
-          <div className="webtools-flow-field__grid" />
-          <div className="webtools-flow-field__fade" />
-        </div>
-      )}
+      {section.background_effect === 'flow-field' && <FlowFieldBackground />}
 
       {section.announcement && (
         <Link
