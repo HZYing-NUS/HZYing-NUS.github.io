@@ -18,6 +18,7 @@ import {
   pickLocaleText,
   platformCollections,
   platformResources,
+  platformStageOrder,
 } from '../src/config/seed/platform-content';
 
 const args = new Set(process.argv.slice(2));
@@ -82,6 +83,15 @@ function slugForLocaleText(value: { zh: string; en: string }) {
 
 function createIdMap(rows: { id: string; slug: string }[]) {
   return new Map(rows.map((row) => [row.slug, row.id]));
+}
+
+function createSourceNote(item: (typeof platformResources)[number]) {
+  return JSON.stringify({
+    usageStatus: item.usageStatus,
+    verifiedAt: item.verifiedAt,
+    caution: item.caution || null,
+    notFor: item.notFor || null,
+  });
 }
 
 async function insertRelation({
@@ -153,6 +163,10 @@ async function seed() {
     }
   }
 
+  for (const itemStage of platformStageOrder) {
+    allStages.set(slugForLocaleText(itemStage), itemStage);
+  }
+
   for (const item of [...platformResources, ...platformCollections]) {
     allStages.set(slugForLocaleText(item.stage), item.stage);
     if ('stages' in item) {
@@ -165,9 +179,20 @@ async function seed() {
       allTags.set(slugForLocaleText(itemTag), itemTag);
   }
 
+  const stageOrderBySlug = new Map(
+    platformStageOrder.map((item, index) => [
+      slugForLocaleText(item),
+      index + 1,
+    ])
+  );
+
   for (const [slug, item] of allStages) {
+    const sortOrder = stageOrderBySlug.get(slug) || allStages.size + 1;
     if (stageBySlug.has(slug)) {
       counts.stages.skipped += 1;
+      if (!dryRun) {
+        await db.update(stage).set({ sortOrder }).where(eq(stage.slug, slug));
+      }
       continue;
     }
 
@@ -179,7 +204,7 @@ async function seed() {
         slug,
         nameZh: item.zh,
         nameEn: item.en,
-        sortOrder: stageBySlug.size + 1,
+        sortOrder,
       });
     }
     stageBySlug.set(slug, id);
@@ -239,9 +264,11 @@ async function seed() {
           reasonEn: item.reason.en,
           useCaseZh: item.useCase.zh,
           useCaseEn: item.useCase.en,
+          sourceNote: createSourceNote(item),
           pricingType: toSlug(pickLocaleText(item.priceType, 'en')),
           featured: item.featured,
           allowAiCitation: item.allowAiCitation,
+          sortOrder: item.sortOrder,
           status: 'published',
         });
       }
@@ -301,10 +328,13 @@ async function seed() {
           titleEn: item.title.en,
           summaryZh: item.summary.zh,
           summaryEn: item.summary.en,
+          contentZh: item.content.zh,
+          contentEn: item.content.en,
           stageId: stageBySlug.get(slugForLocaleText(item.stage)),
           categoryId: categoryBySlug.get(slugForLocaleText(item.category)),
           featured: item.featured,
           allowAiCitation: item.allowAiCitation,
+          sortOrder: item.sortOrder,
           status: 'published',
         });
       }
@@ -335,8 +365,8 @@ async function seed() {
       });
     }
 
-    for (const [sortOrder, resourceSlug] of item.resourceSlugs.entries()) {
-      const resourceId = resourceBySlug.get(resourceSlug);
+    for (const [sortOrder, step] of item.steps.entries()) {
+      const resourceId = resourceBySlug.get(step.resourceSlug);
       if (!resourceId) continue;
       await insertRelation({
         exists: async () =>
@@ -355,9 +385,16 @@ async function seed() {
             )[0]
           ),
         insert: () =>
-          db
-            .insert(collectionResource)
-            .values({ collectionId, resourceId, sortOrder }),
+          db.insert(collectionResource).values({
+            collectionId,
+            resourceId,
+            stepTitleZh: step.title.zh,
+            stepTitleEn: step.title.en,
+            stepDescriptionZh: step.description.zh,
+            stepDescriptionEn: step.description.en,
+            relationType: step.relationType || 'required',
+            sortOrder,
+          }),
         statistic: counts.collectionResources,
       });
     }

@@ -339,9 +339,64 @@ export async function getPublishedCollections(
     )
     .orderBy(asc(collection.sortOrder), asc(collection.createdAt));
 
-  return Promise.all(
-    (rows as (typeof collection.$inferSelect)[]).map((item) =>
-      getPublishedCollectionView(item, locale)
+  const typedRows = rows as (typeof collection.$inferSelect)[];
+  if (!typedRows.length) return [];
+
+  const collectionIds = typedRows.map((item) => item.id);
+  const [tagRows, resourceRows] = await Promise.all([
+    db()
+      .select({
+        collectionId: collectionTag.collectionId,
+        id: tag.id,
+        nameZh: tag.nameZh,
+        nameEn: tag.nameEn,
+      })
+      .from(collectionTag)
+      .innerJoin(tag, eq(collectionTag.tagId, tag.id))
+      .where(inArray(collectionTag.collectionId, collectionIds)),
+    db()
+      .select({
+        collectionId: collectionResource.collectionId,
+        resource,
+        sortOrder: collectionResource.sortOrder,
+        stepTitleZh: collectionResource.stepTitleZh,
+        stepTitleEn: collectionResource.stepTitleEn,
+        stepDescriptionZh: collectionResource.stepDescriptionZh,
+        stepDescriptionEn: collectionResource.stepDescriptionEn,
+        relationType: collectionResource.relationType,
+      })
+      .from(collectionResource)
+      .innerJoin(resource, eq(collectionResource.resourceId, resource.id))
+      .where(
+        and(
+          inArray(collectionResource.collectionId, collectionIds),
+          eq(resource.status, 'published')
+        )
+      )
+      .orderBy(
+        asc(collectionResource.collectionId),
+        asc(collectionResource.sortOrder)
+      ),
+  ]);
+  const tagsByCollection = new Map<string, typeof tagRows>();
+  for (const row of tagRows) {
+    const items = tagsByCollection.get(row.collectionId) || [];
+    items.push(row);
+    tagsByCollection.set(row.collectionId, items);
+  }
+  const resourcesByCollection = new Map<string, typeof resourceRows>();
+  for (const row of resourceRows) {
+    const items = resourcesByCollection.get(row.collectionId) || [];
+    items.push(row);
+    resourcesByCollection.set(row.collectionId, items);
+  }
+
+  return typedRows.map((item) =>
+    buildPublishedCollectionView(
+      item,
+      locale,
+      tagsByCollection.get(item.id) || [],
+      resourcesByCollection.get(item.id) || []
     )
   );
 }
@@ -458,6 +513,27 @@ async function getPublishedCollectionView(
       .orderBy(asc(collectionResource.sortOrder)),
   ]);
 
+  return buildPublishedCollectionView(item, locale, tagRows, resourceRows);
+}
+
+function buildPublishedCollectionView(
+  item: typeof collection.$inferSelect,
+  locale: string,
+  tagRows: {
+    id: string;
+    nameZh: string;
+    nameEn: string | null;
+  }[],
+  resourceRows: {
+    resource: typeof resource.$inferSelect;
+    sortOrder: number;
+    stepTitleZh: string | null;
+    stepTitleEn: string | null;
+    stepDescriptionZh: string | null;
+    stepDescriptionEn: string | null;
+    relationType: string;
+  }[]
+) {
   const typedTagRows = tagRows as {
     id: string;
     nameZh: string;

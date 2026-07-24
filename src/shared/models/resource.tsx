@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { and, asc, count, eq, ilike, inArray, or } from 'drizzle-orm';
 
 import { db } from '@/core/db';
@@ -386,6 +387,7 @@ export async function getResourceReferences(id: string) {
 }
 
 function publicResourceWhere(filters: {
+  slug?: string;
   query?: string;
   resourceType?: string;
   stageId?: string;
@@ -394,6 +396,7 @@ function publicResourceWhere(filters: {
   allowAiCitation?: boolean;
 }) {
   const clauses = [eq(resource.status, 'published')];
+  if (filters.slug) clauses.push(eq(resource.slug, filters.slug));
   const query = filters.query?.trim();
   if (query) {
     clauses.push(
@@ -434,8 +437,48 @@ function localeText(locale: string, zh: string | null, en: string | null) {
   return locale === 'en' ? en || zh || '' : zh || en || '';
 }
 
+function readResourceEditorialMeta(sourceNote: string | null, locale: string) {
+  const fallback = {
+    usageStatus: 'used',
+    verifiedAt: '',
+    caution: '',
+    notFor: '',
+  };
+  if (!sourceNote) return fallback;
+
+  try {
+    const parsed = JSON.parse(sourceNote) as {
+      usageStatus?: string;
+      verifiedAt?: string;
+      caution?: { zh?: string; en?: string } | null;
+      notFor?: { zh?: string; en?: string } | null;
+    };
+    return {
+      usageStatus: ['daily', 'used', 'occasional'].includes(
+        parsed.usageStatus || ''
+      )
+        ? parsed.usageStatus!
+        : fallback.usageStatus,
+      verifiedAt: parsed.verifiedAt || '',
+      caution: localeText(
+        locale,
+        parsed.caution?.zh || null,
+        parsed.caution?.en || null
+      ),
+      notFor: localeText(
+        locale,
+        parsed.notFor?.zh || null,
+        parsed.notFor?.en || null
+      ),
+    };
+  } catch {
+    return fallback;
+  }
+}
+
 export async function getPublishedResources({
   locale,
+  slug,
   query,
   resourceType,
   stageId,
@@ -444,6 +487,7 @@ export async function getPublishedResources({
   allowAiCitation,
 }: {
   locale: string;
+  slug?: string;
   query?: string;
   resourceType?: string;
   stageId?: string;
@@ -458,6 +502,7 @@ export async function getPublishedResources({
     .leftJoin(category, eq(resource.categoryId, category.id))
     .where(
       publicResourceWhere({
+        slug,
         query,
         resourceType,
         stageId,
@@ -544,6 +589,10 @@ export async function getPublishedResources({
     }[]
   ).map((row) => {
     const applicableStages = stagesByResource.get(row.resource.id) || [];
+    const editorialMeta = readResourceEditorialMeta(
+      row.resource.sourceNote,
+      locale
+    );
     if (
       row.stage &&
       !applicableStages.some((item) => item.id === row.stage!.id)
@@ -583,14 +632,25 @@ export async function getPublishedResources({
         ? localeText(locale, row.category.nameZh, row.category.nameEn)
         : '',
       featured: row.resource.featured,
+      usageStatus: editorialMeta.usageStatus,
+      verifiedAt: editorialMeta.verifiedAt,
+      caution: editorialMeta.caution,
+      notFor: editorialMeta.notFor,
       tags: tagsByResource.get(row.resource.id) || [],
     };
   });
 }
 
+const getPublishedResourceBySlugCached = cache(
+  async (slug: string, locale: string) => {
+    const items = await getPublishedResources({ locale, slug });
+    return items[0] || null;
+  }
+);
+
 export async function getPublishedResourceBySlug(slug: string, locale: string) {
-  const items = await getPublishedResources({ locale });
-  return items.find((item) => item.slug === slug) || null;
+  const items = await getPublishedResourceBySlugCached(slug, locale);
+  return items;
 }
 
 export async function getPublicResourceFilters(locale: string) {
@@ -658,6 +718,7 @@ export async function getPublicResourceFilters(locale: string) {
     )
   );
   return {
+    totalResources: publishedRows.length,
     stages: (stages as (typeof stage.$inferSelect)[]).map((item) => ({
       id: item.id,
       name: localeText(locale, item.nameZh, item.nameEn),
