@@ -7,6 +7,17 @@ type 坐标 = {
   y: number;
 };
 
+type 烟雾粒子 = 坐标 & {
+  vx: number;
+  vy: number;
+  radius: number;
+  life: number;
+  age: number;
+  alpha: number;
+  color: readonly [number, number, number];
+  phase: number;
+};
+
 const 光团配置 = [
   { x: 0.18, y: 0.35, size: 0.42, color: [99, 102, 241] },
   { x: 0.76, y: 0.26, size: 0.38, color: [56, 189, 248] },
@@ -31,10 +42,15 @@ export function FlowFieldBackground() {
     const 指针目标: 坐标 = { x: 0.5, y: 0.46 };
     const 指针位置: 坐标 = { x: 0.5, y: 0.46 };
     const 上次指针: 坐标 = { x: 0.5, y: 0.46 };
+    const 流体位移: 坐标 = { x: 0, y: 0 };
+    const 流体速度: 坐标 = { x: 0, y: 0 };
+    const 烟雾粒子组: 烟雾粒子[] = [];
     let 指针强度 = 0;
     let 指针在场 = false;
     let 动画帧 = 0;
-    let 起始时间 = performance.now();
+    const 起始时间 = performance.now();
+    let 上一帧时间 = 起始时间;
+    let 上次指针时间 = 起始时间;
 
     const 调整尺寸 = () => {
       const 边界 = 容器.getBoundingClientRect();
@@ -53,12 +69,49 @@ export function FlowFieldBackground() {
       指针在场 = x >= 0 && x <= 1 && y >= 0 && y <= 1;
       if (!指针在场) return;
 
+      const 当前时间 = performance.now();
+      const 间隔 = Math.max(16, 当前时间 - 上次指针时间);
+      const 变化X = x - 上次指针.x;
+      const 变化Y = y - 上次指针.y;
+      const 移动距离 = Math.hypot(变化X, 变化Y);
+      const 速度X = (变化X / 间隔) * 16;
+      const 速度Y = (变化Y / 间隔) * 16;
+
       指针目标.x = x;
       指针目标.y = y;
-      const 移动距离 = Math.hypot(x - 上次指针.x, y - 上次指针.y);
       指针强度 = Math.min(1, 指针强度 + 移动距离 * 8 + 0.08);
+      流体速度.x += 速度X * 0.85;
+      流体速度.y += 速度Y * 0.85;
+
+      if (移动距离 > 0.002) {
+        const 粒子数量 = Math.min(7, Math.max(2, Math.ceil(移动距离 * 42)));
+        for (let 索引 = 0; 索引 < 粒子数量; 索引 += 1) {
+          const 进度 = 索引 / 粒子数量;
+          const 扩散 = (Math.random() - 0.5) * 0.025;
+          烟雾粒子组.push({
+            x: 上次指针.x + 变化X * 进度 + 扩散,
+            y: 上次指针.y + 变化Y * 进度 + 扩散,
+            vx: 速度X * (0.7 + Math.random() * 0.55) + 扩散 * 0.12,
+            vy:
+              速度Y * (0.7 + Math.random() * 0.55) -
+              (0.0007 + Math.random() * 0.0016),
+            radius: 0.035 + Math.random() * 0.045,
+            life: 1500 + Math.random() * 1700,
+            age: 0,
+            alpha: 0.08 + Math.random() * 0.11,
+            color: 索引 % 3 === 0 ? [56, 189, 248] : [99, 102, 241],
+            phase: Math.random() * Math.PI * 2,
+          });
+        }
+      }
+
+      if (烟雾粒子组.length > 90) {
+        烟雾粒子组.splice(0, 烟雾粒子组.length - 90);
+      }
+
       上次指针.x = x;
       上次指针.y = y;
+      上次指针时间 = 当前时间;
     };
 
     const 绘制光团 = (
@@ -88,11 +141,20 @@ export function FlowFieldBackground() {
       const 宽度 = 容器.clientWidth;
       const 高度 = 容器.clientHeight;
       const 时间 = 减少动态效果 ? 0 : (当前时间 - 起始时间) / 1000;
+      const 帧间隔 = Math.min(32, 当前时间 - 上一帧时间);
+      const 帧倍率 = 帧间隔 / 16;
       const 缓动 = 指针在场 ? 0.11 : 0.035;
+      上一帧时间 = 当前时间;
 
       指针位置.x += (指针目标.x - 指针位置.x) * 缓动;
       指针位置.y += (指针目标.y - 指针位置.y) * 缓动;
-      指针强度 *= 指针在场 ? 0.965 : 0.9;
+      指针强度 *= 0.955;
+      流体位移.x += 流体速度.x * 帧倍率;
+      流体位移.y += 流体速度.y * 帧倍率;
+      流体速度.x *= 0.94;
+      流体速度.y = 流体速度.y * 0.94 - 0.000003 * 帧间隔;
+      流体位移.x *= 0.985;
+      流体位移.y *= 0.985;
 
       上下文.clearRect(0, 0, 宽度, 高度);
       上下文.globalCompositeOperation = 'source-over';
@@ -100,25 +162,52 @@ export function FlowFieldBackground() {
       光团配置.forEach((光团, 索引) => {
         const 自动偏移X = Math.sin(时间 * (0.18 + 索引 * 0.035) + 索引) * 0.07;
         const 自动偏移Y = Math.cos(时间 * (0.14 + 索引 * 0.03) + 索引) * 0.055;
-        const 距离X = 指针位置.x - 光团.x;
-        const 距离Y = 指针位置.y - 光团.y;
-        const 牵引 = 指针在场 ? (0.15 + 索引 * 0.018) * (0.45 + 指针强度) : 0;
-        const x = (光团.x + 自动偏移X + 距离X * 牵引) * 宽度;
-        const y = (光团.y + 自动偏移Y + 距离Y * 牵引) * 高度;
+        const 惯性倍率 = 0.34 - 索引 * 0.045;
+        const x = (光团.x + 自动偏移X + 流体位移.x * 惯性倍率) * 宽度;
+        const y = (光团.y + 自动偏移Y + 流体位移.y * 惯性倍率) * 高度;
         const 半径 = Math.max(宽度, 高度) * 光团.size;
 
         绘制光团(x, y, 半径, 光团.color, 索引 === 3 ? 0.08 : 0.18);
       });
 
-      if (指针在场 || 指针强度 > 0.02) {
+      上下文.globalCompositeOperation = 'screen';
+      for (let 索引 = 烟雾粒子组.length - 1; 索引 >= 0; 索引 -= 1) {
+        const 粒子 = 烟雾粒子组[索引];
+        粒子.age += 帧间隔;
+        if (粒子.age >= 粒子.life) {
+          烟雾粒子组.splice(索引, 1);
+          continue;
+        }
+
+        const 生命进度 = 粒子.age / 粒子.life;
+        粒子.vx *= 0.991;
+        粒子.vy = 粒子.vy * 0.991 - 0.0000018 * 帧间隔;
+        粒子.x +=
+          粒子.vx * 帧倍率 +
+          Math.sin(时间 * 1.25 + 粒子.phase) * 0.000045 * 帧间隔;
+        粒子.y +=
+          粒子.vy * 帧倍率 +
+          Math.cos(时间 * 0.9 + 粒子.phase) * 0.000025 * 帧间隔;
+
+        const 淡出 = Math.pow(1 - 生命进度, 1.65);
+        绘制光团(
+          粒子.x * 宽度,
+          粒子.y * 高度,
+          Math.max(宽度, 高度) * 粒子.radius * (1 + 生命进度 * 2.4),
+          粒子.color,
+          粒子.alpha * 淡出
+        );
+      }
+
+      if (指针在场 && 指针强度 > 0.02) {
         const x = 指针位置.x * 宽度;
         const y = 指针位置.y * 高度;
         绘制光团(
           x,
           y,
-          Math.max(宽度, 高度) * (0.18 + 指针强度 * 0.08),
+          Math.max(宽度, 高度) * (0.1 + 指针强度 * 0.045),
           [79, 70, 229],
-          0.13 + 指针强度 * 0.12
+          0.06 + 指针强度 * 0.08
         );
       }
 

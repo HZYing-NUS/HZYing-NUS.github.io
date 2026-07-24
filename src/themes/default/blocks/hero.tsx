@@ -28,7 +28,7 @@ export function Hero({
     <section
       id={section.id}
       className={cn(
-        `relative isolate overflow-hidden pt-24 pb-8 md:pt-36 md:pb-8`,
+        `relative isolate pt-24 pb-8 md:pt-36 md:pb-8`,
         section.className,
         className
       )}

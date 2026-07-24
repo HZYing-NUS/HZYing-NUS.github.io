@@ -20,7 +20,10 @@
 
 .webtools-flow-field {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: calc(100% + 21rem);
   z-index: -1;
   overflow: hidden;
   background:
@@ -82,6 +85,10 @@
 }
 
 @media (max-width: 767px) {
+  .webtools-flow-field {
+    height: calc(100% + 23rem);
+  }
+
   .webtools-flow-field__canvas {
     opacity: 0.78;
   }
