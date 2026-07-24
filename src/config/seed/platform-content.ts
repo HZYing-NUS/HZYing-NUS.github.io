@@ -39,6 +39,14 @@ export type PlatformCollection = {
   title: LocaleText;
   summary: LocaleText;
   content: LocaleText;
+  duration: LocaleText;
+  audience: LocaleText[];
+  prerequisites: LocaleText[];
+  deliverables: LocaleText[];
+  completionCriteria: LocaleText[];
+  verifiedAt: string;
+  nextSlug?: string;
+  nextTitle?: LocaleText;
   stage: LocaleText;
   category: LocaleText;
   tags: LocaleText[];
@@ -626,11 +634,8 @@ const resourceDrafts: ResourceDraft[] = [
   {
     slug: 'trustmrr',
     name: 'TrustMRR',
-    website: 'https://trustmrr.com',
-    type: [
-      '创业收入数据库与收购市场',
-      'Startup revenue database and acquisition marketplace',
-    ],
+    website: 'https://trustmrr.co',
+    type: ['创业收入数据库', 'Startup revenue database'],
     stage: 'discover',
     category: 'marketplace',
     price: 'freemium',
@@ -641,20 +646,20 @@ const resourceDrafts: ResourceDraft[] = [
       ['SaaS 研究', 'SaaS research'],
     ],
     summary: [
-      '展示经验证的创业项目收入，并提供 SaaS、移动应用和数字业务收购市场。',
-      'A database of verified startup revenue with an acquisition marketplace for SaaS, apps, and digital businesses.',
+      '展示经过平台验证的创业项目收入，用于观察不同产品类型的公开收入信号。',
+      'A database of platform-verified startup revenue for observing public revenue signals across product categories.',
     ],
     reason: [
-      '比单纯展示产品更接近商业结果，可结合收入、售价和倍数研究真实机会。',
-      'Closer to business outcomes than a product gallery, with revenue, asking price, and multiples.',
+      '比产品榜单更接近商业结果，但只能证明被收录项目的收入，不能代表整个市场。',
+      'Closer to business outcomes than a product directory, but it only verifies listed startups and does not represent the whole market.',
     ],
     useCase: [
-      '筛选在售项目，拆解产品、流量、收入与售价，再判断哪些部分可以重新设计。',
-      'Filter businesses for sale and analyze product, traffic, revenue, and price before identifying redesign opportunities.',
+      '按产品类型查看已验证收入案例，记录商业模式、收入区间和可进一步核查的同类产品。',
+      'Browse verified revenue examples by product type and record business models, revenue ranges, and comparable products for further research.',
     ],
     caution: [
-      '收入经验证不等于业务健康；仍需核查成本、留存、渠道依赖和交易风险。',
-      'Verified revenue does not prove business health; inspect costs, retention, channel dependency, and deal risk.',
+      '已验证收入不等于业务健康，也不能证明你的想法会成功；成本、留存和渠道仍需单独核查。',
+      'Verified revenue does not prove business health or guarantee your idea will work; costs, retention, and acquisition still require separate checks.',
     ],
   },
   {
@@ -2026,89 +2031,122 @@ const collectionStep = (
   relationType,
 });
 
+export const retiredPlatformCollectionSlugs = [
+  'daily-information-radar',
+  'buy-analyze-rebuild',
+  'idea-to-testable-mvp',
+  'ai-saas-foundation',
+  'post-launch-data-loop',
+  'ai-capability-ecosystem',
+];
+
 export const platformCollections: PlatformCollection[] = [
   {
-    slug: 'daily-information-radar',
-    title: t(['我的每日信息雷达', 'My daily information radar']),
+    slug: 'find-a-product-problem',
+    title: t([
+      '找到一个值得验证的产品问题',
+      'Find a product problem worth validating',
+    ]),
     summary: t([
-      '用一套固定顺序扫描 AI 生态、技术趋势、产品与流量变化，避免被信息流牵着走。',
-      'Scan AI ecosystems, technology trends, products, and traffic signals in a fixed order without being controlled by the feed.',
+      '从真实讨论和现有产品中提取重复问题，先形成证据，再决定做什么。',
+      'Extract recurring problems from real discussions and existing products before deciding what to build.',
     ]),
     content: t([
-      '每天不需要把所有网站完整看完。先看趋势榜单，再看产品目录，最后只深入与你当前阶段有关的两到三个信号。把发现记录成“机会、工具、风险、待验证”四类。',
-      'You do not need to read every site in full. Start with trend rankings, move to product directories, then investigate only two or three signals related to the current stage. Record findings as opportunities, tools, risks, or items to validate.',
+      '这条路线不负责帮你想一个听起来新奇的点子。它只做一件事：把零散观察整理成可以继续验证的问题。\n\n不要把单条抱怨、榜单热度或工具数量当成需求证明。先保留用户原话和使用场景，再寻找重复模式。',
+      'This guide does not invent a clever idea for you. It turns scattered observations into a problem that is specific enough to validate.\n\nDo not treat one complaint, launch-day attention, or the number of existing tools as proof of demand. Keep the user language and context, then look for repeated patterns.',
+    ]),
+    duration: t(['约 90 分钟', 'About 90 minutes']),
+    audience: [
+      t([
+        '有模糊方向，但说不清用户具体痛点的人',
+        'People with a broad direction but no specific user pain',
+      ]),
+      t([
+        '准备做第一个 Web 产品的独立开发者',
+        'Independent builders preparing a first web product',
+      ]),
+    ],
+    prerequisites: [
+      t(['一个大致人群或使用场景', 'A rough audience or usage scenario']),
+      t([
+        '3～5 个用户可能使用的搜索词',
+        'Three to five phrases the audience might use',
+      ]),
+    ],
+    deliverables: [
+      t([
+        '至少 10 条带上下文的用户原话',
+        'At least 10 user quotes with context',
+      ]),
+      t([
+        '3 个可描述清楚的重复问题',
+        'Three clearly described recurring problems',
+      ]),
+      t(['一份现有替代方案清单', 'A list of current alternatives']),
+    ],
+    completionCriteria: [
+      t([
+        '每个问题都写清楚了谁在什么场景下遇到什么阻力',
+        'Each problem states who encounters what friction and in which context',
+      ]),
+      t([
+        '每个问题至少有两条独立观察支持',
+        'Each problem has at least two independent observations',
+      ]),
+      t([
+        '你能说出现有替代方案为什么仍让用户不满意',
+        'You can explain why current alternatives still frustrate users',
+      ]),
+    ],
+    verifiedAt,
+    nextSlug: 'validate-product-idea',
+    nextTitle: t([
+      '验证一个产品想法有没有人需要',
+      'Validate whether people need the product idea',
     ]),
     stage: stages.discover,
-    category: categories.news,
+    category: categories.community,
     tags: [
-      t(['每日必看', 'Daily reading']),
-      t(['信息雷达', 'Information radar']),
-      t(['趋势研究', 'Trend research']),
+      t(['问题发现', 'Problem discovery']),
+      t(['用户研究', 'User research']),
+      t(['竞品扫描', 'Competitor scan']),
     ],
     steps: [
       collectionStep(
-        'github-trending',
-        ['先看技术趋势', 'Start with technical trends'],
+        'reddit',
+        ['收集用户原话', 'Collect the words users use'],
         [
-          '扫描正在快速增长的开源项目，记录与你当前产品有关的新框架和工具。',
-          'Scan fast-growing open-source projects and record frameworks or tools relevant to the product.',
+          '动作：在目标人群所在的 Subreddit 搜索核心词，查看帖子、评论、发布时间和讨论背景。\n产出：至少 10 条原话，分别记录用户、场景、问题和当前做法。\n通过标准：素材来自至少 3 个独立讨论，不只来自一篇高赞帖子。\n避免：把情绪强烈的一次抱怨直接当成普遍需求。',
+          'Action: Search relevant subreddits, then inspect posts, comments, dates, and discussion context.\nOutput: At least 10 quotes recording the user, context, problem, and current workaround.\nPass: The evidence comes from at least three independent discussions, not one popular post.\nAvoid: Treating one emotional complaint as a common need.',
         ]
       ),
       collectionStep(
-        'skills-sh',
-        ['检查 Agent Skills', 'Review agent skills'],
+        'product-hunt',
+        ['找到用户正在尝试的产品', 'Find products users are already trying'],
         [
-          '观察哪些工作流正在被封装成可复用 Skill。',
-          'Observe which workflows are being packaged into reusable skills.',
-        ]
-      ),
-      collectionStep(
-        'mcp-market',
-        ['检查 MCP 生态', 'Review the MCP ecosystem'],
-        [
-          '寻找新的外部能力连接方式，但安装前回到官方仓库核验。',
-          'Look for new integration paths, then verify them at the official repository before installing.',
-        ]
-      ),
-      collectionStep(
-        'toolify',
-        ['扫描 AI 产品榜单', 'Scan AI product rankings'],
-        [
-          '查看新增工具和流量榜单，识别快速变热的任务类别。',
-          'Review new tools and traffic rankings to spot task categories gaining momentum.',
+          '动作：按任务词和分类寻找相近产品，阅读定位、功能、定价和评论。\n产出：5 个现有产品及其主要承诺、目标用户和评论中的问题。\n通过标准：能够区分产品解决的问题与它宣传的功能。\n避免：把发布当天票数当成长期需求或收入。',
+          'Action: Search by task and category, then review positioning, features, pricing, and comments.\nOutput: Five existing products with their promise, audience, and problems mentioned in comments.\nPass: You can separate the user problem from the features being marketed.\nAvoid: Treating launch-day upvotes as durable demand or revenue.',
         ]
       ),
       collectionStep(
         'theres-an-ai-for-that',
-        ['按任务查工具', 'Search tools by task'],
         [
-          '用用户会说的任务描述检查市场拥挤度。',
-          'Use the customer’s task language to check market saturation.',
+          '用任务语言检查 AI 替代方案',
+          'Check AI alternatives using task language',
+        ],
+        [
+          '动作：用用户原话中的任务描述搜索，而不是只搜你设想的产品名称。\n产出：相近工具的卖点、覆盖范围和未解决环节。\n通过标准：能判断市场是完全空白、已有零散工具，还是已经非常拥挤。\n避免：把没有搜到结果理解为没有需求。',
+          'Action: Search with the task language found in user quotes, not only your imagined product name.\nOutput: Comparable tools, their claims, scope, and unresolved parts.\nPass: You can describe whether the space is empty, fragmented, or crowded.\nAvoid: Interpreting no search result as proof that no demand exists.',
         ]
       ),
       collectionStep(
-        'similarweb',
-        ['核对真实流量', 'Check traffic evidence'],
+        'toolify',
+        ['交叉检查工具密度和定位', 'Cross-check tool density and positioning'],
         [
-          '只对值得进一步研究的网站检查流量和来源。',
-          'Inspect traffic and sources only for sites worth deeper research.',
-        ]
-      ),
-      collectionStep(
-        'the-hacker-news',
-        ['补充安全风险', 'Add security awareness'],
-        [
-          '关注与你使用的技术栈有关的重大安全事件。',
-          'Track major security events affecting the stack you use.',
-        ]
-      ),
-      collectionStep(
-        'techcrunch',
-        ['补充行业变化', 'Add industry context'],
-        [
-          '了解平台、资本和头部公司的方向变化。',
-          'Track shifts among platforms, investors, and major companies.',
-        ]
+          '动作：用 Toolify 的分类、榜单和工具页面补充检查主要竞品。\n产出：补充遗漏产品，并标记常见定位和差异点。\n通过标准：新增信息能够改变或加强前一步的判断。\n避免：为了凑数量重复记录同质工具。',
+          'Action: Use Toolify categories, rankings, and tool pages to cross-check major competitors.\nOutput: Add missed products and mark common positioning and differences.\nPass: The new evidence changes or strengthens the previous conclusion.\nAvoid: Listing many near-identical tools only to increase the count.',
+        ],
+        'alternative'
       ),
     ],
     featured: true,
@@ -2116,57 +2154,113 @@ export const platformCollections: PlatformCollection[] = [
     sortOrder: 1,
   },
   {
-    slug: 'buy-analyze-rebuild',
+    slug: 'validate-product-idea',
     title: t([
-      '购买、拆解和重新设计产品',
-      'Buy, analyze, and rebuild a product',
+      '验证一个产品想法有没有人需要',
+      'Validate whether people need the product idea',
     ]),
     summary: t([
-      '从已被市场验证的产品、服务和模板中寻找改进空间，而不是从空白开始想功能。',
-      'Find improvement opportunities in products, services, and templates already tested by the market.',
+      '用问题证据、现有选择、流量和收入信号做一轮案头验证，决定继续、调整还是停止。',
+      'Use problem evidence, alternatives, traffic, and revenue signals to decide whether to continue, adjust, or stop.',
     ]),
     content: t([
-      '这条路线的目标不是照搬别人的产品，而是识别已经有人付费的结果、现有方案的结构性问题和你能明显改善的一段体验。优先记录用户差评、价格、交付物、渠道和维护成本。',
-      'The goal is not to copy another product. Identify outcomes people already pay for, structural weaknesses in existing solutions, and one experience you can improve materially. Focus on negative reviews, price, deliverables, acquisition, and maintenance cost.',
+      '案头研究不能证明用户一定会付费，但能快速暴露最危险的假设。你的目标不是收集支持自己的材料，而是主动寻找能否定这个方向的证据。\n\n最终只做五类结论之一：继续验证、缩小人群、改变问题、降低 MVP，或暂时停止。',
+      'Desk research cannot prove that users will pay, but it can expose the most dangerous assumption quickly. Do not collect only supportive evidence. Look for evidence that could disprove the direction.\n\nEnd with one of five decisions: continue validating, narrow the audience, change the problem, reduce the MVP, or stop for now.',
     ]),
-    stage: stages.discover,
-    category: categories.marketplace,
+    duration: t(['约 2 小时', 'About 2 hours']),
+    audience: [
+      t([
+        '已经有一个明确问题和初步解决思路的人',
+        'People with a defined problem and an initial solution idea',
+      ]),
+      t([
+        '准备投入开发时间前做风险检查的人',
+        'Builders checking risk before investing development time',
+      ]),
+    ],
+    prerequisites: [
+      t(['一句话问题陈述', 'A one-sentence problem statement']),
+      t(['目标用户和使用场景', 'A target user and usage context']),
+      t(['最小解决方案草图', 'A rough minimum solution']),
+    ],
+    deliverables: [
+      t([
+        '最危险假设和反证条件',
+        'The riskiest assumption and disconfirming condition',
+      ]),
+      t([
+        '竞品、流量与收入证据表',
+        'An evidence table for competitors, traffic, and revenue',
+      ]),
+      t([
+        '继续、调整或停止的明确结论',
+        'A clear continue, adjust, or stop decision',
+      ]),
+    ],
+    completionCriteria: [
+      t([
+        '至少有两类独立证据支持或反对这个方向',
+        'At least two independent evidence types support or challenge the direction',
+      ]),
+      t([
+        '流量估算、榜单和收入案例都没有被当成单独证明',
+        'Traffic estimates, rankings, and revenue examples are not treated as standalone proof',
+      ]),
+      t([
+        '已经写出下一轮必须向真实用户验证的问题',
+        'The next question to test with real users is written down',
+      ]),
+    ],
+    verifiedAt,
+    nextSlug: 'build-testable-prototype',
+    nextTitle: t([
+      '把想法做成可测试的产品原型',
+      'Turn the idea into a testable product prototype',
+    ]),
+    stage: stages.validate,
+    category: categories.intelligence,
     tags: [
-      t(['产品拆解', 'Product teardown']),
-      t(['商业验证', 'Commercial validation']),
-      t(['重新设计', 'Rebuild']),
+      t(['需求验证', 'Demand validation']),
+      t(['最危险假设', 'Riskiest assumption']),
+      t(['决策证据', 'Decision evidence']),
     ],
     steps: [
       collectionStep(
+        'reddit',
+        [
+          '重新检查问题是否持续出现',
+          'Recheck whether the problem keeps appearing',
+        ],
+        [
+          '动作：围绕明确问题重新搜索讨论，主动寻找相反观点和满意的现有做法。\n产出：支持证据、反对证据和仍未知的问题。\n通过标准：能够说明什么证据会让你放弃或修改想法。\n避免：只保存支持自己判断的帖子。',
+          'Action: Search the defined problem again and deliberately look for opposing views and satisfactory workarounds.\nOutput: Supporting evidence, opposing evidence, and remaining unknowns.\nPass: You can state what evidence would make you change or abandon the idea.\nAvoid: Saving only posts that support your current belief.',
+        ]
+      ),
+      collectionStep(
+        'product-hunt',
+        ['拆解用户已经可以选择什么', 'Map what users can already choose'],
+        [
+          '动作：选择 3～5 个最相近产品，比较目标用户、核心承诺、价格和评论。\n产出：竞品对比表，以及用户为什么可能切换或不切换。\n通过标准：差异来自用户结果或使用方式，不只是功能名称不同。\n避免：只看首页文案，不看评论和实际产品范围。',
+          'Action: Compare three to five close products by audience, promise, price, and comments.\nOutput: A competitor table and reasons users may or may not switch.\nPass: The difference is about user outcomes or workflow, not renamed features.\nAvoid: Reading only homepage copy without checking comments and product scope.',
+        ]
+      ),
+      collectionStep(
+        'similarweb',
+        [
+          '检查成熟竞品是否有持续访问',
+          'Check whether established competitors attract sustained visits',
+        ],
+        [
+          '动作：比较可获得数据的成熟竞品，查看流量规模、主要国家和来源变化。\n产出：3 个竞品的流量估算和来源线索。\n通过标准：结论明确写着“估算”，并与社区、搜索或收入证据一起使用。\n避免：用小网站的单月估算值做确定性判断。',
+          'Action: Compare established competitors with available data, including estimated visits, countries, and acquisition sources.\nOutput: Traffic estimates and source clues for three competitors.\nPass: The conclusion labels figures as estimates and combines them with community, search, or revenue evidence.\nAvoid: Making a definite decision from one month of estimates for a small site.',
+        ]
+      ),
+      collectionStep(
         'trustmrr',
-        ['从有收入的产品开始', 'Start with products that have revenue'],
+        ['寻找公开收入信号', 'Look for public revenue signals'],
         [
-          '结合收入、售价和业务类型筛选值得研究的产品。',
-          'Filter products by verified revenue, price, and business type.',
-        ]
-      ),
-      collectionStep(
-        'appsumo',
-        ['阅读真实购买评价', 'Read real buyer reviews'],
-        [
-          '整理用户为什么购买、最满意什么、最不满意什么。',
-          'Record why customers buy, what they value, and what frustrates them.',
-        ]
-      ),
-      collectionStep(
-        'fiverr',
-        ['拆解人工服务', 'Analyze manual services'],
-        [
-          '观察高销量服务的交付物，寻找可产品化或自动化的步骤。',
-          'Inspect high-selling service deliverables and identify steps that can be productized or automated.',
-        ]
-      ),
-      collectionStep(
-        'themeforest',
-        ['研究成熟页面结构', 'Study mature page structures'],
-        [
-          '分析模板的信息架构和组件，但重新设计品牌与核心体验。',
-          'Analyze template information architecture and components, then redesign the brand and core experience.',
+          '动作：按产品类型查看已验证收入项目，寻找相近商业模式。\n产出：可比收入案例、收费方式和需要继续核查的差异。\n通过标准：只把被收录项目当作案例，不把数据库缺席当成没有收入。\n避免：把收入等同于利润、留存或长期健康。',
+          'Action: Browse platform-verified revenue examples by product type and look for comparable business models.\nOutput: Comparable revenue cases, pricing models, and differences that still need checking.\nPass: Listed startups are treated as examples, while absence from the database is not treated as no revenue.\nAvoid: Equating revenue with profit, retention, or long-term health.',
         ],
         'alternative'
       ),
@@ -2176,287 +2270,129 @@ export const platformCollections: PlatformCollection[] = [
     sortOrder: 2,
   },
   {
-    slug: 'idea-to-testable-mvp',
-    title: t(['从想法到可测试 MVP', 'From idea to testable MVP']),
+    slug: 'build-testable-prototype',
+    title: t([
+      '把想法做成可测试的产品原型',
+      'Turn the idea into a testable product prototype',
+    ]),
     summary: t([
-      '先找到重复问题，再做一个能被真实用户操作的最小版本。',
-      'Find a recurring problem, then build the smallest version real users can operate.',
+      '只实现最关键的用户路径，让目标用户可以理解、点击并暴露问题。',
+      'Build only the critical user path so target users can understand it, use it, and reveal problems.',
     ]),
     content: t([
-      '先证明问题存在，再证明用户理解你的解决方案，最后才证明你能把完整产品开发出来。每一步都应该产生一个可以否定假设的证据。',
-      'First prove the problem exists, then prove users understand the proposed solution, and only then prove you can build the full product. Each step should produce evidence capable of disproving the assumption.',
+      '原型的任务不是看起来像完整产品，而是验证用户能否理解价值并完成核心动作。先固定一个核心任务，再决定页面和工具。\n\n如果静态页面已经能验证理解度，就不要提前加入登录、数据库或支付。只有测试必须保存数据时，才选择全栈方案。',
+      'A prototype does not need to look like a finished product. It needs to test whether users understand the value and can complete the core action. Fix one core task before choosing screens and tools.\n\nIf a static flow can test comprehension, do not add authentication, databases, or payments early. Choose a full-stack path only when the test must save data.',
     ]),
-    stage: stages.validate,
+    duration: t(['半天到 1 天', 'Half a day to one day']),
+    audience: [
+      t([
+        '已经完成问题验证，准备让用户实际操作的人',
+        'People ready to let users interact after initial problem validation',
+      ]),
+      t([
+        '容易在第一个版本加入过多功能的人',
+        'Builders who tend to add too many features to the first version',
+      ]),
+    ],
+    prerequisites: [
+      t([
+        '一个核心用户和一个核心任务',
+        'One primary user and one primary task',
+      ]),
+      t(['明确不做的功能清单', 'A list of features that will not be built']),
+      t([
+        '准备邀请测试的 3 名目标用户',
+        'Three target users you can invite to test',
+      ]),
+    ],
+    deliverables: [
+      t(['核心流程和页面顺序', 'A core flow and screen order']),
+      t([
+        '一个可通过链接访问的可点击原型',
+        'A clickable prototype accessible by link',
+      ]),
+      t([
+        '首轮测试问题与观察记录表',
+        'A first-round test script and observation sheet',
+      ]),
+    ],
+    completionCriteria: [
+      t([
+        '用户不需要口头教学就能说出产品解决什么问题',
+        'Users can explain the problem being solved without verbal coaching',
+      ]),
+      t([
+        '核心任务从开始到结果可以完整走通',
+        'The core task works from start to outcome',
+      ]),
+      t([
+        '已经记录至少 3 名目标用户的卡点和误解',
+        'Friction and misunderstandings from at least three target users are recorded',
+      ]),
+    ],
+    verifiedAt,
+    stage: stages.design,
     category: categories.prototype,
     tags: [
-      t(['MVP', 'MVP']),
-      t(['需求验证', 'Demand validation']),
       t(['快速原型', 'Rapid prototype']),
+      t(['用户测试', 'User testing']),
+      t(['MVP 降级', 'MVP reduction']),
     ],
     steps: [
       collectionStep(
-        'reddit',
-        ['收集重复问题', 'Collect recurring problems'],
+        'design-lab',
         [
-          '在目标社区记录重复抱怨、现有替代方案和用户原话。',
-          'Record recurring complaints, current alternatives, and the exact words users use.',
+          '先选一种与定位一致的设计语言',
+          'Choose one design language that fits the positioning',
+        ],
+        [
+          '动作：比较少量风格，选择一种能支持产品语气和目标用户的方向。\n产出：一个设计方向和可交给 AI 的风格提示。\n通过标准：能说明选择如何服务内容层级，而不只是“看起来好看”。\n避免：混合多种风格，或让视觉掩盖核心任务。',
+          'Action: Compare a small set of styles and choose one that fits the product voice and audience.\nOutput: One design direction and a style prompt for an AI builder.\nPass: You can explain how the choice supports content hierarchy, not only that it looks good.\nAvoid: Mixing multiple styles or letting visuals hide the core task.',
         ]
       ),
       collectionStep(
-        'product-hunt',
-        ['检查现有产品', 'Inspect existing products'],
+        'one-page-love',
+        ['拆出页面顺序和转化入口', 'Study page order and conversion points'],
         [
-          '研究相近产品的定位、功能和评论，避免重复造没有差异的产品。',
-          'Study similar products, positioning, features, and comments to avoid undifferentiated duplication.',
-        ]
-      ),
-      collectionStep(
-        'similarweb',
-        ['验证竞品是否有流量', 'Validate competitor traffic'],
-        [
-          '用外部流量数据判断方向是否存在持续关注。',
-          'Use external traffic signals to see whether the category attracts sustained attention.',
+          '动作：选择 3 个同类单页案例，只记录首屏信息、内容顺序、证明方式和 CTA。\n产出：适合你的页面结构草图。\n通过标准：每个区块都服务理解、信任或行动中的一个目标。\n避免：直接复制配色、图片或品牌表达。',
+          'Action: Select three comparable one-page examples and record only hero information, content order, proof, and calls to action.\nOutput: A page-structure sketch for your product.\nPass: Every section serves comprehension, trust, or action.\nAvoid: Copying colors, imagery, or brand expression directly.',
         ]
       ),
       collectionStep(
         'stitch',
-        ['生成界面方向', 'Generate interface directions'],
         [
-          '快速比较核心页面与信息层级。',
-          'Compare key screens and information hierarchy quickly.',
+          '比较核心页面的界面方案',
+          'Compare interface options for the core screens',
+        ],
+        [
+          '动作：输入目标用户、核心任务、必要页面和约束，生成并比较多个方案。\n产出：选定的核心页面和关键状态。\n通过标准：页面顺序支持用户完成任务，并包含空状态、错误状态或结果状态中的必要部分。\n避免：只根据单张界面美观度选择。',
+          'Action: Describe the user, core task, required screens, and constraints, then compare multiple generated directions.\nOutput: Selected core screens and required states.\nPass: The sequence supports task completion and includes the necessary empty, error, or result state.\nAvoid: Choosing based only on one attractive screen.',
         ]
       ),
       collectionStep(
         'bolt',
-        ['生成可点击 MVP', 'Build a clickable MVP'],
+        ['实现最小可点击流程', 'Build the smallest clickable flow'],
         [
-          '实现最小核心流程，让目标用户实际操作。',
-          'Implement the minimum core flow so target users can interact with it.',
+          '动作：只实现核心输入、处理和结果，把非必要功能写进“不做清单”。\n产出：可访问链接和一条可走通的核心路径。\n通过标准：目标用户可以独立完成任务，测试过程中不需要开发者代操作。\n避免：在验证前加入完整账号、支付、后台和复杂权限。',
+          'Action: Build only the essential input, processing, and result, while keeping nonessential features on the not-building list.\nOutput: An accessible link and one complete core path.\nPass: A target user can complete the task without the builder operating the product.\nAvoid: Adding full accounts, payments, admin, or complex permissions before validation.',
         ]
       ),
       collectionStep(
         'lovable',
-        ['补充数据和交互', 'Add data and interaction'],
         [
-          '需要全栈流程时，加入注册、表单和数据展示。',
-          'Add signup, forms, and data views when a fuller product flow is necessary.',
+          '需要保存数据时改用全栈原型',
+          'Use a full-stack prototype only when data must persist',
+        ],
+        [
+          '动作：只有测试必须注册、提交表单或查看已保存数据时，才建立对应流程。\n产出：包含必要数据交互的最小版本。\n通过标准：每个新增数据功能都直接影响当前测试问题。\n避免：因为工具支持全栈，就把模板能力全部加入产品。',
+          'Action: Add signup, forms, or saved data only when the test genuinely requires them.\nOutput: A minimum version with the required data interaction.\nPass: Every added data feature directly supports the current test question.\nAvoid: Adding every full-stack capability simply because the tool supports it.',
         ],
         'alternative'
-      ),
-      collectionStep(
-        'vercel',
-        ['发布测试版本', 'Publish the test version'],
-        [
-          '部署可访问版本，开始收集真实行为和反馈。',
-          'Deploy an accessible version and begin collecting real behavior and feedback.',
-        ]
       ),
     ],
     featured: true,
     allowAiCitation: true,
     sortOrder: 3,
-  },
-  {
-    slug: 'ai-saas-foundation',
-    title: t(['AI SaaS 开发底座', 'AI SaaS development foundation']),
-    summary: t([
-      '在模板、数据库和部署方案之间做明确选择，建立可维护的上线基础。',
-      'Make explicit choices across boilerplate, database, and deployment to create a maintainable launch foundation.',
-    ]),
-    content: t([
-      '不要同时采用两个功能重叠的 SaaS 模板，也不要因为模板已经内置某项能力就默认产品需要它。先列出必须能力，再选择最少的一套底座。',
-      'Do not combine overlapping SaaS boilerplates or assume every included feature belongs in the product. List required capabilities first, then choose the smallest foundation that covers them.',
-    ]),
-    stage: stages.develop,
-    category: categories.template,
-    tags: [
-      t(['AI SaaS', 'AI SaaS']),
-      t(['技术选型', 'Stack selection']),
-      t(['开发底座', 'Development foundation']),
-    ],
-    steps: [
-      collectionStep(
-        'shipany-template-two',
-        ['选择主模板', 'Choose the primary boilerplate'],
-        [
-          '需要支付、多语言、鉴权和后台时使用完整底座。',
-          'Use a full foundation when payments, i18n, auth, and admin are required.',
-        ]
-      ),
-      collectionStep(
-        'mksaas',
-        ['对比替代模板', 'Compare an alternative boilerplate'],
-        [
-          '对比功能和代码结构，只选择一个主模板。',
-          'Compare capabilities and code structure, but choose only one primary boilerplate.',
-        ],
-        'alternative'
-      ),
-      collectionStep(
-        'neon',
-        ['配置 Serverless Postgres', 'Configure serverless Postgres'],
-        [
-          '为标准 Next.js 项目建立开发、预览和生产数据库。',
-          'Create development, preview, and production databases for a standard Next.js project.',
-        ]
-      ),
-      collectionStep(
-        'supabase',
-        ['需要完整后端套件时替代', 'Use a broader backend when needed'],
-        [
-          '需要内置鉴权、存储和实时能力时考虑 Supabase。',
-          'Consider Supabase when built-in auth, storage, and realtime are required.',
-        ],
-        'alternative'
-      ),
-      collectionStep(
-        'vercel',
-        ['建立部署链路', 'Establish deployment'],
-        [
-          '连接仓库、环境变量和域名，形成预览到生产流程。',
-          'Connect the repository, environment variables, and domain from preview through production.',
-        ]
-      ),
-    ],
-    featured: true,
-    allowAiCitation: true,
-    sortOrder: 4,
-  },
-  {
-    slug: 'post-launch-data-loop',
-    title: t(['上线后的数据闭环', 'The post-launch data loop']),
-    summary: t([
-      '用流量、事件、回放和性能数据判断下一步该改什么。',
-      'Use traffic, events, recordings, and performance data to decide what to improve next.',
-    ]),
-    content: t([
-      '先定义一个核心转化和三到五个关键事件。数字指标负责发现异常，行为工具负责解释原因，性能工具负责排除技术阻力。不要因为工具能采集就追踪所有内容。',
-      'Define one core conversion and three to five key events. Metrics reveal anomalies, behavior tools explain causes, and performance tools uncover technical friction. Do not track everything merely because the tool can.',
-    ]),
-    stage: stages.optimize,
-    category: categories.analytics,
-    tags: [
-      t(['数据分析', 'Analytics']),
-      t(['用户行为', 'User behavior']),
-      t(['性能优化', 'Performance']),
-    ],
-    steps: [
-      collectionStep(
-        'plausible',
-        ['先看清流量', 'Start with clear traffic data'],
-        [
-          '用简单指标确认来源、页面和目标转化。',
-          'Confirm acquisition, landing pages, and goals with simple metrics.',
-        ]
-      ),
-      collectionStep(
-        'google-analytics',
-        ['需要复杂归因时补充', 'Add complex attribution when needed'],
-        [
-          '营销渠道和复杂事件较多时使用 GA4。',
-          'Use GA4 when marketing channels and event structures become complex.',
-        ],
-        'alternative'
-      ),
-      collectionStep(
-        'openpanel',
-        ['连接产品事件', 'Connect product events'],
-        [
-          '跟踪注册、激活和核心功能完成。',
-          'Track signup, activation, and core-action completion.',
-        ]
-      ),
-      collectionStep(
-        'microsoft-clarity',
-        ['解释用户为什么卡住', 'Explain where users struggle'],
-        [
-          '使用热力图和回放观察关键页面的问题。',
-          'Use heatmaps and recordings to observe friction on key pages.',
-        ]
-      ),
-      collectionStep(
-        'pagespeed-insights',
-        ['排除性能阻力', 'Remove performance friction'],
-        [
-          '检查 Core Web Vitals 和加载瓶颈。',
-          'Inspect Core Web Vitals and loading bottlenecks.',
-        ]
-      ),
-    ],
-    featured: true,
-    allowAiCitation: true,
-    sortOrder: 5,
-  },
-  {
-    slug: 'ai-capability-ecosystem',
-    title: t([
-      'AI 能力和生态选择',
-      'Choosing AI capabilities and ecosystem tools',
-    ]),
-    summary: t([
-      '从模型、Skill、MCP 到联网搜索，按任务和风险选择能力。',
-      'Choose models, skills, MCP servers, and web search according to the task and risk.',
-    ]),
-    content: t([
-      '模型解决通用推理，Skill 封装方法和流程，MCP 连接外部工具，搜索补充最新信息。不要把四者混成一个“更强 AI”开关，每种能力都应有明确授权和成本边界。',
-      'Models provide general reasoning, skills package methods and workflows, MCP connects external tools, and search adds current information. Do not combine them into one “stronger AI” switch; each capability needs explicit authorization and cost boundaries.',
-    ]),
-    stage: stages.develop,
-    category: categories.assistant,
-    tags: [
-      t(['模型选择', 'Model selection']),
-      t(['Agent Skill', 'Agent skills']),
-      t(['MCP', 'MCP']),
-      t(['联网搜索', 'Web search']),
-    ],
-    steps: [
-      collectionStep(
-        'artificial-analysis',
-        [
-          '按质量、速度和价格筛模型',
-          'Shortlist models by quality, speed, and price',
-        ],
-        [
-          '用统一指标缩小候选范围。',
-          'Use comparable metrics to narrow the candidates.',
-        ]
-      ),
-      collectionStep(
-        'arena-ai',
-        ['用真实提示词盲测', 'Blind-test with real prompts'],
-        [
-          '比较模型输出偏好，补充基准测试。',
-          'Compare output preference to complement benchmarks.',
-        ]
-      ),
-      collectionStep(
-        'skills-sh',
-        ['寻找可复用工作流', 'Find reusable workflows'],
-        [
-          '检查是否已有适合任务的 Skill。',
-          'Check whether a suitable skill already exists.',
-        ]
-      ),
-      collectionStep(
-        'mcp-market',
-        ['寻找外部工具连接', 'Find external tool connections'],
-        [
-          '需要操作数据库、设计或浏览器时寻找 MCP。',
-          'Look for MCP integrations when databases, design tools, or browsers must be controlled.',
-        ]
-      ),
-      collectionStep(
-        'tavily',
-        ['按需加入联网搜索', 'Add web search when needed'],
-        [
-          '只有任务需要最新外部信息时才启用搜索。',
-          'Enable search only when the task requires current external information.',
-        ]
-      ),
-    ],
-    featured: true,
-    allowAiCitation: true,
-    sortOrder: 6,
   },
 ];
 

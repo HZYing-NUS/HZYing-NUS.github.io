@@ -27,11 +27,22 @@ export function Hero({
     <section
       id={section.id}
       className={cn(
-        `pt-24 pb-8 md:pt-36 md:pb-8`,
+        `relative isolate overflow-hidden pt-24 pb-8 md:pt-36 md:pb-8`,
         section.className,
         className
       )}
     >
+      {section.background_effect === 'flow-field' && (
+        <div className="webtools-flow-field" aria-hidden="true">
+          <div className="webtools-flow-field__wash" />
+          <div className="webtools-flow-field__orb webtools-flow-field__orb--one" />
+          <div className="webtools-flow-field__orb webtools-flow-field__orb--two" />
+          <div className="webtools-flow-field__orb webtools-flow-field__orb--three" />
+          <div className="webtools-flow-field__grid" />
+          <div className="webtools-flow-field__fade" />
+        </div>
+      )}
+
       {section.announcement && (
         <Link
           href={section.announcement.url || ''}
@@ -156,21 +167,22 @@ export function Hero({
         </div>
       )}
 
-      {section.background_image?.src && (
-        <div className="absolute inset-0 -z-10 hidden h-full w-full overflow-hidden md:block">
-          <div className="from-background/80 via-background/80 to-background absolute inset-0 z-10 bg-gradient-to-b" />
-          <Image
-            src={section.background_image.src}
-            alt={section.background_image.alt || ''}
-            className="object-cover opacity-60 blur-[0px]"
-            fill
-            loading="lazy"
-            sizes="(max-width: 768px) 0vw, 100vw"
-            quality={70}
-            unoptimized={section.background_image.src.startsWith('http')}
-          />
-        </div>
-      )}
+      {section.background_effect !== 'flow-field' &&
+        section.background_image?.src && (
+          <div className="absolute inset-0 -z-10 hidden h-full w-full overflow-hidden md:block">
+            <div className="from-background/80 via-background/80 to-background absolute inset-0 z-10 bg-gradient-to-b" />
+            <Image
+              src={section.background_image.src}
+              alt={section.background_image.alt || ''}
+              className="object-cover opacity-60 blur-[0px]"
+              fill
+              loading="lazy"
+              sizes="(max-width: 768px) 0vw, 100vw"
+              quality={70}
+              unoptimized={section.background_image.src.startsWith('http')}
+            />
+          </div>
+        )}
     </section>
   );
 }

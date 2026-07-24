@@ -18,6 +18,172 @@
   @apply mx-auto max-w-7xl px-4 md:px-8;
 }
 
+.webtools-flow-field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      transparent 0 16rem,
+      var(--background) 46rem
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--background) 82%, transparent),
+      var(--background)
+    );
+  pointer-events: none;
+}
+
+.webtools-flow-field__wash,
+.webtools-flow-field__orb,
+.webtools-flow-field__grid,
+.webtools-flow-field__fade {
+  position: absolute;
+  inset: 0;
+}
+
+.webtools-flow-field__wash {
+  inset: -35% -18% -20%;
+  background:
+    radial-gradient(
+      ellipse at 24% 46%,
+      color-mix(in oklab, var(--primary) 24%, transparent) 0 14%,
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 72% 31%,
+      color-mix(in oklab, #60a5fa 19%, transparent) 0 12%,
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 58% 72%,
+      color-mix(in oklab, #f59e0b 9%, transparent) 0 9%,
+      transparent 34%
+    );
+  filter: blur(28px) saturate(112%);
+  animation: webtools-flow-drift 18s ease-in-out infinite alternate;
+}
+
+.webtools-flow-field__orb {
+  border-radius: 42% 58% 63% 37% / 56% 44% 56% 44%;
+  filter: blur(54px);
+  opacity: 0.5;
+  will-change: transform;
+}
+
+.webtools-flow-field__orb--one {
+  inset: 8% auto auto 5%;
+  width: min(46rem, 62vw);
+  aspect-ratio: 1.7;
+  background: color-mix(in oklab, var(--primary) 38%, transparent);
+  animation: webtools-flow-one 16s ease-in-out infinite alternate;
+}
+
+.webtools-flow-field__orb--two {
+  inset: -4% 2% auto auto;
+  width: min(42rem, 58vw);
+  aspect-ratio: 1.55;
+  background: color-mix(in oklab, #7dd3fc 30%, transparent);
+  animation: webtools-flow-two 20s ease-in-out infinite alternate;
+}
+
+.webtools-flow-field__orb--three {
+  inset: auto 21% -25% auto;
+  width: min(36rem, 50vw);
+  aspect-ratio: 1.45;
+  background: color-mix(in oklab, #a78bfa 26%, transparent);
+  animation: webtools-flow-three 17s ease-in-out infinite alternate;
+}
+
+.webtools-flow-field__grid {
+  background-image:
+    linear-gradient(
+      color-mix(in oklab, var(--primary) 9%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--primary) 9%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+  mask-image: radial-gradient(
+    ellipse 65% 58% at 50% 43%,
+    black 0%,
+    transparent 78%
+  );
+  opacity: 0.38;
+}
+
+.webtools-flow-field__fade {
+  background:
+    linear-gradient(
+      90deg,
+      var(--background),
+      transparent 18% 82%,
+      var(--background)
+    ),
+    linear-gradient(180deg, transparent 55%, var(--background) 98%);
+}
+
+@keyframes webtools-flow-drift {
+  to {
+    transform: translate3d(2.5%, -3%, 0) scale(1.05) rotate(-2deg);
+  }
+}
+
+@keyframes webtools-flow-one {
+  to {
+    transform: translate3d(14vw, 5vh, 0) scale(1.12) rotate(8deg);
+    border-radius: 58% 42% 38% 62% / 45% 58% 42% 55%;
+  }
+}
+
+@keyframes webtools-flow-two {
+  to {
+    transform: translate3d(-13vw, 9vh, 0) scale(0.92) rotate(-10deg);
+    border-radius: 35% 65% 55% 45% / 62% 38% 62% 38%;
+  }
+}
+
+@keyframes webtools-flow-three {
+  to {
+    transform: translate3d(-8vw, -10vh, 0) scale(1.16) rotate(7deg);
+  }
+}
+
+@media (max-width: 767px) {
+  .webtools-flow-field__wash {
+    inset: -10% -55% 0;
+  }
+
+  .webtools-flow-field__orb {
+    filter: blur(38px);
+    opacity: 0.42;
+  }
+
+  .webtools-flow-field__orb--one,
+  .webtools-flow-field__orb--two,
+  .webtools-flow-field__orb--three {
+    width: 30rem;
+  }
+
+  .webtools-flow-field__grid {
+    background-size: 36px 36px;
+    opacity: 0.28;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .webtools-flow-field__wash,
+  .webtools-flow-field__orb {
+    animation: none;
+  }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

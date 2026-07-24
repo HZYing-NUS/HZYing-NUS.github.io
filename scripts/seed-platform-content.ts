@@ -19,6 +19,7 @@ import {
   platformCollections,
   platformResources,
   platformStageOrder,
+  retiredPlatformCollectionSlugs,
 } from '../src/config/seed/platform-content';
 
 const args = new Set(process.argv.slice(2));
@@ -245,6 +246,32 @@ async function seed() {
     const resourceCreated = !resourceId;
     if (resourceId) {
       counts.resources.skipped += 1;
+      if (!dryRun) {
+        await db
+          .update(resource)
+          .set({
+            nameZh: item.name.zh,
+            nameEn: item.name.en,
+            websiteUrl: item.website,
+            resourceType: toSlug(pickLocaleText(item.type, 'en')),
+            stageId: stageBySlug.get(slugForLocaleText(item.stage)),
+            categoryId: categoryBySlug.get(slugForLocaleText(item.category)),
+            summaryZh: item.summary.zh,
+            summaryEn: item.summary.en,
+            reasonZh: item.reason.zh,
+            reasonEn: item.reason.en,
+            useCaseZh: item.useCase.zh,
+            useCaseEn: item.useCase.en,
+            sourceNote: createSourceNote(item),
+            pricingType: toSlug(pickLocaleText(item.priceType, 'en')),
+            featured: item.featured,
+            allowAiCitation: item.allowAiCitation,
+            sortOrder: item.sortOrder,
+            status: 'published',
+            updatedAt: new Date(),
+          })
+          .where(eq(resource.id, resourceId));
+      }
     } else {
       resourceId = stableId('resource', item.slug);
       counts.resources.created += 1;
@@ -317,6 +344,26 @@ async function seed() {
     let collectionId = collectionBySlug.get(item.slug);
     if (collectionId) {
       counts.collections.skipped += 1;
+      if (!dryRun) {
+        await db
+          .update(collection)
+          .set({
+            titleZh: item.title.zh,
+            titleEn: item.title.en,
+            summaryZh: item.summary.zh,
+            summaryEn: item.summary.en,
+            contentZh: item.content.zh,
+            contentEn: item.content.en,
+            stageId: stageBySlug.get(slugForLocaleText(item.stage)),
+            categoryId: categoryBySlug.get(slugForLocaleText(item.category)),
+            featured: item.featured,
+            allowAiCitation: item.allowAiCitation,
+            sortOrder: item.sortOrder,
+            status: 'published',
+            updatedAt: new Date(),
+          })
+          .where(eq(collection.id, collectionId));
+      }
     } else {
       collectionId = stableId('collection', item.slug);
       counts.collections.created += 1;
@@ -341,62 +388,53 @@ async function seed() {
       collectionBySlug.set(item.slug, collectionId);
     }
 
-    for (const itemTag of item.tags) {
+    const tagRelations = item.tags.flatMap((itemTag) => {
       const tagId = tagBySlug.get(slugForLocaleText(itemTag));
-      if (!tagId) continue;
-      await insertRelation({
-        exists: async () =>
-          Boolean(
-            (
-              await db
-                .select()
-                .from(collectionTag)
-                .where(
-                  and(
-                    eq(collectionTag.collectionId, collectionId),
-                    eq(collectionTag.tagId, tagId)
-                  )
-                )
-                .limit(1)
-            )[0]
-          ),
-        insert: () => db.insert(collectionTag).values({ collectionId, tagId }),
-        statistic: counts.collectionTags,
+      return tagId ? [{ collectionId, tagId }] : [];
+    });
+    const resourceRelations = item.steps.flatMap((step, sortOrder) => {
+      const resourceId = resourceBySlug.get(step.resourceSlug);
+      return resourceId
+        ? [
+            {
+              collectionId,
+              resourceId,
+              stepTitleZh: step.title.zh,
+              stepTitleEn: step.title.en,
+              stepDescriptionZh: step.description.zh,
+              stepDescriptionEn: step.description.en,
+              relationType: step.relationType || 'required',
+              sortOrder,
+            },
+          ]
+        : [];
+    });
+
+    counts.collectionTags.created += tagRelations.length;
+    counts.collectionResources.created += resourceRelations.length;
+
+    if (!dryRun) {
+      await db.transaction(async (tx) => {
+        await tx
+          .delete(collectionTag)
+          .where(eq(collectionTag.collectionId, collectionId));
+        await tx
+          .delete(collectionResource)
+          .where(eq(collectionResource.collectionId, collectionId));
+        if (tagRelations.length)
+          await tx.insert(collectionTag).values(tagRelations);
+        if (resourceRelations.length)
+          await tx.insert(collectionResource).values(resourceRelations);
       });
     }
+  }
 
-    for (const [sortOrder, step] of item.steps.entries()) {
-      const resourceId = resourceBySlug.get(step.resourceSlug);
-      if (!resourceId) continue;
-      await insertRelation({
-        exists: async () =>
-          Boolean(
-            (
-              await db
-                .select()
-                .from(collectionResource)
-                .where(
-                  and(
-                    eq(collectionResource.collectionId, collectionId),
-                    eq(collectionResource.resourceId, resourceId)
-                  )
-                )
-                .limit(1)
-            )[0]
-          ),
-        insert: () =>
-          db.insert(collectionResource).values({
-            collectionId,
-            resourceId,
-            stepTitleZh: step.title.zh,
-            stepTitleEn: step.title.en,
-            stepDescriptionZh: step.description.zh,
-            stepDescriptionEn: step.description.en,
-            relationType: step.relationType || 'required',
-            sortOrder,
-          }),
-        statistic: counts.collectionResources,
-      });
+  if (!dryRun && retiredPlatformCollectionSlugs.length) {
+    for (const slug of retiredPlatformCollectionSlugs) {
+      await db
+        .update(collection)
+        .set({ status: 'archived', updatedAt: new Date() })
+        .where(eq(collection.slug, slug));
     }
   }
 

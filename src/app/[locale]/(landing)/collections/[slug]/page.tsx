@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
-  ArrowRight,
-  CheckCircle2,
-  Circle,
-  ListChecks,
-  Target,
-} from 'lucide-react';
+  IconArrowLeft,
+  IconArrowUpRight,
+  IconCheck,
+  IconChecklist,
+  IconClock,
+  IconExternalLink,
+  IconRoute,
+  IconTargetArrow,
+  IconUsers,
+} from '@tabler/icons-react';
 import { setRequestLocale } from 'next-intl/server';
 
 import { envConfigs } from '@/config';
@@ -27,7 +31,8 @@ export async function generateMetadata({
 
   if (!collection) return {};
 
-  const canonical = `${envConfigs.app_url}${locale === envConfigs.locale ? '' : `/${locale}`}/collections/${slug}`;
+  const localePrefix = locale === envConfigs.locale ? '' : `/${locale}`;
+  const canonical = `${envConfigs.app_url}${localePrefix}/collections/${slug}`;
   return {
     title: `${collection.title} | ${envConfigs.app_name}`,
     description: collection.summary,
@@ -44,12 +49,14 @@ export default async function CollectionDetailPage({
   setRequestLocale(locale);
 
   const isZh = locale === 'zh';
+  const localePrefix = locale === envConfigs.locale ? '' : `/${locale}`;
   const [collection, currentUser] = await Promise.all([
     getPublishedCollectionBySlug(slug, locale),
     getSignUser(),
   ]);
 
   if (!collection) notFound();
+
   const interactionState = currentUser
     ? await getCommunityInteractionState({
         userId: currentUser.id,
@@ -60,155 +67,302 @@ export default async function CollectionDetailPage({
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
+    '@type': 'HowTo',
     name: collection.title,
     description: collection.summary,
-    url: `${envConfigs.app_url}/${locale}/collections/${collection.slug}`,
-    mainEntity: {
-      '@type': 'ItemList',
-      numberOfItems: collection.resources.length,
-      itemListElement: collection.resources.map((resource, position) => ({
-        '@type': 'ListItem',
-        position: position + 1,
-        url: `${envConfigs.app_url}/${locale}/resources/${resource.slug}`,
-        name: resource.name,
-      })),
-    },
+    url: `${envConfigs.app_url}${localePrefix}/collections/${collection.slug}`,
+    step: collection.resources.map((resource, position) => ({
+      '@type': 'HowToStep',
+      position: position + 1,
+      name: resource.stepTitle || resource.name,
+      text: resource.stepDescription,
+      url: `${envConfigs.app_url}${localePrefix}/resources/${resource.slug}`,
+    })),
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <main className="overflow-hidden pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Link
-        href={`/${locale}/collections`}
-        className="text-muted-foreground hover:text-primary text-sm transition"
-      >
-        {isZh ? '返回行动专题' : 'Back to action guides'}
-      </Link>
 
-      <section className="mt-8 max-w-3xl">
-        <p className="text-muted-foreground text-sm font-medium tracking-[0.3em] uppercase">
-          {isZh ? 'Action guide' : 'Action guide'}
-        </p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
-          {collection.title}
-        </h1>
-        <p className="text-muted-foreground mt-6 text-lg leading-8">
-          {collection.summary}
-        </p>
-        {collection.content ? (
-          <div className="prose prose-neutral dark:prose-invert mt-10 max-w-none whitespace-pre-wrap">
-            {collection.content}
+      <section className="relative border-b bg-[radial-gradient(circle_at_78%_18%,hsl(var(--primary)/0.13),transparent_30%),linear-gradient(to_bottom,hsl(var(--muted)/0.3),transparent)]">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.2)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent)] bg-[size:52px_52px]" />
+        <div className="relative mx-auto max-w-6xl px-6 py-14 md:py-20">
+          <Link
+            href={`/${locale}/collections`}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition"
+          >
+            <IconArrowLeft className="size-4" aria-hidden="true" />
+            {isZh ? '返回行动专题' : 'Back to action guides'}
+          </Link>
+
+          <div className="mt-10 grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_330px]">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                {collection.tags.map((item) => (
+                  <span
+                    key={item.id}
+                    className="bg-background rounded-full border px-3 py-1.5 text-xs font-semibold"
+                  >
+                    {item.name}
+                  </span>
+                ))}
+              </div>
+              <h1 className="mt-7 max-w-4xl font-serif text-5xl leading-[1.05] tracking-tight md:text-7xl">
+                {collection.title}
+              </h1>
+              <p className="text-muted-foreground mt-7 max-w-3xl text-lg leading-8">
+                {collection.summary}
+              </p>
+            </div>
+
+            <aside className="bg-background/80 rounded-3xl border p-6 shadow-sm backdrop-blur">
+              <div className="flex items-center gap-2 font-semibold">
+                <IconClock className="text-primary size-5" aria-hidden="true" />
+                {isZh ? '预计用时' : 'Estimated time'}
+              </div>
+              <p className="mt-3 font-serif text-3xl">
+                {collection.duration ||
+                  (isZh ? '按步骤完成' : 'Follow the steps')}
+              </p>
+              <p className="text-muted-foreground mt-4 border-t pt-4 text-sm leading-6">
+                {isZh
+                  ? `共 ${collection.resources.length} 个执行环节。最近核验：${collection.verifiedAt || '需确认'}。`
+                  : `${collection.resources.length} execution steps. Last checked: ${collection.verifiedAt || 'needs verification'}.`}
+              </p>
+            </aside>
           </div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-6xl px-6">
+        {currentUser ? (
+          <CommunityContentActions
+            targetId={collection.id}
+            targetType="collection"
+            initialBookmarked={interactionState.bookmarked}
+            locale={locale}
+          />
         ) : null}
-      </section>
-      {currentUser && (
-        <CommunityContentActions
-          targetId={collection.id}
-          targetType="collection"
-          initialBookmarked={interactionState.bookmarked}
-          locale={locale}
-        />
-      )}
 
-      <section className="mt-12 grid gap-5 md:grid-cols-2">
-        <div className="bg-muted/30 rounded-2xl border p-6">
-          <div className="text-primary flex items-center gap-2 text-sm font-medium">
-            <Target className="size-4" aria-hidden="true" />
-            {isZh ? '任务目标' : 'Task goal'}
+        <section className="mt-12 grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+          <div className="bg-muted/25 rounded-3xl border p-6 md:p-8">
+            <div className="text-primary flex items-center gap-2 font-semibold">
+              <IconTargetArrow className="size-5" aria-hidden="true" />
+              {isZh ? '为什么现在做' : 'Why this comes now'}
+            </div>
+            <div className="mt-5 space-y-4 leading-7 whitespace-pre-line">
+              {collection.content}
+            </div>
           </div>
-          <p className="mt-3 leading-7">{collection.summary}</p>
-        </div>
-        <div className="bg-muted/30 rounded-2xl border p-6">
-          <div className="text-primary flex items-center gap-2 text-sm font-medium">
-            <CheckCircle2 className="size-4" aria-hidden="true" />
-            {isZh ? '完成标准' : 'Completion criteria'}
-          </div>
-          <p className="mt-3 leading-7">
-            {isZh
-              ? `完成以下 ${collection.resources.length} 项资源的配置、连接与验证。`
-              : `Configure, connect, and verify the ${collection.resources.length} resources listed below.`}
-          </p>
-        </div>
-      </section>
 
-      <section className="mt-14">
-        <div className="flex items-center gap-3">
-          <ListChecks className="text-primary size-5" aria-hidden="true" />
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">
-              {isZh ? '执行清单' : 'Execution checklist'}
+          <div className="rounded-3xl border p-6 md:p-8">
+            <div className="flex items-center gap-2 font-semibold">
+              <IconUsers className="text-primary size-5" aria-hidden="true" />
+              {isZh ? '适合谁' : 'Who this is for'}
+            </div>
+            <InfoList items={collection.audience} checked />
+
+            <div className="mt-7 border-t pt-6">
+              <div className="flex items-center gap-2 font-semibold">
+                <IconChecklist
+                  className="text-primary size-5"
+                  aria-hidden="true"
+                />
+                {isZh ? '开始前准备' : 'Before you start'}
+              </div>
+              <InfoList items={collection.prerequisites} checked />
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-14">
+          <div className="max-w-3xl">
+            <p className="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase">
+              {isZh ? '执行路线' : 'Execution route'}
+            </p>
+            <h2 className="mt-3 font-serif text-4xl tracking-tight">
+              {isZh ? '每一步都留下可检查的产出' : 'Every step leaves evidence'}
             </h2>
-            <p className="text-muted-foreground mt-1 text-sm">
+            <p className="text-muted-foreground mt-4 leading-7">
               {isZh
-                ? '按顺序完成。资源是步骤中的工具，不是这条专题本身。'
-                : 'Complete in order. Resources are tools within the steps, not the guide itself.'}
+                ? '按顺序推进。替代方案只在满足对应条件时使用，不需要把同类工具全部做一遍。'
+                : 'Move in order. Use an alternative only when its condition fits; you do not need to use every similar tool.'}
             </p>
           </div>
-        </div>
 
-        <ol className="mt-8 space-y-4">
-          {collection.resources.map((resource, index) => (
-            <li
-              key={resource.slug}
-              className="bg-background rounded-2xl border p-5 md:p-6"
-            >
-              <div className="flex items-start gap-4">
-                <div className="bg-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
-                  {index + 1}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold">{resource.name}</h3>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    {resource.stepTitle ? (
-                      <p className="font-medium">{resource.stepTitle}</p>
-                    ) : null}
-                    <span className="bg-muted rounded-full px-2 py-0.5 text-xs font-medium">
-                      {resource.relationType === 'alternative'
-                        ? isZh
-                          ? '替代方案'
-                          : 'Alternative'
-                        : isZh
-                          ? '必选'
-                          : 'Required'}
-                    </span>
+          <ol className="mt-9 space-y-6">
+            {collection.resources.map((resource, index) => {
+              const stepParts = parseStepDescription(
+                resource.stepDescription,
+                isZh
+              );
+
+              return (
+                <li
+                  key={resource.slug}
+                  className="bg-background relative overflow-hidden rounded-3xl border p-6 shadow-sm md:p-8"
+                >
+                  <span className="text-muted-foreground/20 absolute top-2 right-6 font-serif text-7xl italic tabular-nums">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+
+                  <div className="relative grid gap-8 lg:grid-cols-[230px_minmax(0,1fr)]">
+                    <div>
+                      <p className="text-muted-foreground text-xs font-semibold tracking-[0.16em] uppercase">
+                        {resource.relationType === 'alternative'
+                          ? isZh
+                            ? '条件式替代方案'
+                            : 'Conditional alternative'
+                          : isZh
+                            ? '主要步骤'
+                            : 'Primary step'}
+                      </p>
+                      <h3 className="mt-3 font-serif text-2xl leading-tight">
+                        {resource.stepTitle || resource.name}
+                      </h3>
+                      <p className="text-muted-foreground mt-3 text-sm leading-6">
+                        {resource.name}
+                      </p>
+                      <Link
+                        href={`/${locale}/resources/${resource.slug}`}
+                        className="text-primary mt-5 inline-flex items-center gap-2 text-sm font-semibold"
+                      >
+                        {isZh ? '查看资源说明' : 'View resource guidance'}
+                        <IconExternalLink
+                          className="size-4"
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    </div>
+
+                    <dl className="grid gap-5 sm:grid-cols-2">
+                      {stepParts.map((part) => (
+                        <div
+                          key={part.label}
+                          className="bg-muted/25 rounded-2xl p-5"
+                        >
+                          <dt className="text-sm font-semibold">
+                            {part.label}
+                          </dt>
+                          <dd className="text-muted-foreground mt-2 text-sm leading-6">
+                            {part.value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
                   </div>
-                  <p className="text-muted-foreground mt-2 text-sm leading-6">
-                    {resource.stepDescription ||
-                      (isZh
-                        ? `使用 ${resource.name} 推进此专题中的第 ${index + 1} 个关键环节。`
-                        : `Use ${resource.name} to complete step ${index + 1} of this guide.`)}
-                  </p>
-                  <Link
-                    href={`/${locale}/resources/${resource.slug}`}
-                    className="text-primary mt-4 inline-flex items-center gap-2 text-sm font-medium"
-                  >
-                    {isZh
-                      ? '查看资源与配置建议'
-                      : 'View resource and setup guidance'}
-                    <ArrowRight className="size-4" aria-hidden="true" />
-                  </Link>
-                </div>
-                <Circle
-                  className="text-muted-foreground size-5 shrink-0"
-                  aria-label={isZh ? '未完成' : 'Incomplete'}
-                />
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {collection.resources.length === 0 ? (
-        <section className="text-muted-foreground mt-10 rounded-2xl border border-dashed px-6 py-12 text-center">
-          {isZh
-            ? '这个专题正在补充执行资源。'
-            : 'This guide is being prepared.'}
+                </li>
+              );
+            })}
+          </ol>
         </section>
-      ) : null}
+
+        <section className="mt-14 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl border p-6 md:p-8">
+            <div className="flex items-center gap-2 font-semibold">
+              <IconRoute className="text-primary size-5" aria-hidden="true" />
+              {isZh ? '你会得到' : 'What you will have'}
+            </div>
+            <InfoList items={collection.deliverables} checked />
+          </div>
+
+          <div className="bg-foreground text-background rounded-3xl p-6 md:p-8">
+            <div className="flex items-center gap-2 font-semibold">
+              <IconCheck className="size-5" aria-hidden="true" />
+              {isZh ? '完成标准' : 'Completion criteria'}
+            </div>
+            <InfoList items={collection.completionCriteria} checked inverted />
+          </div>
+        </section>
+
+        {collection.nextSlug && collection.nextTitle ? (
+          <section className="mt-14 border-t pt-10">
+            <p className="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase">
+              {isZh ? '下一步' : 'Next guide'}
+            </p>
+            <Link
+              href={`/${locale}/collections/${collection.nextSlug}`}
+              className="group mt-4 flex items-center justify-between gap-6 rounded-3xl border p-6 transition hover:-translate-y-1 hover:shadow-lg md:p-8"
+            >
+              <div>
+                <p className="font-serif text-3xl tracking-tight">
+                  {collection.nextTitle}
+                </p>
+                <p className="text-muted-foreground mt-3 text-sm">
+                  {isZh
+                    ? '带着这次产出继续，不要重新从空白开始。'
+                    : 'Carry the evidence forward instead of starting from a blank page.'}
+                </p>
+              </div>
+              <IconArrowUpRight
+                className="size-6 shrink-0 transition group-hover:translate-x-1 group-hover:-translate-y-1"
+                aria-hidden="true"
+              />
+            </Link>
+          </section>
+        ) : null}
+      </div>
     </main>
   );
+}
+
+function InfoList({
+  items,
+  checked = false,
+  inverted = false,
+}: {
+  items: string[];
+  checked?: boolean;
+  inverted?: boolean;
+}) {
+  if (!items.length) return null;
+
+  return (
+    <ul className="mt-5 space-y-3">
+      {items.map((item) => (
+        <li key={item} className="flex items-start gap-3 text-sm leading-6">
+          {checked ? (
+            <IconCheck
+              className={`mt-0.5 size-4 shrink-0 ${inverted ? 'text-background' : 'text-primary'}`}
+              aria-hidden="true"
+            />
+          ) : null}
+          <span
+            className={
+              inverted ? 'text-background/80' : 'text-muted-foreground'
+            }
+          >
+            {item}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function parseStepDescription(value: string, isZh: boolean) {
+  const labels = isZh
+    ? ['动作', '产出', '通过标准', '避免']
+    : ['Action', 'Output', 'Pass', 'Avoid'];
+  const fallbackLabel = isZh ? '执行说明' : 'Guidance';
+  const parts = value
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separator = line.indexOf(':') >= 0 ? ':' : '：';
+      const separatorIndex = line.indexOf(separator);
+      if (separatorIndex < 0) return null;
+      const label = line.slice(0, separatorIndex).trim();
+      const content = line.slice(separatorIndex + 1).trim();
+      return labels.includes(label) && content
+        ? { label, value: content }
+        : null;
+    })
+    .filter((item): item is { label: string; value: string } => Boolean(item));
+
+  return parts.length ? parts : [{ label: fallbackLabel, value }];
 }

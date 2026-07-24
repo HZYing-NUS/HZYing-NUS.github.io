@@ -1,4 +1,13 @@
-import { and, asc, count, eq, ilike, inArray, or } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  eq,
+  ilike,
+  inArray,
+  notInArray,
+  or,
+} from 'drizzle-orm';
 
 import { db } from '@/core/db';
 import {
@@ -9,6 +18,11 @@ import {
   resourceTag,
   tag,
 } from '@/config/db/schema';
+import {
+  pickLocaleText,
+  platformCollections,
+  retiredPlatformCollectionSlugs,
+} from '@/config/seed/platform-content';
 import type { CollectionStepInput } from '@/shared/forms/collection';
 import { TableColumn } from '@/shared/types/blocks/table';
 
@@ -33,6 +47,17 @@ type PublicResource = {
   featured: boolean;
 };
 
+type CollectionEditorialMeta = {
+  duration: string;
+  audience: string[];
+  prerequisites: string[];
+  deliverables: string[];
+  completionCriteria: string[];
+  verifiedAt: string;
+  nextSlug: string;
+  nextTitle: string;
+};
+
 function pickLocale(locale: string, zh: string | null, en: string | null) {
   return locale === 'en' ? en || zh || '' : zh || en || '';
 }
@@ -47,6 +72,44 @@ function readJsonStringArray(value: string | null) {
   } catch {
     return [];
   }
+}
+
+function readCollectionEditorialMeta(
+  slug: string,
+  locale: string
+): CollectionEditorialMeta {
+  const definition = platformCollections.find((item) => item.slug === slug);
+  if (!definition) {
+    return {
+      duration: '',
+      audience: [],
+      prerequisites: [],
+      deliverables: [],
+      completionCriteria: [],
+      verifiedAt: '',
+      nextSlug: '',
+      nextTitle: '',
+    };
+  }
+
+  return {
+    duration: pickLocaleText(definition.duration, locale),
+    audience: definition.audience.map((item) => pickLocaleText(item, locale)),
+    prerequisites: definition.prerequisites.map((item) =>
+      pickLocaleText(item, locale)
+    ),
+    deliverables: definition.deliverables.map((item) =>
+      pickLocaleText(item, locale)
+    ),
+    completionCriteria: definition.completionCriteria.map((item) =>
+      pickLocaleText(item, locale)
+    ),
+    verifiedAt: definition.verifiedAt,
+    nextSlug: definition.nextSlug || '',
+    nextTitle: definition.nextTitle
+      ? pickLocaleText(definition.nextTitle, locale)
+      : '',
+  };
 }
 
 async function validateCollectionRelationIds(
@@ -334,6 +397,7 @@ export async function getPublishedCollections(
     .where(
       and(
         eq(collection.status, 'published'),
+        notInArray(collection.slug, retiredPlatformCollectionSlugs),
         ...(allowAiCitation ? [eq(collection.allowAiCitation, true)] : [])
       )
     )
@@ -405,6 +469,8 @@ export async function getPublishedCollectionBySlug(
   slug: string,
   locale: string
 ) {
+  if (retiredPlatformCollectionSlugs.includes(slug)) return null;
+
   const [item] = await db()
     .select()
     .from(collection)
@@ -534,6 +600,7 @@ function buildPublishedCollectionView(
     relationType: string;
   }[]
 ) {
+  const editorialMeta = readCollectionEditorialMeta(item.slug, locale);
   const typedTagRows = tagRows as {
     id: string;
     nameZh: string;
@@ -555,6 +622,7 @@ function buildPublishedCollectionView(
     title: pickLocale(locale, item.titleZh, item.titleEn),
     summary: pickLocale(locale, item.summaryZh, item.summaryEn),
     content: pickLocale(locale, item.contentZh, item.contentEn),
+    ...editorialMeta,
     stageId: item.stageId,
     categoryId: item.categoryId,
     featured: item.featured,

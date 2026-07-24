@@ -42,10 +42,7 @@
         "show_avatars": false,
         "avatars_tip": "Helping beginners take a website from idea to launch",
         "show_award": false,
-        "background_image": {
-          "src": "/imgs/bg/tree.jpg",
-          "alt": "hero"
-        }
+        "background_effect": "flow-field"
       },
       "logos": {
         "id": "logos",
