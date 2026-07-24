@@ -39,7 +39,7 @@ export function Hero({
         <Link
           href={section.announcement.url || ''}
           target={section.announcement.target || '_self'}
-          className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto mb-8 flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
+          className="hover:bg-background dark:hover:border-t-border bg-muted group relative z-10 mx-auto mb-8 flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
         >
           <span className="text-foreground text-sm">
             {section.announcement.title}
@@ -59,7 +59,7 @@ export function Hero({
         </Link>
       )}
 
-      <div className="relative mx-auto max-w-full px-4 text-center md:max-w-5xl">
+      <div className="relative z-10 mx-auto max-w-full px-4 text-center md:max-w-5xl">
         {texts && texts.length > 0 ? (
           <h1 className="text-foreground text-4xl font-semibold text-balance sm:mt-12 sm:text-6xl">
             {texts[0]}

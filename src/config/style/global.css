@@ -24,7 +24,7 @@
   right: 0;
   left: 0;
   height: calc(100% + 21rem);
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
   background:
     radial-gradient(
@@ -45,6 +45,60 @@
 .webtools-flow-field__fade {
   position: absolute;
   inset: 0;
+  pointer-events: none;
+}
+
+.webtools-flow-step-card {
+  --spot-x: 50%;
+  --spot-y: 50%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--primary) 15%, var(--border));
+  border-radius: 1rem;
+  background: color-mix(in oklab, var(--background) 72%, transparent);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--primary) 8%, transparent);
+  backdrop-filter: blur(14px);
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.webtools-flow-step-card::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    circle 7rem at var(--spot-x) var(--spot-y),
+    color-mix(in oklab, var(--primary) 22%, transparent),
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 300ms ease;
+  content: '';
+}
+
+.webtools-flow-step-card:hover {
+  border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
+  background: color-mix(in oklab, var(--background) 86%, transparent);
+  box-shadow:
+    0 0 20px color-mix(in oklab, var(--primary) 18%, transparent),
+    0 14px 28px -22px color-mix(in oklab, var(--primary) 42%, transparent);
+}
+
+.webtools-flow-step-card:hover::before {
+  opacity: 1;
+}
+
+.webtools-flow-step-card__icon {
+  position: relative;
+  z-index: 1;
+  transition: transform 300ms ease;
+}
+
+.webtools-flow-step-card:hover .webtools-flow-step-card__icon {
+  transform: scale(1.1);
 }
 
 .webtools-flow-field__canvas {

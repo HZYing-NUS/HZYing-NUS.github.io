@@ -114,6 +114,15 @@ export function FlowFieldBackground() {
       上次指针时间 = 当前时间;
     };
 
+    const 处理指针离开 = (事件: PointerEvent) => {
+      const 边界 = 容器.getBoundingClientRect();
+      指针在场 =
+        事件.clientX >= 边界.left &&
+        事件.clientX <= 边界.right &&
+        事件.clientY >= 边界.top &&
+        事件.clientY <= 边界.bottom;
+    };
+
     const 绘制光团 = (
       x: number,
       y: number,
@@ -217,6 +226,7 @@ export function FlowFieldBackground() {
     const 尺寸观察器 = new ResizeObserver(调整尺寸);
     尺寸观察器.observe(容器);
     window.addEventListener('pointermove', 记录指针, { passive: true });
+    window.addEventListener('pointerleave', 处理指针离开, { passive: true });
     调整尺寸();
     动画帧 = requestAnimationFrame(绘制);
 
@@ -224,6 +234,7 @@ export function FlowFieldBackground() {
       cancelAnimationFrame(动画帧);
       尺寸观察器.disconnect();
       window.removeEventListener('pointermove', 记录指针);
+      window.removeEventListener('pointerleave', 处理指针离开);
     };
   }, []);
 

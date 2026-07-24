@@ -46,6 +46,7 @@
       },
       "logos": {
         "id": "logos",
+        "variant": "flow-steps",
         "title": "Building a website usually goes through these steps",
         "items": [
           {

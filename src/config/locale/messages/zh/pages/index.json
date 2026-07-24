@@ -46,6 +46,7 @@
       },
       "logos": {
         "id": "logos",
+        "variant": "flow-steps",
         "title": "搭一个网站，大概要走这几步",
         "items": [
           {
