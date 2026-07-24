@@ -15,14 +15,19 @@
  *
  * Priority: --env argument > ENV_FILE env var > .env.{NODE_ENV} > .env.development (default)
  */
-import { execSync } from 'child_process';
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
 
 // Parse command line arguments
 const args = process.argv.slice(2);
 
 // Check for --env argument (supports both --env file and --env=file formats)
 let envFile: string;
-const envIndex = args.findIndex((arg) => arg.startsWith('--env'));
+const envIndex = args.findIndex(
+  (arg) => arg === '--env' || arg.startsWith('--env=')
+);
 
 if (envIndex !== -1) {
   const envArg = args[envIndex];
@@ -31,7 +36,7 @@ if (envIndex !== -1) {
     envFile = envArg.split('=')[1];
     if (!envFile) {
       console.error(
-        '❌ Error: --env= requires a value (e.g., --env=.env.production)'
+        'Error: --env= requires a value (e.g., --env=.env.production)'
       );
       process.exit(1);
     }
@@ -42,7 +47,7 @@ if (envIndex !== -1) {
     envFile = args[envIndex + 1];
     if (!envFile) {
       console.error(
-        '❌ Error: --env requires a value (e.g., --env .env.production)'
+        'Error: --env requires a value (e.g., --env .env.production)'
       );
       process.exit(1);
     }
@@ -63,20 +68,29 @@ if (envIndex !== -1) {
 
 // Get command and arguments (after removing --env)
 if (args.length === 0) {
-  console.error('❌ Error: No command provided');
+  console.error('Error: No command provided');
   process.exit(1);
 }
 
 const command = args.join(' ');
+const dotenvCliPath = require.resolve('dotenv-cli/cli.js');
 
-console.log(`📄 Loading environment from: ${envFile}`);
-console.log(`▶️  Executing: ${command}\n`);
+console.log(`Loading environment from: ${envFile}`);
+console.log(`Executing: ${command}\n`);
 
-try {
-  execSync(`dotenv -e ${envFile} -- ${command}`, {
+const result = spawnSync(
+  process.execPath,
+  [dotenvCliPath, '-e', envFile, '--', ...args],
+  {
     stdio: 'inherit',
     cwd: process.cwd(),
-  });
-} catch (error) {
+  }
+);
+
+if (result.error) {
+  console.error(result.error.message);
   process.exit(1);
 }
+
+if (result.signal) process.kill(process.pid, result.signal);
+process.exit(result.status ?? 1);
