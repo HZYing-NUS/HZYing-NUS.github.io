@@ -42,6 +42,18 @@ export default async function BlogPage({
     listCommunityBlogFacets(),
   ]);
   const followed = filter === 'following';
+  const feedFilters = user
+    ? ['all', 'featured', 'following']
+    : ['all', 'featured'];
+  const taxonomyItems = [
+    ...facets.categories.map((label) => ({
+      label,
+      href: `/blog/category/${label}`,
+    })),
+    ...facets.tags
+      .slice(0, Math.max(0, 10 - facets.categories.length))
+      .map((label) => ({ label, href: `/blog/tag/${label}` })),
+  ];
   const community =
     followed && !user
       ? []
@@ -73,15 +85,17 @@ export default async function BlogPage({
 
   return (
     <main className="bg-muted/35 min-h-screen border-t">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mx-auto max-w-7xl px-4 pt-28 pb-12 sm:px-6 md:pt-36 lg:px-8 lg:pb-16">
         <header className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-primary mb-2 text-sm font-medium">
-              {t('messages.eyebrow')}
-            </p>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              {t('page.title')}
-            </h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                {t('page.title')}
+              </h1>
+              <span className="border-primary/20 bg-primary/8 text-primary rounded-full border px-3 py-1 text-xs font-semibold">
+                {t('messages.eyebrow')}
+              </span>
+            </div>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
               {t('page.sections.blog.description')}
             </p>
@@ -95,47 +109,13 @@ export default async function BlogPage({
           </Link>
         </header>
 
-        <div className="bg-card mb-4 overflow-x-auto rounded-xl border px-2 shadow-sm">
-          <nav
-            className="flex min-w-max items-center gap-1"
-            aria-label={t('messages.categories')}
-          >
-            <Link
-              href="/blog"
-              className="text-primary relative px-4 py-4 text-sm font-semibold after:absolute after:inset-x-4 after:bottom-0 after:h-0.5 after:bg-current"
-            >
-              {t('messages.all')}
-            </Link>
-            {facets.categories.map((category) => (
-              <Link
-                key={category}
-                href={`/blog/category/${category}`}
-                className="text-muted-foreground hover:text-foreground px-4 py-4 text-sm font-medium transition-colors"
-              >
-                {category}
-              </Link>
-            ))}
-            {facets.tags
-              .slice(0, Math.max(0, 10 - facets.categories.length))
-              .map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/blog/tag/${tag}`}
-                  className="text-muted-foreground hover:text-foreground px-4 py-4 text-sm font-medium transition-colors"
-                >
-                  {tag}
-                </Link>
-              ))}
-          </nav>
-        </div>
-
         <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="bg-card overflow-hidden rounded-xl border shadow-sm">
             <nav
-              className="flex items-center gap-1 border-b px-4 py-3"
+              className="flex items-center gap-1 overflow-x-auto border-b px-4 py-3"
               aria-label={t('messages.feedFilter')}
             >
-              {['all', 'featured', 'following'].map((item) => (
+              {feedFilters.map((item) => (
                 <Link
                   key={item}
                   href={item === 'all' ? '/blog' : `/blog?filter=${item}`}
@@ -149,6 +129,25 @@ export default async function BlogPage({
                 </Link>
               ))}
             </nav>
+            {taxonomyItems.length > 0 && (
+              <nav
+                className="flex items-center gap-2 overflow-x-auto border-b px-5 py-3"
+                aria-label={t('messages.categories')}
+              >
+                <span className="text-muted-foreground mr-1 text-xs font-medium">
+                  {t('messages.categories')}
+                </span>
+                {taxonomyItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
 
             {followed && !user ? (
               <div className="px-6 py-20 text-center">
@@ -173,6 +172,7 @@ export default async function BlogPage({
                     locale={locale}
                     fallbackAuthor={t('messages.communityAuthor')}
                     featuredLabel={t('messages.featured')}
+                    viewProfileLabel={t('messages.viewProfile')}
                   />
                 ))}
                 {legacy.map((post) => (
@@ -180,6 +180,7 @@ export default async function BlogPage({
                     key={`legacy:${post.id}`}
                     post={post}
                     fallbackAuthor={t('messages.webtoolsEditorial')}
+                    viewProfileLabel={t('messages.viewProfile')}
                   />
                 ))}
               </div>
@@ -258,11 +259,13 @@ function CommunityArticle({
   locale,
   fallbackAuthor,
   featuredLabel,
+  viewProfileLabel,
 }: {
   row: PublicCommunityArticleRow;
   locale: string;
   fallbackAuthor: string;
   featuredLabel: string;
+  viewProfileLabel: string;
 }) {
   const { article, revision, profile, metrics } = row;
   const title = getLocalizedText(locale, revision.titleZh, revision.titleEn);
@@ -281,8 +284,27 @@ function CommunityArticle({
   return (
     <article className="group px-5 py-6 sm:px-7">
       <div className="flex items-center gap-2 text-sm">
-        <AuthorAvatar src={profile?.avatarUrl} name={author} />
-        <span className="font-medium">{author}</span>
+        {profile?.username ? (
+          <Link
+            href={`/u/${profile.username}`}
+            aria-label={`${viewProfileLabel} ${author}`}
+            className="group/author hover:bg-muted -m-1 inline-flex items-center gap-2 rounded-md p-1 transition-colors"
+          >
+            <AuthorAvatar src={profile.avatarUrl} name={author} />
+            <span className="group-hover/author:text-primary font-medium transition-colors">
+              {author}
+            </span>
+            <span className="text-muted-foreground group-hover/author:text-primary hidden text-xs transition-colors sm:inline">
+              {viewProfileLabel}
+            </span>
+            <ChevronRight className="text-muted-foreground group-hover/author:text-primary size-3.5 transition-colors" />
+          </Link>
+        ) : (
+          <>
+            <AuthorAvatar src={profile?.avatarUrl} name={author} />
+            <span className="font-medium">{author}</span>
+          </>
+        )}
         {publishedAt && (
           <>
             <span className="text-muted-foreground">·</span>
@@ -359,16 +381,30 @@ function CommunityArticle({
 function LegacyArticle({
   post,
   fallbackAuthor,
+  viewProfileLabel,
 }: {
   post: Post;
   fallbackAuthor: string;
+  viewProfileLabel: string;
 }) {
   const author = post.author_name || fallbackAuthor;
   return (
     <article className="group px-5 py-6 sm:px-7">
       <div className="flex items-center gap-2 text-sm">
-        <AuthorAvatar src={post.author_image} name={author} />
-        <span className="font-medium">{author}</span>
+        <Link
+          href="/about"
+          aria-label={`${viewProfileLabel} ${author}`}
+          className="group/author hover:bg-muted -m-1 inline-flex items-center gap-2 rounded-md p-1 transition-colors"
+        >
+          <AuthorAvatar src={post.author_image} name={author} />
+          <span className="group-hover/author:text-primary font-medium transition-colors">
+            {author}
+          </span>
+          <span className="text-muted-foreground group-hover/author:text-primary hidden text-xs transition-colors sm:inline">
+            {viewProfileLabel}
+          </span>
+          <ChevronRight className="text-muted-foreground group-hover/author:text-primary size-3.5 transition-colors" />
+        </Link>
         {post.created_at && (
           <>
             <span className="text-muted-foreground">·</span>
