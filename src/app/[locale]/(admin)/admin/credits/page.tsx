@@ -68,6 +68,18 @@ function nonNegativeInteger(data: FormData, name: string) {
   return value;
 }
 
+async function loadAdminPanel<T>(
+  panel: string,
+  load: () => Promise<T>
+): Promise<{ data: T | null; error: boolean }> {
+  try {
+    return { data: await load(), error: false };
+  } catch (error) {
+    console.error(`Failed to load ${panel} in admin credits`, error);
+    return { data: null, error: true };
+  }
+}
+
 type ReferralRewardAction = 'approve' | 'freeze' | 'unfreeze' | 'revoke';
 
 function getReferralRewardActions({
@@ -104,22 +116,37 @@ export default async function AdminCreditsPage({
   });
   const isZh = locale === 'zh';
   const [
-    users,
-    reservations,
-    usage,
-    risks,
-    transactions,
-    packages,
-    referralRewards,
+    userResult,
+    reservationResult,
+    usageResult,
+    riskResult,
+    transactionResult,
+    packageResult,
+    referralRewardResult,
   ] = await Promise.all([
-    getUsers({ limit: 100 }),
-    getAdminCreditReservations({ userId, limit: 100 }),
-    getAdminUsageLedger({ userId, limit: 100 }),
-    getPaymentRiskEvents({ userId, limit: 100 }),
-    getCredits({ userId, getUser: true, limit: 100 }),
-    getAllCreditPackages(),
-    getAdminReferralRewards(100),
+    loadAdminPanel('users', () => getUsers({ limit: 100 })),
+    loadAdminPanel('credit reservations', () =>
+      getAdminCreditReservations({ userId, limit: 100 })
+    ),
+    loadAdminPanel('usage ledger', () =>
+      getAdminUsageLedger({ userId, limit: 100 })
+    ),
+    loadAdminPanel('payment risks', () =>
+      getPaymentRiskEvents({ userId, limit: 100 })
+    ),
+    loadAdminPanel('credit transactions', () =>
+      getCredits({ userId, getUser: true, limit: 100 })
+    ),
+    loadAdminPanel('credit packages', getAllCreditPackages),
+    loadAdminPanel('referral rewards', () => getAdminReferralRewards(100)),
   ]);
+  const users = userResult.data || [];
+  const reservations = reservationResult.data || [];
+  const usage = usageResult.data || [];
+  const risks = riskResult.data || [];
+  const transactions = transactionResult.data || [];
+  const packages = packageResult.data || [];
+  const referralRewards = referralRewardResult.data || [];
   const selectedUser = userId
     ? users.find((item) => item.id === userId)
     : undefined;
@@ -250,6 +277,7 @@ export default async function AdminCreditsPage({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
+            {userResult.error ? <AdminPanelError locale={locale} /> : null}
             <form method="get" className="flex flex-wrap items-end gap-3">
               <Field label={isZh ? '用户' : 'User'}>
                 <select
@@ -308,6 +336,7 @@ export default async function AdminCreditsPage({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
+            {packageResult.error ? <AdminPanelError locale={locale} /> : null}
             {packages.map((item: CreditPackage) => (
               <form
                 key={item.id}
@@ -370,6 +399,9 @@ export default async function AdminCreditsPage({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
+            {referralRewardResult.error ? (
+              <AdminPanelError locale={locale} />
+            ) : null}
             {referralRewards.map(
               ({
                 reward,
@@ -547,6 +579,8 @@ export default async function AdminCreditsPage({
             item.status,
             item.description || '-',
           ])}
+          error={transactionResult.error}
+          locale={locale}
         />
         <AdminTable
           title={isZh ? '预扣记录' : 'Reservations'}
@@ -570,6 +604,8 @@ export default async function AdminCreditsPage({
             reservation.status,
             reservation.failureReason || '-',
           ])}
+          error={reservationResult.error}
+          locale={locale}
         />
         <AdminTable
           title={isZh ? '用量与结算账本' : 'Usage and settlement ledger'}
@@ -595,6 +631,8 @@ export default async function AdminCreditsPage({
             item.refundedCredits,
             item.status,
           ])}
+          error={usageResult.error}
+          locale={locale}
         />
         <AdminTable
           title={isZh ? '支付风险事件' : 'Payment risk events'}
@@ -614,6 +652,8 @@ export default async function AdminCreditsPage({
             item.orderNo || '-',
             item.status,
           ])}
+          error={riskResult.error}
+          locale={locale}
         />
       </Main>
     </>
@@ -637,14 +677,28 @@ function Field({
   );
 }
 
+function AdminPanelError({ locale }: { locale: string }) {
+  return (
+    <div className="border-destructive/40 bg-destructive/5 text-destructive rounded-md border p-4 text-sm">
+      {locale === 'zh'
+        ? '该面板加载失败。请检查服务端日志，并确认生产数据库已执行全部迁移。'
+        : 'This panel failed to load. Check the server logs and confirm all migrations have been applied to the production database.'}
+    </div>
+  );
+}
+
 function AdminTable({
   title,
   headers,
   rows,
+  error = false,
+  locale = 'en',
 }: {
   title: string;
   headers: string[];
   rows: Array<Array<React.ReactNode>>;
+  error?: boolean;
+  locale?: string;
 }) {
   return (
     <Card className="mb-8">
@@ -653,6 +707,7 @@ function AdminTable({
         <CardDescription>{rows.length} records</CardDescription>
       </CardHeader>
       <CardContent className="overflow-x-auto">
+        {error ? <AdminPanelError locale={locale} /> : null}
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b">
@@ -684,7 +739,7 @@ function AdminTable({
                 ))}
               </tr>
             ))}
-            {!rows.length && (
+            {!rows.length && !error && (
               <tr>
                 <td
                   colSpan={headers.length}
