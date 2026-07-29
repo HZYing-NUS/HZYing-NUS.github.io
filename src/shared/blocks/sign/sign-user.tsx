@@ -29,7 +29,7 @@ import {
 } from '@/shared/components/ui/dropdown-menu';
 import { useAppContext } from '@/shared/contexts/app';
 import { cn } from '@/shared/lib/utils';
-import { User as UserType } from '@/shared/models/user';
+import { WorkspaceUser as UserType } from '@/shared/models/user';
 import { NavItem, UserNav } from '@/shared/types/blocks/common';
 
 import { SmartIcon } from '../common/smart-icon';

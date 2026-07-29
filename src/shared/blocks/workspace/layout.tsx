@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -11,13 +11,29 @@ import { DashboardLayout } from '@/shared/blocks/dashboard';
 import { Button } from '@/shared/components/ui/button';
 import { SidebarTrigger } from '@/shared/components/ui/sidebar';
 import { ChatContextProvider } from '@/shared/contexts/chat';
+import { useAppContext } from '@/shared/contexts/app';
+import type { WorkspaceUser } from '@/shared/models/user';
 import type { Sidebar } from '@/shared/types/blocks/dashboard';
+
+function WorkspaceSessionBootstrap({ user }: { user: WorkspaceUser | null }) {
+  const { setIsCheckSign, setUser, fetchUserInfo } = useAppContext();
+
+  useEffect(() => {
+    setUser(user);
+    setIsCheckSign(false);
+    if (user) void fetchUserInfo();
+  }, [fetchUserInfo, setIsCheckSign, setUser, user]);
+
+  return null;
+}
 
 function WorkspaceFrame({
   children,
+  initialUser,
   showChatLibrary = false,
 }: {
   children: ReactNode;
+  initialUser: WorkspaceUser | null;
   showChatLibrary?: boolean;
 }) {
   const t = useTranslations('ai.chat.workspace_shell');
@@ -72,9 +88,11 @@ function WorkspaceFrame({
   };
 
   return (
-    <DashboardLayout sidebar={sidebar}>
-      <LocaleDetector />
-      <div className="bg-background text-foreground flex min-h-dvh min-w-0 flex-col">
+    <>
+      <WorkspaceSessionBootstrap user={initialUser} />
+      <DashboardLayout sidebar={sidebar}>
+        <LocaleDetector />
+        <div className="bg-background text-foreground flex min-h-dvh min-w-0 flex-col">
         <header className="bg-background/92 border-border sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b px-3 backdrop-blur md:px-5">
           <SidebarTrigger className="size-8" />
           <Button
@@ -99,23 +117,38 @@ function WorkspaceFrame({
           </div>
         </header>
         <div className="min-h-0 min-w-0 flex-1">{children}</div>
-      </div>
-    </DashboardLayout>
+        </div>
+      </DashboardLayout>
+    </>
   );
 }
 
-export function WorkspaceLayout({ children }: { children: ReactNode }) {
+export function WorkspaceLayout({
+  children,
+  initialUser,
+}: {
+  children: ReactNode;
+  initialUser: WorkspaceUser | null;
+}) {
   return (
     <ChatContextProvider>
-      <WorkspaceFrame>{children}</WorkspaceFrame>
+      <WorkspaceFrame initialUser={initialUser}>{children}</WorkspaceFrame>
     </ChatContextProvider>
   );
 }
 
-export function ChatWorkspaceLayout({ children }: { children: ReactNode }) {
+export function ChatWorkspaceLayout({
+  children,
+  initialUser,
+}: {
+  children: ReactNode;
+  initialUser: WorkspaceUser | null;
+}) {
   return (
     <ChatContextProvider>
-      <WorkspaceFrame showChatLibrary>{children}</WorkspaceFrame>
+      <WorkspaceFrame initialUser={initialUser} showChatLibrary>
+        {children}
+      </WorkspaceFrame>
     </ChatContextProvider>
   );
 }

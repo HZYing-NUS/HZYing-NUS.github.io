@@ -11,7 +11,7 @@ import { getIncompleteCollectionProgress } from '@/shared/models/collection-prog
 import { searchPublishedPosts } from '@/shared/models/post';
 import { getProjects, type Project } from '@/shared/models/project';
 import { getPublishedResources } from '@/shared/models/resource';
-import { getSignUser } from '@/shared/models/user';
+import { getSignUser, getUserCredits } from '@/shared/models/user';
 import {
   rankWorkspaceRecommendationCandidates,
   resolveWorkspaceStage,
@@ -31,7 +31,11 @@ export default async function LandingPage({
   if (hasSession) noStore();
   const user = hasSession ? await getSignUser() : null;
   if (user) {
-    const recentProjects: Project[] = (await getProjects(user.id)).slice(0, 3);
+    const [recentProjectsResult, credits] = await Promise.all([
+      getProjects(user.id),
+      getUserCredits(user.id),
+    ]);
+    const recentProjects: Project[] = recentProjectsResult.slice(0, 3);
     const projectStage = resolveWorkspaceStage(
       recentProjects.map((project) => project.stage)
     );
@@ -107,7 +111,9 @@ export default async function LandingPage({
       })),
     };
     return (
-      <WorkspaceLayout>
+      <WorkspaceLayout
+        initialUser={{ ...user, credits: { ...credits, expiresAt: null } }}
+      >
         <ChatGenerator
           recentProjects={recentProjects}
           recommendations={recommendations}

@@ -36,7 +36,7 @@ import {
   useSidebar,
 } from '@/shared/components/ui/sidebar';
 import { useAppContext } from '@/shared/contexts/app';
-import { User as UserType } from '@/shared/models/user';
+import { WorkspaceUser as UserType } from '@/shared/models/user';
 import { NavItem } from '@/shared/types/blocks/common';
 import { SidebarUser as SidebarUserType } from '@/shared/types/blocks/dashboard';
 
@@ -86,8 +86,8 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
       return;
     }
 
-    setIsCheckSign(isPending);
-  }, [hasMounted, isPending, setIsCheckSign]);
+    setIsCheckSign(isPending && !authUser);
+  }, [authUser, hasMounted, isPending, setIsCheckSign]);
 
   // show one tap if not initialized
   useEffect(() => {
@@ -121,10 +121,17 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
     if (sessionUser && sessionUserId !== currentUserId) {
       setUser(sessionUser as UserType);
       fetchUserInfo();
-    } else if (!sessionUser && currentUserId) {
+    } else if (!sessionUser && currentUserId && !isPending) {
       setUser(null);
     }
-  }, [hasMounted, session?.user, authUser?.id, setUser, fetchUserInfo]);
+  }, [
+    hasMounted,
+    session?.user,
+    authUser?.id,
+    isPending,
+    setUser,
+    fetchUserInfo,
+  ]);
 
   // If not mounted, render placeholder to avoid hydration mismatch
   if (!hasMounted) {

@@ -21,6 +21,12 @@ export type User = typeof user.$inferSelect & {
   roles?: Role[];
   permissions?: Permission[];
 };
+export type WorkspaceUser = Pick<
+  User,
+  'id' | 'name' | 'email' | 'emailVerified' | 'createdAt' | 'updatedAt'
+> & {
+  image?: string | null;
+} & Pick<User, 'isAdmin' | 'publicUsername' | 'credits'>;
 export type NewUser = typeof user.$inferInsert;
 export type UpdateUser = Partial<Omit<NewUser, 'id' | 'createdAt' | 'email'>>;
 
