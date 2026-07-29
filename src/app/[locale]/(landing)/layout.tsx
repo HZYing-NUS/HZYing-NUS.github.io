@@ -1,56 +1,30 @@
 import { ReactNode } from 'react';
-import { getTranslations } from 'next-intl/server';
+import { unstable_noStore as noStore } from 'next/cache';
+import { headers } from 'next/headers';
 
-import { getThemeLayout } from '@/core/theme';
-import { envConfigs } from '@/config';
-import { LocaleDetector, TopBanner } from '@/shared/blocks/common';
-import {
-  Footer as FooterType,
-  Header as HeaderType,
-} from '@/shared/types/blocks/landing';
+import { PublicLandingShell } from '@/shared/blocks/landing/public-shell';
+import { WorkspaceLayout } from '@/shared/blocks/workspace/layout';
+import { getSignUser } from '@/shared/models/user';
 
 export default async function LandingLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  // load page data
-  const t = await getTranslations('landing');
+  const requestHeaders = await headers();
+  const pathname = requestHeaders.get('x-pathname') || '';
+  const normalizedPath = pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
+  if (normalizedPath === '/') return <>{children}</>;
 
-  // load layout component
-  const Layout = await getThemeLayout('landing');
+  const hasSession = requestHeaders.get('x-session-present') === '1';
+  if (!hasSession) return <PublicLandingShell>{children}</PublicLandingShell>;
 
-  // header and footer to display
-  const header: HeaderType = t.raw('header');
-  const footer: FooterType = t.raw('footer');
-  if (envConfigs.community_about_username) {
-    if (header.nav?.items)
-      header.nav.items = header.nav.items.filter(
-        (item) => item.url !== '/about'
-      );
-    if (footer.nav?.items)
-      footer.nav.items = footer.nav.items.map((group) => ({
-        ...group,
-        children: group.children?.filter((item) => item.url !== '/about'),
-      }));
-  }
+  noStore();
+  const user = await getSignUser();
 
-  return (
-    <Layout header={header} footer={footer}>
-      <LocaleDetector />
-      {header.topbanner && header.topbanner.text && (
-        <TopBanner
-          id="topbanner"
-          text={header.topbanner?.text}
-          buttonText={header.topbanner?.buttonText}
-          href={header.topbanner?.href}
-          target={header.topbanner?.target}
-          closable
-          rememberDismiss
-          dismissedExpiryDays={header.topbanner?.dismissedExpiryDays ?? 1}
-        />
-      )}
-      {children}
-    </Layout>
+  return user ? (
+    <WorkspaceLayout>{children}</WorkspaceLayout>
+  ) : (
+    <PublicLandingShell>{children}</PublicLandingShell>
   );
 }

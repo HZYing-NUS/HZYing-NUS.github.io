@@ -13,6 +13,7 @@ import {
   getPublicCommunityProfileStats,
 } from '@/shared/models/community';
 import { getSignUser } from '@/shared/models/user';
+import { getCommunityHttpsUrl } from '@/shared/services/community/profile-content';
 
 export async function generateMetadata({
   params,
@@ -22,8 +23,6 @@ export async function generateMetadata({
   const { locale, username } = await params;
   const profile = await findPublicCommunityProfile(username);
   if (!profile) return {};
-  const stats = await getPublicCommunityProfileStats(profile.userId);
-  const hasAbout = Boolean(profile.aboutZh || profile.aboutEn);
   const prefix = locale === envConfigs.locale ? '' : `/${locale}`;
   const canonical = `${envConfigs.app_url}${prefix}/u/${profile.username}`;
   const description =
@@ -40,10 +39,6 @@ export async function generateMetadata({
         en: `${envConfigs.app_url}/u/${profile.username}`,
       },
     },
-    robots:
-      stats.publishedArticles > 0 || hasAbout
-        ? undefined
-        : { index: false, follow: true },
   };
 }
 
@@ -75,6 +70,47 @@ export default async function CommunityProfilePage({
       : Promise.resolve([]),
   ]);
   const about = locale === 'en' ? profile.aboutEn : profile.aboutZh;
+  const websiteUrl = getCommunityHttpsUrl(profile.websiteUrl);
+  const socialLinks = Array.isArray(profile.socialLinks)
+    ? (profile.socialLinks as unknown[])
+        .slice(0, 5)
+        .map((item) => {
+          const link = item as { label?: string; url?: string };
+          return { label: link.label, url: getCommunityHttpsUrl(link.url) };
+        })
+        .filter((link): link is { label: string | undefined; url: string } =>
+          Boolean(link.url)
+        )
+    : [];
+  const works = Array.isArray(profile.works)
+    ? (profile.works as unknown[])
+        .slice(0, 20)
+        .map((item) => {
+          const work = item as {
+            title?: string;
+            description?: string;
+            titleZh?: string;
+            titleEn?: string;
+            descriptionZh?: string;
+            descriptionEn?: string;
+            url?: string;
+          };
+          return {
+            title:
+              (locale === 'zh'
+                ? work.titleZh || work.title
+                : work.titleEn || work.title || work.titleZh
+              )?.trim() || '',
+            description:
+              (locale === 'zh'
+                ? work.descriptionZh || work.description
+                : work.descriptionEn || work.description || work.descriptionZh
+              )?.trim() || '',
+            url: getCommunityHttpsUrl(work.url),
+          };
+        })
+        .filter((work) => work.title || work.description || work.url)
+    : [];
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 md:py-24">
@@ -129,20 +165,36 @@ export default async function CommunityProfilePage({
               const title = String(
                 locale === 'zh'
                   ? record.titleZh || record.roleZh || record.title || ''
-                  : record.titleEn || record.roleEn || record.title || ''
+                  : record.titleEn ||
+                      record.roleEn ||
+                      record.title ||
+                      record.titleZh ||
+                      ''
               );
               const role = String(
                 locale === 'zh'
-                  ? record.roleZh || record.organizationZh || ''
-                  : record.roleEn || record.organizationEn || ''
+                  ? record.roleZh ||
+                      record.organizationZh ||
+                      record.organization ||
+                      ''
+                  : record.roleEn ||
+                      record.organizationEn ||
+                      record.organization ||
+                      record.organizationZh ||
+                      ''
               );
               const period = String(
-                locale === 'zh' ? record.periodZh || '' : record.periodEn || ''
+                locale === 'zh'
+                  ? record.periodZh || record.period || ''
+                  : record.periodEn || record.period || record.periodZh || ''
               );
               const description = String(
                 locale === 'zh'
-                  ? record.descriptionZh || ''
-                  : record.descriptionEn || ''
+                  ? record.descriptionZh || record.description || ''
+                  : record.descriptionEn ||
+                      record.description ||
+                      record.descriptionZh ||
+                      ''
               );
               const itemTitle = title || role || period;
               return (
@@ -168,24 +220,33 @@ export default async function CommunityProfilePage({
           </div>
         </section>
       )}
-      <section className="py-10">
-        <h2 className="text-2xl font-semibold">{t('about')}</h2>
-        <p className="text-muted-foreground mt-4 leading-7 whitespace-pre-wrap">
-          {about || t('emptyAbout')}
-        </p>
-      </section>
-      {(profile.region || profile.websiteUrl) && (
+      {about ? (
+        <section className="py-10">
+          <h2 className="text-2xl font-semibold">{t('about')}</h2>
+          <p className="text-muted-foreground mt-4 leading-7 whitespace-pre-wrap">
+            {about}
+          </p>
+        </section>
+      ) : null}
+      {(profile.region || websiteUrl) && (
         <section className="border-t py-8">
           <p className="text-muted-foreground">{profile.region}</p>
-          {profile.websiteUrl && (
-            <a
-              href={profile.websiteUrl}
-              target="_blank"
-              rel="ugc nofollow noreferrer"
-              className="text-primary mt-2 inline-block"
-            >
-              {profile.websiteUrl}
-            </a>
+          {websiteUrl && (
+            <div className="mt-2">
+              <p className="text-muted-foreground text-xs">
+                {locale === 'zh'
+                  ? '用户内容 · 外部链接'
+                  : 'User content · External link'}
+              </p>
+              <a
+                href={websiteUrl}
+                target="_blank"
+                rel="ugc nofollow noopener noreferrer"
+                className="text-primary mt-1 inline-block"
+              >
+                {websiteUrl}
+              </a>
+            </div>
           )}
         </section>
       )}
@@ -203,25 +264,85 @@ export default async function CommunityProfilePage({
           </div>
         </section>
       )}
-      {Array.isArray(profile.socialLinks) && profile.socialLinks.length > 0 && (
+      {Array.isArray(profile.focusAreas) && profile.focusAreas.length > 0 && (
         <section className="border-t py-8">
+          <h2 className="text-2xl font-semibold">
+            {locale === 'zh' ? '关注方向' : 'Focus areas'}
+          </h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {(profile.focusAreas as unknown[]).map((area: unknown) => (
+              <span
+                key={String(area)}
+                className="bg-muted rounded-full px-3 py-1 text-sm"
+              >
+                {String(area)}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+      {works.length > 0 && (
+        <section className="border-t py-8">
+          <h2 className="text-2xl font-semibold">
+            {locale === 'zh' ? '作品' : 'Works'}
+          </h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {works.map((work, index) => (
+              <article
+                key={`${work.title}-${index}`}
+                className="rounded-xl border p-5"
+              >
+                {work.title ? (
+                  <h3 className="font-semibold">{work.title}</h3>
+                ) : null}
+                {work.description ? (
+                  <p className="text-muted-foreground mt-2 text-sm leading-6">
+                    {work.description}
+                  </p>
+                ) : null}
+                {work.url ? (
+                  <div className="mt-4">
+                    <p className="text-muted-foreground text-xs">
+                      {locale === 'zh'
+                        ? '用户内容 · 外部链接'
+                        : 'User content · External link'}
+                    </p>
+                    <a
+                      href={work.url}
+                      target="_blank"
+                      rel="ugc nofollow noopener noreferrer"
+                      className="text-primary mt-1 inline-block text-sm"
+                    >
+                      {locale === 'zh' ? '查看作品' : 'View work'}
+                    </a>
+                  </div>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+      {socialLinks.length > 0 && (
+        <section className="border-t py-8">
+          <p className="text-muted-foreground mb-3 text-xs">
+            {locale === 'zh'
+              ? '用户内容 · 外部链接'
+              : 'User content · External links'}
+          </p>
           <div className="flex flex-wrap gap-4">
-            {(profile.socialLinks as unknown[])
-              .slice(0, 5)
-              .map((item: unknown, index: number) => {
-                const link = item as { label?: string; url?: string };
-                return link.url ? (
-                  <a
-                    key={index}
-                    href={link.url}
-                    target="_blank"
-                    rel="ugc nofollow noreferrer"
-                    className="text-primary text-sm"
-                  >
-                    {link.label || link.url}
-                  </a>
-                ) : null;
-              })}
+            {socialLinks.map((link, index) => {
+              return (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="ugc nofollow noopener noreferrer"
+                  className="text-primary text-sm"
+                >
+                  {link.label || link.url}
+                </a>
+              );
+            })}
           </div>
         </section>
       )}

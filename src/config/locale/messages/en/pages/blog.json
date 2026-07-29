@@ -33,6 +33,18 @@
     "contributeDescription": "Write about the mistakes, practical methods, and honest lessons from building your web product.",
     "startWriting": "Start writing",
     "ranking": "Featured articles",
-    "rankingHint": "Recent"
+    "rankingHint": "Recent",
+    "contentType": "Blog content type",
+    "articles": "Articles",
+    "authors": "Authors",
+    "authorDirectory": "Discover authors",
+    "authorDirectoryDescription": "Browse approved public profiles. Authors can be discovered without publishing an article first.",
+    "searchAuthors": "Search name, username, bio, or skills",
+    "search": "Search",
+    "articleCount": "{count, plural, one {# article} other {# articles}}",
+    "previousPage": "Previous",
+    "nextPage": "Next",
+    "noAuthorsFound": "No matching authors found. Try another keyword.",
+    "noPublishedAuthors": "No public author profiles yet."
   }
 }

@@ -22,13 +22,19 @@ import {
 } from '@/shared/components/ui/drawer';
 import { useAppContext } from '@/shared/contexts/app';
 import { useMediaQuery } from '@/shared/hooks/use-media-query';
+import { safeInternalCallbackPath } from '@/shared/lib/auth-callback';
 
 import { SignInForm } from './sign-in-form';
 import { SignUpForm } from './sign-up-form';
 
 export function SignModal({ callbackUrl = '/' }: { callbackUrl?: string }) {
   const t = useTranslations('common.sign');
-  const { isShowSignModal, setIsShowSignModal } = useAppContext();
+  const {
+    isShowSignModal,
+    setIsShowSignModal,
+    signCallbackUrl,
+    setSignCallbackUrl,
+  } = useAppContext();
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
 
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -37,23 +43,26 @@ export function SignModal({ callbackUrl = '/' }: { callbackUrl?: string }) {
     setIsShowSignModal(open);
     if (!open) {
       setMode('sign-in');
+      setSignCallbackUrl(null);
     }
   };
 
-  const title =
-    mode === 'sign-in' ? t('sign_in_title') : t('sign_up_title');
+  const title = mode === 'sign-in' ? t('sign_in_title') : t('sign_up_title');
   const description =
     mode === 'sign-in' ? t('sign_in_description') : t('sign_up_description');
+  const safeCallbackUrl = safeInternalCallbackPath(
+    signCallbackUrl || callbackUrl
+  );
 
   const formContent =
     mode === 'sign-in' ? (
       <SignInForm
-        callbackUrl={callbackUrl}
+        callbackUrl={safeCallbackUrl}
         onSwitchToSignUp={() => setMode('sign-up')}
       />
     ) : (
       <SignUpForm
-        callbackUrl={callbackUrl}
+        callbackUrl={safeCallbackUrl}
         onSwitchToSignIn={() => setMode('sign-in')}
       />
     );
@@ -81,13 +90,13 @@ export function SignModal({ callbackUrl = '/' }: { callbackUrl?: string }) {
         </DrawerHeader>
         {mode === 'sign-in' ? (
           <SignInForm
-            callbackUrl={callbackUrl}
+            callbackUrl={safeCallbackUrl}
             className="mt-8 px-4"
             onSwitchToSignUp={() => setMode('sign-up')}
           />
         ) : (
           <SignUpForm
-            callbackUrl={callbackUrl}
+            callbackUrl={safeCallbackUrl}
             className="mt-8 px-4"
             onSwitchToSignIn={() => setMode('sign-in')}
           />

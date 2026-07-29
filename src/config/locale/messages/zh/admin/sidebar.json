@@ -56,6 +56,11 @@
               "url": "/admin/community/articles"
             },
             {
+              "title": "作者主页管理",
+              "icon": "UserRound",
+              "url": "/admin/community/profiles"
+            },
+            {
               "title": "社区举报与治理",
               "icon": "ShieldCheck",
               "url": "/admin/community/comments"
@@ -94,11 +99,6 @@
               "title": "投稿建议",
               "icon": "MessageSquarePlus",
               "url": "/admin/submissions"
-            },
-            {
-              "title": "关于我",
-              "icon": "UserRound",
-              "url": "/admin/profile"
             }
           ]
         }

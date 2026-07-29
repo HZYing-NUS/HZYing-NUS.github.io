@@ -1,4 +1,18 @@
 {
+  "workspace_shell": {
+    "home": "Home",
+    "assistant": "AI Assistant",
+    "projects": "Projects",
+    "resources": "Resources",
+    "collections": "Action guides",
+    "articles": "Articles",
+    "submit": "Submit feedback",
+    "profile": "Profile",
+    "settings": "Settings",
+    "new_chat": "New chat",
+    "search": "Search resources, guides, and articles",
+    "credit": "Credit"
+  },
   "sidebar": {
     "header": {
       "brand": {
@@ -110,7 +124,27 @@
     "skill_label": "Chat mode",
     "auto_model": "Auto",
     "auto_model_with_name": "Auto · {model}",
-    "auto_model_description": "Uses the current recommended model. Open the menu to choose a specific model."
+    "auto_model_description": "Uses the current recommended model. Open the menu to choose a specific model.",
+    "quick_validate": "Help me decide whether this product idea is worth pursuing",
+    "quick_mvp": "Turn my idea into a small, testable MVP",
+    "quick_launch": "Tell me what is still missing before launch",
+    "quick_growth": "Design the first acquisition path for my product",
+    "recent_projects_eyebrow": "Continue building",
+    "recent_projects": "Recent projects",
+    "view_projects": "View all",
+    "project_no_description": "Continue organizing this project's progress and next step.",
+    "projects_empty_title": "No projects yet",
+    "projects_empty_description": "Create a project to keep conversations, files, and progress together.",
+    "create_project": "Create your first project",
+    "recommended_eyebrow": "Stage-based recommendations",
+    "recommended_for_stage": "Keep moving through {stage}",
+    "recommended_for_stage_description": "Based on the current stage in your recent projects, these resources, action guides, and articles are ready to use next.",
+    "recommended_default_title": "Start with these selected guides",
+    "recommended_default_description": "No clear project stage is set yet, so this section starts with featured resources, action guides, and recent articles.",
+    "recommended_resources": "Resources",
+    "recommended_collections": "Action guides",
+    "recommended_articles": "Articles",
+    "recommended_view_all": "View all"
   },
   "history": {
     "title": "Search chats",

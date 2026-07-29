@@ -1640,6 +1640,43 @@ export const collectionResource = table(
   (table) => [primaryKey({ columns: [table.collectionId, table.resourceId] })]
 );
 
+export const collectionStepProgress = table(
+  'collection_step_progress',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    collectionId: text('collection_id')
+      .notNull()
+      .references(() => collection.id, { onDelete: 'cascade' }),
+    resourceId: text('resource_id')
+      .notNull()
+      .references(() => resource.id, { onDelete: 'cascade' }),
+    completedAt: timestamp('completed_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.collectionId, table.resourceId],
+    }),
+    index('idx_collection_step_progress_user_updated').on(
+      table.userId,
+      table.updatedAt
+    ),
+    foreignKey({
+      columns: [table.collectionId, table.resourceId],
+      foreignColumns: [
+        collectionResource.collectionId,
+        collectionResource.resourceId,
+      ],
+      name: 'collection_step_progress_step_fk',
+    }).onDelete('cascade'),
+  ]
+);
+
 export const collectionPost = table(
   'collection_post',
   {
@@ -1683,6 +1720,8 @@ export const communityUserProfile = table(
     aboutEn: text('about_en'),
     experience: jsonb('experience').notNull().default([]),
     skills: jsonb('skills').notNull().default([]),
+    works: jsonb('works').notNull().default([]),
+    focusAreas: jsonb('focus_areas').notNull().default([]),
     region: text('region'),
     websiteUrl: text('website_url'),
     socialLinks: jsonb('social_links').notNull().default([]),
@@ -1724,7 +1763,7 @@ export const communityUserProfile = table(
     }).onDelete('restrict'),
     check(
       'community_profile_moderation_status_valid',
-      sql`${table.moderationStatus} in ('pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed')`
+      sql`${table.moderationStatus} in ('draft', 'pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed')`
     ),
     check(
       'community_profile_ai_citation_disabled',
@@ -1750,6 +1789,8 @@ export const communityProfileRevision = table(
     aboutEn: text('about_en'),
     experience: jsonb('experience').notNull().default([]),
     skills: jsonb('skills').notNull().default([]),
+    works: jsonb('works').notNull().default([]),
+    focusAreas: jsonb('focus_areas').notNull().default([]),
     region: text('region'),
     websiteUrl: text('website_url'),
     socialLinks: jsonb('social_links').notNull().default([]),
@@ -1782,7 +1823,7 @@ export const communityProfileRevision = table(
     ),
     check(
       'community_profile_revision_moderation_status_valid',
-      sql`${table.moderationStatus} in ('pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed')`
+      sql`${table.moderationStatus} in ('draft', 'pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed')`
     ),
   ]
 );

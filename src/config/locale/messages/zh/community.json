@@ -43,7 +43,7 @@
       {
         "title": "个人资料编辑",
         "description": "维护公开资料和 About。",
-        "href": "/settings/community/profile"
+        "href": "/settings/profile"
       },
       {
         "title": "Credit 与账单",

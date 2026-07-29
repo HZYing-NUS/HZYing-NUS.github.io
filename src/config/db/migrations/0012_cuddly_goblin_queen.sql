@@ -1,0 +1,4 @@
+ALTER TABLE "community_profile_revision" DROP CONSTRAINT "community_profile_revision_moderation_status_valid";--> statement-breakpoint
+ALTER TABLE "community_user_profile" DROP CONSTRAINT "community_profile_moderation_status_valid";--> statement-breakpoint
+ALTER TABLE "community_profile_revision" ADD CONSTRAINT "community_profile_revision_moderation_status_valid" CHECK ("community_profile_revision"."moderation_status" in ('draft', 'pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed'));--> statement-breakpoint
+ALTER TABLE "community_user_profile" ADD CONSTRAINT "community_profile_moderation_status_valid" CHECK ("community_user_profile"."moderation_status" in ('draft', 'pending', 'moderation_pending', 'published', 'pending_admin', 'blocked', 'failed'));

@@ -11,7 +11,12 @@ export interface ContextValue {
   setChats: (chats: Chat[]) => void;
 }
 
-const ChatContext = createContext({} as ContextValue);
+const ChatContext = createContext<ContextValue>({
+  chat: null,
+  setChat: () => undefined,
+  chats: [],
+  setChats: () => undefined,
+});
 
 export const useChatContext = () => useContext(ChatContext);
 

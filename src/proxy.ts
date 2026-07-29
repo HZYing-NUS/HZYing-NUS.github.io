@@ -21,10 +21,19 @@ export async function proxy(request: NextRequest) {
   // Extract locale from pathname
   const locale = pathname.split('/')[1];
   const isValidLocale = routing.locales.includes(locale as any);
-  const pathWithoutLocale = isValidLocale
-    ? pathname.slice(locale.length + 1)
-    : pathname;
+  const pathWithoutLocale =
+    (isValidLocale ? pathname.slice(locale.length + 1) : pathname) || '/';
   const localePrefix = isValidLocale ? `/${locale}` : '';
+  const sessionCookie = getSessionCookie(request);
+  const isPublicContentPage =
+    pathWithoutLocale === '/' ||
+    pathWithoutLocale.startsWith('/resources') ||
+    pathWithoutLocale.startsWith('/collections') ||
+    pathWithoutLocale.startsWith('/blog') ||
+    pathWithoutLocale.startsWith('/search') ||
+    pathWithoutLocale.startsWith('/u/') ||
+    pathWithoutLocale === '/privacy-policy' ||
+    pathWithoutLocale === '/terms-of-service';
 
   if (pathWithoutLocale === '/about' && envConfigs.community_about_username) {
     const target = buildCommunityPermanentRedirectPath({
@@ -41,7 +50,9 @@ export async function proxy(request: NextRequest) {
     value: string
   ) => {
     const secret = process.env.CRON_SECRET;
-    if (!secret) return { status: 503 as const, target: null };
+    // Redirect lookup is an enhancement for legacy slugs. A missing cron
+    // secret must not make current public pages unavailable.
+    if (!secret) return { status: 200 as const, target: null };
     const resolutionUrl = new URL(
       '/api/internal/community/resolve-redirect',
       request.url
@@ -128,8 +139,6 @@ export async function proxy(request: NextRequest) {
     pathWithoutLocale.startsWith('/activity')
   ) {
     // Check if session cookie exists
-    const sessionCookie = getSessionCookie(request);
-
     // If no session token found, redirect to sign-in
     if (!sessionCookie) {
       const signInUrl = new URL(
@@ -152,23 +161,55 @@ export async function proxy(request: NextRequest) {
   intlResponse.headers.set('x-pathname', request.nextUrl.pathname);
   intlResponse.headers.set('x-url', request.url);
 
-  // Remove Set-Cookie from public pages to allow caching
-  // We exclude admin, settings, activity, and auth pages from this behavior
-  if (
-    !pathWithoutLocale.startsWith('/admin') &&
-    !pathWithoutLocale.startsWith('/settings') &&
-    !pathWithoutLocale.startsWith('/activity') &&
-    !pathWithoutLocale.startsWith('/sign-') &&
-    !pathWithoutLocale.startsWith('/auth')
-  ) {
-    intlResponse.headers.delete('Set-Cookie');
+  const overriddenRequestHeaders = new Set(
+    (intlResponse.headers.get('x-middleware-override-headers') || '')
+      .split(',')
+      .map((header) => header.trim())
+      .filter(Boolean)
+  );
+  overriddenRequestHeaders.add('x-pathname');
+  overriddenRequestHeaders.add('x-session-present');
+  intlResponse.headers.set(
+    'x-middleware-override-headers',
+    [...overriddenRequestHeaders].join(',')
+  );
+  intlResponse.headers.set(
+    'x-middleware-request-x-pathname',
+    request.nextUrl.pathname
+  );
+  intlResponse.headers.set(
+    'x-middleware-request-x-session-present',
+    sessionCookie ? '1' : '0'
+  );
 
-    // Cache-Control header for public pages
-    const cacheControl = 'public, s-maxage=3600, stale-while-revalidate=14400';
+  // Give authenticated public-page requests a distinct internal cache key.
+  // The browser URL remains unchanged, while anonymous HTML can be cached
+  // without ever serving that shell to a signed-in request.
+  if (isPublicContentPage && sessionCookie) {
+    const existingRewrite = intlResponse.headers.get('x-middleware-rewrite');
+    const workspaceUrl = existingRewrite
+      ? new URL(existingRewrite)
+      : request.nextUrl.clone();
+    workspaceUrl.searchParams.set('__workspace', '1');
+    intlResponse.headers.set('x-middleware-rewrite', workspaceUrl.toString());
+  }
+
+  // Only anonymous public content may enter shared cache. Session responses
+  // always remain private because their surrounding product shell is personal.
+  if (isPublicContentPage && !sessionCookie) {
+    intlResponse.headers.delete('Set-Cookie');
+    const cacheControl = 'public, s-maxage=300, stale-while-revalidate=1800';
 
     intlResponse.headers.set('Cache-Control', cacheControl);
     intlResponse.headers.set('CDN-Cache-Control', cacheControl);
     intlResponse.headers.set('Cloudflare-CDN-Cache-Control', cacheControl);
+  } else if (
+    !pathWithoutLocale.startsWith('/sign-') &&
+    !pathWithoutLocale.startsWith('/auth')
+  ) {
+    intlResponse.headers.set('Cache-Control', 'private, no-store');
+    intlResponse.headers.set('CDN-Cache-Control', 'no-store');
+    intlResponse.headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
   }
 
   // For all other routes (including /, /sign-in, /sign-up, /sign-out), just return the intl response

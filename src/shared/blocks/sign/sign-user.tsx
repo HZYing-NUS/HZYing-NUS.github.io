@@ -2,7 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
-import { Coins, LayoutDashboard, Loader2, LogOut, User } from 'lucide-react';
+import {
+  Coins,
+  ExternalLink,
+  LayoutDashboard,
+  Loader2,
+  LogOut,
+  User,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { authClient, signOut, useSession } from '@/core/auth/client';
@@ -168,6 +175,22 @@ export function SignUser({
                     {t('credits_title', {
                       credits: displayUser.credits?.remainingCredits || 0,
                     })}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+
+            {displayUser.publicUsername && (
+              <>
+                <DropdownMenuItem asChild>
+                  <Link
+                    className="w-full cursor-pointer"
+                    href={`/u/${displayUser.publicUsername}`}
+                    target="_blank"
+                  >
+                    <ExternalLink />
+                    {t('public_profile_title')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

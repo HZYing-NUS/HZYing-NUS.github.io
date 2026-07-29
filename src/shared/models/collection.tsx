@@ -32,6 +32,7 @@ type CollectionValues = Omit<
 >;
 
 type PublicResource = {
+  id: string;
   slug: string;
   nameZh: string;
   nameEn: string | null;
@@ -660,6 +661,7 @@ function toPublicResource(
   useCase: string;
 } {
   return {
+    id: item.id,
     slug: item.slug,
     nameZh: item.nameZh,
     nameEn: item.nameEn,

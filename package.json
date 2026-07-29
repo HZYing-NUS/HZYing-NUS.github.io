@@ -32,6 +32,7 @@
     "seed:platform": "tsx scripts/seed-platform-content.ts",
     "seed:ai-assistant": "tsx scripts/seed-ai-assistant.ts",
     "seed:legacy-profile": "tsx scripts/seed-legacy-profile.ts",
+    "migrate:legacy-about": "tsx scripts/migrate-legacy-about-to-community-profile.ts",
     "seed:legacy-posts": "tsx scripts/seed-legacy-posts.ts",
     "media:manifest": "tsx scripts/generate-legacy-media-manifest.ts",
     "media:migrate": "tsx scripts/migrate-legacy-media.ts",

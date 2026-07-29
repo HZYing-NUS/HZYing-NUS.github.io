@@ -3,9 +3,30 @@ import test from 'node:test';
 
 import {
   assertCommunityCommentParent,
+  escapeCommunityLikePattern,
   isActiveCommunityJobClaim,
   isUsernameUnavailable,
+  normalizeCommunityProfileSearchQuery,
 } from './community';
+
+test('public profile search normalizes user input without expanding the schema', () => {
+  assert.equal(
+    normalizeCommunityProfileSearchQuery('  Ｗｅｂ 开发  '),
+    'Web 开发'
+  );
+  assert.equal(normalizeCommunityProfileSearchQuery(), '');
+  assert.equal(
+    normalizeCommunityProfileSearchQuery('x'.repeat(120)).length,
+    100
+  );
+});
+
+test('public profile search treats SQL LIKE wildcards as literal text', () => {
+  assert.equal(
+    escapeCommunityLikePattern('100%_safe\\path'),
+    '100\\%\\_safe\\\\path'
+  );
+});
 
 test('username allocation rejects current, historical, and reserved names', () => {
   assert.equal(

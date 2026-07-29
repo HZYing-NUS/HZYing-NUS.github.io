@@ -5,8 +5,8 @@
     "avatar": "Avatar"
   },
   "edit": {
-    "title": "Profile",
-    "description": "Update your profile",
+    "title": "Account profile",
+    "description": "Update the name and avatar used by your account.",
     "crumbs": {
       "settings": "Settings",
       "profile": "Profile"

@@ -17,29 +17,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
+import {
+  safeInternalCallbackPath,
+  stripCallbackLocale,
+} from '@/shared/lib/auth-callback';
 
 const RESEND_COOLDOWN_SECONDS = 60;
-
-function safeDecodeCallbackUrl(raw?: string) {
-  if (!raw) return '/';
-  try {
-    const decoded = decodeURIComponent(raw);
-    // only allow internal redirects
-    if (decoded.startsWith('/')) return decoded;
-    return '/';
-  } catch {
-    return '/';
-  }
-}
-
-function stripLocalePrefix(path: string, locale: string) {
-  if (!path?.startsWith('/')) return '/';
-  if (locale === defaultLocale) return path;
-  if (path === `/${locale}`) return '/';
-  if (path.startsWith(`/${locale}/`))
-    return path.slice(locale.length + 1) || '/';
-  return path;
-}
 
 function getCooldownKey(email?: string) {
   return `verify-email:lastSentAt:${String(email || '').toLowerCase()}`;
@@ -83,9 +66,7 @@ export function VerifyEmailPage({
   const lastSessionCheckAtRef = useRef(0);
 
   const nextUrl = useMemo(() => {
-    const decoded = safeDecodeCallbackUrl(callbackUrl);
-    // i18n router will prefix locale automatically; store locale-less paths
-    return stripLocalePrefix(decoded, locale);
+    return stripCallbackLocale(safeInternalCallbackPath(callbackUrl), locale);
   }, [callbackUrl, locale]);
   const base = locale !== defaultLocale ? `/${locale}` : '';
   const signInPath = useMemo(() => {

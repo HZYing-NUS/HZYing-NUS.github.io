@@ -44,6 +44,7 @@ import { getUuid } from '@/shared/lib/hash';
 import {
   getCommunityCommentDepthForInsert,
   getCommunityPublicArticleConditions,
+  getCommunityPublicProfileConditions,
 } from '@/shared/models/community';
 
 import {
@@ -258,7 +259,10 @@ export async function listCommunityArticleComments({
     .from(communityComment)
     .leftJoin(
       communityUserProfile,
-      eq(communityComment.userId, communityUserProfile.userId)
+      and(
+        eq(communityComment.userId, communityUserProfile.userId),
+        ...getCommunityPublicProfileConditions()
+      )
     )
     .where(eq(communityComment.articleId, articleId))
     .orderBy(asc(communityComment.createdAt));
@@ -612,7 +616,7 @@ export async function setCommunityFollow({
       .where(
         and(
           eq(communityUserProfile.userId, followedId),
-          eq(communityUserProfile.isHidden, false)
+          ...getCommunityPublicProfileConditions()
         )
       )
       .limit(1);
@@ -1193,7 +1197,7 @@ export async function getPublicCommunityList(username: string, slug: string) {
     .where(
       and(
         eq(communityUserProfile.username, username.toLowerCase()),
-        eq(communityUserProfile.isHidden, false),
+        ...getCommunityPublicProfileConditions(),
         eq(communityUserList.slug, slug),
         eq(communityUserList.visibility, 'public'),
         eq(communityUserList.moderationStatus, 'published'),
@@ -1831,7 +1835,7 @@ export async function reportCommunityProfile({
       .where(
         and(
           eq(communityUserProfile.id, profileId),
-          eq(communityUserProfile.isHidden, false)
+          ...getCommunityPublicProfileConditions()
         )
       )
       .limit(1);

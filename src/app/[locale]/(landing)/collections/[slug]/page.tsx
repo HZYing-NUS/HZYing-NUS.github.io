@@ -14,8 +14,10 @@ import {
 import { setRequestLocale } from 'next-intl/server';
 
 import { envConfigs } from '@/config';
+import { CollectionProgress } from '@/shared/blocks/community/collection-progress';
 import { CommunityContentActions } from '@/shared/blocks/community/content-actions';
 import { getPublishedCollectionBySlug } from '@/shared/models/collection';
+import { getCollectionProgress } from '@/shared/models/collection-progress';
 import { getSignUser } from '@/shared/models/user';
 import { getCommunityInteractionState } from '@/shared/services/community/interactions';
 
@@ -64,6 +66,9 @@ export default async function CollectionDetailPage({
         targetId: collection.id,
       })
     : { liked: false, bookmarked: false };
+  const completedResourceIds = currentUser
+    ? await getCollectionProgress(currentUser.id, collection.id)
+    : [];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -75,8 +80,12 @@ export default async function CollectionDetailPage({
       '@type': 'HowToStep',
       position: position + 1,
       name: resource.stepTitle || resource.name,
-      text: resource.stepDescription,
-      url: `${envConfigs.app_url}${localePrefix}/resources/${resource.slug}`,
+      ...(currentUser
+        ? {
+            text: resource.stepDescription,
+            url: `${envConfigs.app_url}${localePrefix}/resources/${resource.slug}`,
+          }
+        : {}),
     })),
   };
 
@@ -138,14 +147,40 @@ export default async function CollectionDetailPage({
       </section>
 
       <div className="mx-auto max-w-6xl px-6">
-        {currentUser ? (
-          <CommunityContentActions
-            targetId={collection.id}
-            targetType="collection"
-            initialBookmarked={interactionState.bookmarked}
-            locale={locale}
-          />
-        ) : null}
+        <CommunityContentActions
+          targetId={collection.id}
+          targetType="collection"
+          canInteract={Boolean(currentUser)}
+          initialBookmarked={interactionState.bookmarked}
+          locale={locale}
+          callbackUrl={`/${locale}/collections/${collection.slug}`}
+          projectHref="/chat/projects"
+          aiHref={`/chat?question=${encodeURIComponent(
+            isZh
+              ? `我想执行行动专题「${collection.title}」，请结合专题内容帮我从第一步开始。`
+              : `I want to follow the action guide “${collection.title}”. Help me start with the first step.`
+          )}`}
+          restrictedActionLabel={
+            isZh ? '登录后收藏专题' : 'Sign in to bookmark'
+          }
+          restrictedActionDescription={
+            isZh
+              ? '专题介绍、目标和步骤目录可以直接查看。登录后可查看完整执行说明，并在项目或 AI 工作区中继续。'
+              : 'The overview, goals, and step directory are public. Sign in to see the full instructions and continue in a project or the AI workspace.'
+          }
+        />
+
+        <CollectionProgress
+          collectionId={collection.id}
+          callbackUrl={`/${locale}/collections/${collection.slug}`}
+          locale={locale}
+          initialCompletedResourceIds={completedResourceIds}
+          steps={collection.resources.map((resource) => ({
+            resourceId: resource.id,
+            title: resource.stepTitle || resource.name,
+            name: resource.name,
+          }))}
+        />
 
         <section className="mt-12 grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
           <div className="bg-muted/25 rounded-3xl border p-6 md:p-8">
@@ -209,7 +244,9 @@ export default async function CollectionDetailPage({
                     {String(index + 1).padStart(2, '0')}
                   </span>
 
-                  <div className="relative grid gap-8 lg:grid-cols-[230px_minmax(0,1fr)]">
+                  <div
+                    className={`relative grid gap-8 ${currentUser ? 'lg:grid-cols-[230px_minmax(0,1fr)]' : ''}`}
+                  >
                     <div>
                       <p className="text-muted-foreground text-xs font-semibold tracking-[0.16em] uppercase">
                         {resource.relationType === 'alternative'
@@ -226,57 +263,81 @@ export default async function CollectionDetailPage({
                       <p className="text-muted-foreground mt-3 text-sm leading-6">
                         {resource.name}
                       </p>
-                      <Link
-                        href={`/${locale}/resources/${resource.slug}`}
-                        className="text-primary mt-5 inline-flex items-center gap-2 text-sm font-semibold"
-                      >
-                        {isZh ? '查看资源说明' : 'View resource guidance'}
-                        <IconExternalLink
-                          className="size-4"
-                          aria-hidden="true"
-                        />
-                      </Link>
+                      {currentUser ? (
+                        <Link
+                          href={`/${locale}/resources/${resource.slug}`}
+                          className="text-primary mt-5 inline-flex items-center gap-2 text-sm font-semibold"
+                        >
+                          {isZh ? '查看资源说明' : 'View resource guidance'}
+                          <IconExternalLink
+                            className="size-4"
+                            aria-hidden="true"
+                          />
+                        </Link>
+                      ) : null}
                     </div>
 
-                    <dl className="grid gap-5 sm:grid-cols-2">
-                      {stepParts.map((part) => (
-                        <div
-                          key={part.label}
-                          className="bg-muted/25 rounded-2xl p-5"
-                        >
-                          <dt className="text-sm font-semibold">
-                            {part.label}
-                          </dt>
-                          <dd className="text-muted-foreground mt-2 text-sm leading-6">
-                            {part.value}
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
+                    {currentUser ? (
+                      <dl className="grid gap-5 sm:grid-cols-2">
+                        {stepParts.map((part) => (
+                          <div
+                            key={part.label}
+                            className="bg-muted/25 rounded-2xl p-5"
+                          >
+                            <dt className="text-sm font-semibold">
+                              {part.label}
+                            </dt>
+                            <dd className="text-muted-foreground mt-2 text-sm leading-6">
+                              {part.value}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    ) : null}
                   </div>
                 </li>
               );
             })}
           </ol>
+          {!currentUser ? (
+            <div className="bg-muted/30 mt-6 rounded-3xl border border-dashed p-7 text-center">
+              <p className="font-semibold">
+                {isZh
+                  ? '登录后查看每一步的动作、产出与通过标准'
+                  : 'Sign in to see the action, output, and pass criteria for every step'}
+              </p>
+              <p className="text-muted-foreground mt-2 text-sm leading-6">
+                {isZh
+                  ? '登录不会离开当前专题，完成后会返回这里。'
+                  : 'After signing in, you will return to this guide.'}
+              </p>
+            </div>
+          ) : null}
         </section>
 
-        <section className="mt-14 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border p-6 md:p-8">
-            <div className="flex items-center gap-2 font-semibold">
-              <IconRoute className="text-primary size-5" aria-hidden="true" />
-              {isZh ? '你会得到' : 'What you will have'}
+        {currentUser ? (
+          <section className="mt-14 grid gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl border p-6 md:p-8">
+              <div className="flex items-center gap-2 font-semibold">
+                <IconRoute className="text-primary size-5" aria-hidden="true" />
+                {isZh ? '你会得到' : 'What you will have'}
+              </div>
+              <InfoList items={collection.deliverables} checked />
             </div>
-            <InfoList items={collection.deliverables} checked />
-          </div>
 
-          <div className="bg-foreground text-background rounded-3xl p-6 md:p-8">
-            <div className="flex items-center gap-2 font-semibold">
-              <IconCheck className="size-5" aria-hidden="true" />
-              {isZh ? '完成标准' : 'Completion criteria'}
+            <div className="bg-foreground text-background rounded-3xl p-6 md:p-8">
+              <div className="flex items-center gap-2 font-semibold">
+                <IconCheck className="size-5" aria-hidden="true" />
+                {isZh ? '完成标准' : 'Completion criteria'}
+              </div>
+              <InfoList
+                items={collection.completionCriteria}
+                checked
+                inverted
+              />
             </div>
-            <InfoList items={collection.completionCriteria} checked inverted />
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         {collection.nextSlug && collection.nextTitle ? (
           <section className="mt-14 border-t pt-10">

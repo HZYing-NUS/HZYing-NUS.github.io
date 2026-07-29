@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
   buildCommunityPermanentRedirectPath,
   getCommunityArticleHttpStatus,
+  isCommunityProfilePublic,
   resolveCommunityRedirectLookupResponse,
   resolveCommunityVisibilityResponse,
 } from './public-visibility';
@@ -96,6 +97,50 @@ test('community article visibility returns real public status decisions', () => 
       now
     ),
     404
+  );
+});
+
+test('community profile visibility requires its published revision and ignores draft state', () => {
+  const publishedRevision = {
+    id: 'revision-1',
+    profileId: 'profile-1',
+    moderationStatus: 'published',
+  };
+  assert.equal(
+    isCommunityProfilePublic({
+      id: 'profile-1',
+      isHidden: false,
+      currentPublishedRevisionId: 'revision-1',
+      publishedRevision,
+    }),
+    true
+  );
+  assert.equal(
+    isCommunityProfilePublic({
+      id: 'profile-1',
+      isHidden: true,
+      currentPublishedRevisionId: 'revision-1',
+      publishedRevision,
+    }),
+    false
+  );
+  assert.equal(
+    isCommunityProfilePublic({
+      id: 'profile-1',
+      isHidden: false,
+      currentPublishedRevisionId: null,
+      publishedRevision: null,
+    }),
+    false
+  );
+  assert.equal(
+    isCommunityProfilePublic({
+      id: 'profile-1',
+      isHidden: false,
+      currentPublishedRevisionId: 'revision-1',
+      publishedRevision: { ...publishedRevision, moderationStatus: 'draft' },
+    }),
+    false
   );
 });
 

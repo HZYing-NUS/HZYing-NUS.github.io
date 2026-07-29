@@ -5,8 +5,8 @@
     "avatar": "头像"
   },
   "edit": {
-    "title": "个人资料",
-    "description": "更新你的个人资料",
+    "title": "账户资料",
+    "description": "更新登录账户使用的名称和头像。",
     "crumbs": {
       "settings": "设置",
       "profile": "个人资料"

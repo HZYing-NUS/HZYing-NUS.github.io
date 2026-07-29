@@ -52,13 +52,55 @@ export type PublicCommunityArticleRow = {
   };
 };
 
+export type PublicCommunityProfileRow = {
+  id: string;
+  userId: string;
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
+  headline: string | null;
+  aboutZh: string | null;
+  aboutEn: string | null;
+  skills: unknown;
+  focusAreas: unknown;
+  publishedAt: Date | null;
+  articleCount: number;
+};
+
 export function getCommunityPublicArticleConditions() {
   return [
     isNotNull(communityBlogArticle.currentPublishedRevisionId),
+    sql`exists (
+      select 1 from ${communityArticleRevision} public_article_revision
+      where public_article_revision.id = ${communityBlogArticle.currentPublishedRevisionId}
+        and public_article_revision.article_id = ${communityBlogArticle.id}
+        and public_article_revision.review_status = 'published'
+    )`,
     isNull(communityBlogArticle.deletedAt),
     isNull(communityBlogArticle.archivedAt),
     ne(communityBlogArticle.status, 'archived'),
   ];
+}
+
+export function getCommunityPublicProfileConditions() {
+  return [
+    eq(communityUserProfile.isHidden, false),
+    isNotNull(communityUserProfile.currentPublishedRevisionId),
+    sql`exists (
+      select 1 from ${communityProfileRevision} public_profile_revision
+      where public_profile_revision.id = ${communityUserProfile.currentPublishedRevisionId}
+        and public_profile_revision.profile_id = ${communityUserProfile.id}
+        and public_profile_revision.moderation_status = 'published'
+    )`,
+  ];
+}
+
+export function normalizeCommunityProfileSearchQuery(query?: string) {
+  return query?.normalize('NFKC').trim().slice(0, 100) || '';
+}
+
+export function escapeCommunityLikePattern(value: string) {
+  return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
 }
 
 export function isUsernameUnavailable({
@@ -248,13 +290,15 @@ export async function findPublicCommunityProfile(username: string) {
       aboutEn: communityProfileRevision.aboutEn,
       experience: communityProfileRevision.experience,
       skills: communityProfileRevision.skills,
+      works: communityProfileRevision.works,
+      focusAreas: communityProfileRevision.focusAreas,
       region: communityProfileRevision.region,
       websiteUrl: communityProfileRevision.websiteUrl,
       socialLinks: communityProfileRevision.socialLinks,
       publishedAt: communityProfileRevision.publishedAt,
     })
     .from(communityUserProfile)
-    .leftJoin(
+    .innerJoin(
       communityProfileRevision,
       and(
         eq(
@@ -268,7 +312,7 @@ export async function findPublicCommunityProfile(username: string) {
     .where(
       and(
         eq(communityUserProfile.username, username.toLowerCase()),
-        eq(communityUserProfile.isHidden, false)
+        ...getCommunityPublicProfileConditions()
       )
     )
     .limit(1);
@@ -282,24 +326,110 @@ export async function listIndexableCommunityProfiles(limit = 500) {
       updatedAt: communityUserProfile.updatedAt,
     })
     .from(communityUserProfile)
-    .where(
+    .innerJoin(
+      communityProfileRevision,
       and(
-        eq(communityUserProfile.isHidden, false),
-        or(
-          isNotNull(communityUserProfile.currentPublishedRevisionId),
-          sql`exists (
-            select 1 from ${communityBlogArticle}
-            where ${communityBlogArticle.authorId} = ${communityUserProfile.userId}
-              and ${communityBlogArticle.currentPublishedRevisionId} is not null
-              and ${communityBlogArticle.deletedAt} is null
-              and ${communityBlogArticle.archivedAt} is null
-              and ${communityBlogArticle.status} <> 'archived'
-          )`
-        )
+        eq(
+          communityUserProfile.currentPublishedRevisionId,
+          communityProfileRevision.id
+        ),
+        eq(communityProfileRevision.profileId, communityUserProfile.id),
+        eq(communityProfileRevision.moderationStatus, 'published')
       )
     )
+    .where(and(...getCommunityPublicProfileConditions()))
     .orderBy(desc(communityUserProfile.updatedAt))
     .limit(limit);
+}
+
+export async function listPublicCommunityProfiles({
+  query,
+  limit = 50,
+  offset = 0,
+}: {
+  query?: string;
+  limit?: number;
+  offset?: number;
+} = {}): Promise<PublicCommunityProfileRow[]> {
+  const normalizedQuery = normalizeCommunityProfileSearchQuery(query);
+  const pattern = `%${escapeCommunityLikePattern(normalizedQuery)}%`;
+
+  return db()
+    .select({
+      id: communityUserProfile.id,
+      userId: communityUserProfile.userId,
+      username: communityUserProfile.username,
+      displayName: communityProfileRevision.displayName,
+      avatarUrl: communityProfileRevision.avatarUrl,
+      headline: communityProfileRevision.headline,
+      aboutZh: communityProfileRevision.aboutZh,
+      aboutEn: communityProfileRevision.aboutEn,
+      skills: communityProfileRevision.skills,
+      focusAreas: communityProfileRevision.focusAreas,
+      publishedAt: communityProfileRevision.publishedAt,
+      articleCount: sql<number>`(
+        select count(*)::int
+        from ${communityBlogArticle} public_profile_article
+        where public_profile_article.author_id = ${communityUserProfile.userId}
+          and public_profile_article.current_published_revision_id is not null
+          and exists (
+            select 1
+            from ${communityArticleRevision} public_profile_article_revision
+            where public_profile_article_revision.id = public_profile_article.current_published_revision_id
+              and public_profile_article_revision.article_id = public_profile_article.id
+              and public_profile_article_revision.review_status = 'published'
+          )
+          and public_profile_article.deleted_at is null
+          and public_profile_article.archived_at is null
+          and public_profile_article.status <> 'archived'
+      )`,
+    })
+    .from(communityUserProfile)
+    .innerJoin(
+      communityProfileRevision,
+      and(
+        eq(
+          communityUserProfile.currentPublishedRevisionId,
+          communityProfileRevision.id
+        ),
+        eq(communityProfileRevision.profileId, communityUserProfile.id),
+        eq(communityProfileRevision.moderationStatus, 'published')
+      )
+    )
+    .where(
+      and(
+        ...getCommunityPublicProfileConditions(),
+        normalizedQuery
+          ? or(
+              sql`${communityUserProfile.username} ilike ${pattern} escape '\\'`,
+              sql`${communityProfileRevision.displayName} ilike ${pattern} escape '\\'`,
+              sql`${communityProfileRevision.headline} ilike ${pattern} escape '\\'`,
+              sql`${communityProfileRevision.aboutZh} ilike ${pattern} escape '\\'`,
+              sql`${communityProfileRevision.aboutEn} ilike ${pattern} escape '\\'`,
+              sql`exists (
+                select 1
+                from jsonb_array_elements_text(
+                  coalesce(${communityProfileRevision.skills}, '[]'::jsonb)
+                ) public_profile_skill(value)
+                where public_profile_skill.value ilike ${pattern} escape '\\'
+              )`,
+              sql`exists (
+                select 1
+                from jsonb_array_elements_text(
+                  coalesce(${communityProfileRevision.focusAreas}, '[]'::jsonb)
+                ) public_profile_focus_area(value)
+                where public_profile_focus_area.value ilike ${pattern} escape '\\'
+              )`
+            )
+          : undefined
+      )
+    )
+    .orderBy(
+      desc(communityProfileRevision.publishedAt),
+      desc(communityUserProfile.updatedAt)
+    )
+    .limit(Math.min(Math.max(limit, 1), 100))
+    .offset(Math.max(offset, 0));
 }
 
 export async function listPublishedCommunityArticles({
@@ -353,7 +483,7 @@ export async function listPublishedCommunityArticles({
       communityUserProfile,
       and(
         eq(communityBlogArticle.authorId, communityUserProfile.userId),
-        eq(communityUserProfile.isHidden, false)
+        ...getCommunityPublicProfileConditions()
       )
     )
     .where(
@@ -403,7 +533,7 @@ export async function findPublishedCommunityArticle(slug: string) {
       communityUserProfile,
       and(
         eq(communityBlogArticle.authorId, communityUserProfile.userId),
-        eq(communityUserProfile.isHidden, false)
+        ...getCommunityPublicProfileConditions()
       )
     )
     .where(eq(communityBlogArticle.slug, slug))
@@ -789,7 +919,7 @@ export async function getPublicCommunityProfileContent(userId: string) {
                 eq(communityUserList.visibility, 'public'),
                 eq(communityUserList.moderationStatus, 'published'),
                 isNull(communityUserList.deletedAt),
-                eq(communityUserProfile.isHidden, false)
+                ...getCommunityPublicProfileConditions()
               )
             ),
         ]).then((groups) => groups.flat())
@@ -808,7 +938,7 @@ export async function getPublicCommunityProfileContent(userId: string) {
           .where(
             and(
               eq(communityFollow.followerId, userId),
-              eq(communityUserProfile.isHidden, false)
+              ...getCommunityPublicProfileConditions()
             )
           )
       : Promise.resolve([]),
@@ -826,7 +956,7 @@ export async function getPublicCommunityProfileContent(userId: string) {
           .where(
             and(
               eq(communityFollow.followedId, userId),
-              eq(communityUserProfile.isHidden, false)
+              ...getCommunityPublicProfileConditions()
             )
           )
       : Promise.resolve([]),

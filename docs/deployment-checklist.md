@@ -77,6 +77,11 @@ This project reuses ShipAny's existing better-auth, database, storage, and chat 
 - Seed Profile: `CONFIRM_LEGACY_PROFILE_SEED=1 pnpm seed:legacy-profile -- --env=<environment-file> --apply`
 - Seed legacy posts under an existing administrator account: `CONFIRM_LEGACY_POSTS_SEED=1 pnpm seed:legacy-posts -- --env=<environment-file> --author-email=<existing-admin-email> --apply`
 - All seed scripts are insert-only. Re-running them preserves editor-managed rows and reports skipped counts.
+- Apply the WebTools workspace/profile migrations in order with `CI=true corepack pnpm@10 db:migrate`: `0012_cuddly_goblin_queen.sql`, `0013_creator_works_focus_areas.sql`, then `0014_collection_step_progress.sql`. Review the generated SQL and migration journal before running against Production; do not use `db:push` for this release.
+- Confirm the About owner before redirecting: production currently uses user email `huangziying622@gmail.com` and public username `hzying-nus-aa1c94` (read-only verification on 2026-07-29). Do not set `COMMUNITY_ABOUT_USERNAME` until that profile has a published, non-hidden revision.
+- After the schema migrations are applied, preview the draft migration with `pnpm migrate:legacy-about --env=<environment-file> --user-id=<target-user-id> --username=<public-username>`. The command is dry-run by default.
+- Only after reviewing the preview, create a draft with `CONFIRM_LEGACY_ABOUT_MIGRATION=1 pnpm migrate:legacy-about --env=<environment-file> --user-id=<target-user-id> --username=<public-username> --apply`. Review and submit the draft through `/settings/profile`; never publish this migration directly from a script.
+- After moderation publishes the revision, set `COMMUNITY_ABOUT_USERNAME=<public-username>` in the matching Vercel environment and redeploy. Verify `/about` returns a permanent redirect to `/u/<public-username>` and the target page is publicly visible before hiding the legacy About navigation.
 
 ## Post-deploy Acceptance
 

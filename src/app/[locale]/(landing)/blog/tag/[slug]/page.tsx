@@ -71,36 +71,53 @@ export default async function TagBlogPage({
       </Link>
       <h1 className="mt-4 text-4xl font-semibold">#{slug}</h1>
       <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {community.map(({ article, revision, profile }) => (
-          <Link
-            key={article.id}
-            href={`/blog/${article.slug}`}
-            className="rounded-2xl border p-5"
-          >
-            <h2 className="text-xl font-semibold">
-              {locale === 'zh' ? revision.titleZh : revision.titleEn}
-            </h2>
-            <p className="text-muted-foreground mt-3 line-clamp-3 text-sm">
-              {locale === 'zh' ? revision.summaryZh : revision.summaryEn}
-            </p>
-            <p className="text-muted-foreground mt-5 text-xs">
-              {profile?.displayName ||
-                profile?.username ||
-                (locale === 'zh' ? '社区作者' : 'Community author')}
-            </p>
-          </Link>
-        ))}
+        {community.map(({ article, revision, profile }) => {
+          const author =
+            profile?.displayName ||
+            profile?.username ||
+            (locale === 'zh' ? '社区作者' : 'Community author');
+          return (
+            <article key={article.id} className="rounded-2xl border p-5">
+              <Link href={`/blog/${article.slug}`}>
+                <h2 className="text-xl font-semibold">
+                  {locale === 'zh' ? revision.titleZh : revision.titleEn}
+                </h2>
+                <p className="text-muted-foreground mt-3 line-clamp-3 text-sm">
+                  {locale === 'zh' ? revision.summaryZh : revision.summaryEn}
+                </p>
+              </Link>
+              {profile?.username ? (
+                <Link
+                  href={`/u/${profile.username}`}
+                  className="text-primary mt-5 inline-flex text-xs font-medium hover:underline"
+                >
+                  {author} · {locale === 'zh' ? '查看主页' : 'View profile'}
+                </Link>
+              ) : (
+                <p className="text-muted-foreground mt-5 text-xs">{author}</p>
+              )}
+            </article>
+          );
+        })}
         {legacy.map((post) => (
-          <Link
-            key={`legacy:${post.id}`}
-            href={`/blog/${post.slug}`}
-            className="rounded-2xl border p-5"
-          >
-            <h2 className="text-xl font-semibold">{post.title}</h2>
-            <p className="text-muted-foreground mt-3 line-clamp-3 text-sm">
-              {post.description}
-            </p>
-          </Link>
+          <article key={`legacy:${post.id}`} className="rounded-2xl border p-5">
+            <Link href={`/blog/${post.slug}`}>
+              <h2 className="text-xl font-semibold">{post.title}</h2>
+              <p className="text-muted-foreground mt-3 line-clamp-3 text-sm">
+                {post.description}
+              </p>
+            </Link>
+            <Link
+              href={
+                envConfigs.community_about_username
+                  ? `/u/${envConfigs.community_about_username}`
+                  : '/about'
+              }
+              className="text-primary mt-5 inline-flex text-xs font-medium hover:underline"
+            >
+              {locale === 'zh' ? '查看作者主页' : 'View author profile'}
+            </Link>
+          </article>
         ))}
       </div>
     </main>

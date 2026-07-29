@@ -2,6 +2,8 @@
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 
+import { Link } from '@/core/i18n/navigation';
+
 type CommentRow = {
   comment: {
     id: string;
@@ -14,6 +16,7 @@ type CommentRow = {
   };
   username: string | null;
   displayName: string | null;
+  avatarUrl: string | null;
   likeCount: number;
   liked: boolean;
 };
@@ -256,10 +259,36 @@ function CommentContent({ row, zh }: { row: CommentRow; zh: boolean }) {
     reported: zh ? '已举报平台' : 'Reported',
     closed_unhandled: zh ? '作者未处理' : 'Closed without action',
   };
+  const authorName = row.displayName || row.username || (zh ? '用户' : 'User');
+  const author = row.username ? (
+    <Link
+      href={`/u/${row.username}`}
+      aria-label={`${zh ? '查看主页' : 'View profile'} ${authorName}`}
+      className="hover:text-primary inline-flex items-center gap-2 transition-colors"
+    >
+      {row.avatarUrl ? (
+        <img
+          src={row.avatarUrl}
+          alt={authorName}
+          className="size-7 rounded-md object-cover"
+        />
+      ) : (
+        <span className="bg-primary/10 text-primary flex size-7 items-center justify-center rounded-md text-xs font-semibold">
+          {authorName.charAt(0).toUpperCase()}
+        </span>
+      )}
+      <span>{authorName}</span>
+      <span className="text-primary text-xs font-normal">
+        {zh ? '查看主页' : 'View profile'}
+      </span>
+    </Link>
+  ) : (
+    authorName
+  );
   return (
     <div>
       <p className="text-sm font-medium">
-        {row.displayName || row.username || (zh ? '用户' : 'User')}
+        {author}
         {row.comment.featured && (
           <span className="ml-2 text-xs">{zh ? '精选' : 'Featured'}</span>
         )}

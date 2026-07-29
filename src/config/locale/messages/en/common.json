@@ -29,6 +29,7 @@
     "name_placeholder": "Input your name here",
     "email_verification_hint": "Use an email address you can access. You must verify your email after signing up.",
     "admin_title": "Admin System",
+    "public_profile_title": "My public profile",
     "credits_title": "Credits: {credits}",
     "verify_email_sent": "Verification email sent. Please check your inbox.",
     "verify_email_required": "Please verify your email address before signing in.",

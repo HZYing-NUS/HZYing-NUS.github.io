@@ -9,6 +9,10 @@ import { signIn } from '@/core/auth/client';
 import { defaultLocale } from '@/config/locale';
 import { Button } from '@/shared/components/ui/button';
 import { useAppContext } from '@/shared/contexts/app';
+import {
+  localizeCallbackPath,
+  safeInternalCallbackPath,
+} from '@/shared/lib/auth-callback';
 import { cn } from '@/shared/lib/utils';
 import { Button as ButtonType } from '@/shared/types/blocks/common';
 
@@ -30,15 +34,10 @@ export function SocialProviders({
   const popupRef = useRef<Window | null>(null);
   const popupTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  if (callbackUrl) {
-    if (
-      locale !== defaultLocale &&
-      callbackUrl.startsWith('/') &&
-      !callbackUrl.startsWith(`/${locale}`)
-    ) {
-      callbackUrl = `/${locale}${callbackUrl}`;
-    }
-  }
+  callbackUrl = localizeCallbackPath(
+    safeInternalCallbackPath(callbackUrl),
+    locale
+  );
 
   const cleanupPopup = useCallback(() => {
     if (popupTimerRef.current) {
@@ -51,9 +50,8 @@ export function SocialProviders({
   const handleAuthCallback = useCallback(() => {
     cleanupPopup();
     setIsShowSignModal(false);
-    // Hard reload the page so the browser picks up the new session cookie
-    window.location.reload();
-  }, [cleanupPopup, setIsShowSignModal]);
+    window.location.assign(callbackUrl);
+  }, [callbackUrl, cleanupPopup, setIsShowSignModal]);
 
   // Listen for localStorage event from the popup callback page
   // (works even when COOP blocks window.opener / postMessage)
@@ -97,7 +95,10 @@ export function SocialProviders({
         { provider, callbackURL: callbackUrl },
         {
           onRequest: () => setLoading(true),
-          onSuccess: () => setIsShowSignModal(false),
+          onSuccess: () => {
+            setIsShowSignModal(false);
+            window.location.assign(callbackUrl);
+          },
           onError: (e: any) => {
             toast.error(e?.error?.message || 'Sign in failed');
             setLoading(false);

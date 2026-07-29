@@ -11,7 +11,6 @@ import { useChatContext } from '@/shared/contexts/chat';
 import { Chat } from '@/shared/types/chat';
 
 import { FollowUp } from './follow-up';
-import { ChatHeader } from './header';
 import { ChatMessages } from './messages';
 
 export function ChatBox({
@@ -107,8 +106,7 @@ export function ChatBox({
   const showIntroduction = !initialMessages?.length;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
-      <ChatHeader />
+    <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
           {showIntroduction ? (

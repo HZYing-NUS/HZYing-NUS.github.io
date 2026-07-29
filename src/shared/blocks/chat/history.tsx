@@ -7,13 +7,12 @@ import moment from 'moment';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { Link, usePathname, useRouter } from '@/core/i18n/navigation';
-import { LocaleSelector, Pagination } from '@/shared/blocks/common';
+import { Pagination } from '@/shared/blocks/common';
 import { Empty } from '@/shared/blocks/common/empty';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
-import { SidebarTrigger } from '@/shared/components/ui/sidebar';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useAppContext } from '@/shared/contexts/app';
 
@@ -306,12 +305,7 @@ export function ChatHistory() {
   const showFooter = user && !loading && chats.length > 0;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
-      <header className="bg-background sticky top-0 z-10 flex w-full items-center gap-2 px-4 py-3">
-        <SidebarTrigger className="size-7" />
-        <div className="flex-1" />
-        <LocaleSelector />
-      </header>
+    <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto px-6 py-4">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
           <div className="flex flex-col gap-2">

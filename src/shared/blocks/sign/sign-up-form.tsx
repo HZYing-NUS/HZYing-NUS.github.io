@@ -12,6 +12,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useAppContext } from '@/shared/contexts/app';
+import {
+  localizeCallbackPath,
+  safeInternalCallbackPath,
+  stripCallbackLocale,
+} from '@/shared/lib/auth-callback';
 
 import { SocialProviders } from './social-providers';
 
@@ -33,7 +38,8 @@ export function SignUpForm({
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { configs, setIsShowSignModal, setUser, fetchUserInfo } = useAppContext();
+  const { configs, setIsShowSignModal, setUser, fetchUserInfo } =
+    useAppContext();
 
   const isGoogleAuthEnabled = configs.google_auth_enabled === 'true';
   const isGithubAuthEnabled = configs.github_auth_enabled === 'true';
@@ -43,25 +49,12 @@ export function SignUpForm({
   const emailVerificationEnabled =
     configs.email_verification_enabled === 'true';
 
-  if (callbackUrl) {
-    if (
-      locale !== defaultLocale &&
-      callbackUrl.startsWith('/') &&
-      !callbackUrl.startsWith(`/${locale}`)
-    ) {
-      callbackUrl = `/${locale}${callbackUrl}`;
-    }
-  }
+  callbackUrl = localizeCallbackPath(
+    safeInternalCallbackPath(callbackUrl),
+    locale
+  );
 
   const base = locale !== defaultLocale ? `/${locale}` : '';
-  const stripLocalePrefix = (path: string) => {
-    if (!path?.startsWith('/')) return '/';
-    if (locale === defaultLocale) return path;
-    if (path === `/${locale}`) return '/';
-    if (path.startsWith(`/${locale}/`))
-      return path.slice(locale.length + 1) || '/';
-    return path;
-  };
 
   const reportAffiliate = ({
     userEmail,
@@ -103,7 +96,7 @@ export function SignUpForm({
           email,
           password,
           name,
-          callbackURL: `${base}${stripLocalePrefix(callbackUrl) || '/'}`,
+          callbackURL: callbackUrl,
         },
         {
           onRequest: () => {},
@@ -112,7 +105,10 @@ export function SignUpForm({
             reportAffiliate({ userEmail: email });
 
             if (emailVerificationEnabled) {
-              const normalizedCallbackUrl = stripLocalePrefix(callbackUrl);
+              const normalizedCallbackUrl = stripCallbackLocale(
+                callbackUrl,
+                locale
+              );
               const verifyPath = `/verify-email?sent=1&email=${encodeURIComponent(
                 email
               )}&callbackUrl=${encodeURIComponent(normalizedCallbackUrl)}`;
@@ -132,7 +128,7 @@ export function SignUpForm({
             } catch {}
             setIsShowSignModal(false);
             setLoading(false);
-            router.refresh();
+            window.location.assign(callbackUrl);
           },
           onError: (e: any) => {
             const errorCode = e?.error?.code || '';
@@ -144,23 +140,31 @@ export function SignUpForm({
             if (emailVerificationEnabled && isExistingUser) {
               void (async () => {
                 try {
-                  const statusResponse = await fetch('/api/user/is-email-verified', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email }),
-                  });
+                  const statusResponse = await fetch(
+                    '/api/user/is-email-verified',
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email }),
+                    }
+                  );
                   const statusResult = await statusResponse.json();
                   const status = statusResult?.data;
 
                   if (!status?.emailVerified) {
-                    const normalizedCallbackUrl = stripLocalePrefix(callbackUrl);
+                    const normalizedCallbackUrl = stripCallbackLocale(
+                      callbackUrl,
+                      locale
+                    );
                     const verifyPath = `/verify-email?sent=1&email=${encodeURIComponent(
                       email
                     )}&callbackUrl=${encodeURIComponent(normalizedCallbackUrl)}`;
-                    const resendResult = await authClient.sendVerificationEmail({
-                      email,
-                      callbackURL: `${base}${normalizedCallbackUrl || '/'}`,
-                    });
+                    const resendResult = await authClient.sendVerificationEmail(
+                      {
+                        email,
+                        callbackURL: `${base}${normalizedCallbackUrl || '/'}`,
+                      }
+                    );
                     if (resendResult?.error) {
                       throw new Error(resendResult.error.message);
                     }
@@ -170,7 +174,9 @@ export function SignUpForm({
                     return;
                   }
                 } catch (error: any) {
-                  toast.error(error?.message || 'send verification email failed');
+                  toast.error(
+                    error?.message || 'send verification email failed'
+                  );
                   setLoading(false);
                   return;
                 }
@@ -230,7 +236,7 @@ export function SignUpForm({
                 value={email}
               />
               {emailVerificationEnabled && (
-                <p className="text-amber-600 text-xs">
+                <p className="text-xs text-amber-600">
                   {t('email_verification_hint')}
                 </p>
               )}

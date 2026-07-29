@@ -33,6 +33,18 @@
     "contributeDescription": "把你做 Web 产品时踩过的坑、跑通的方法和真实复盘分享给更多创作者。",
     "startWriting": "开始写作",
     "ranking": "精选文章榜",
-    "rankingHint": "近期"
+    "rankingHint": "近期",
+    "contentType": "博客内容类型",
+    "articles": "文章",
+    "authors": "作者",
+    "authorDirectory": "发现作者",
+    "authorDirectoryDescription": "浏览已经主动发布并通过审核的作者主页，无需先发布文章也能被发现。",
+    "searchAuthors": "搜索姓名、用户名、介绍或技能",
+    "search": "搜索",
+    "articleCount": "{count} 篇文章",
+    "previousPage": "上一页",
+    "nextPage": "下一页",
+    "noAuthorsFound": "没有找到匹配的作者，换一个关键词试试。",
+    "noPublishedAuthors": "暂无已公开的作者主页。"
   }
 }

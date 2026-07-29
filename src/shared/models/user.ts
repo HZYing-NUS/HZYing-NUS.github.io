@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { headers } from 'next/headers';
-import { and, count, desc, eq, inArray, lt } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNotNull, lt } from 'drizzle-orm';
 
 import { getAuth } from '@/core/auth';
 import { db } from '@/core/db';
-import { account, user } from '@/config/db/schema';
+import { account, communityUserProfile, user } from '@/config/db/schema';
 
 import { Permission, Role } from '../services/rbac';
 import { getRemainingCredits } from './credit';
@@ -16,6 +16,7 @@ export interface UserCredits {
 
 export type User = typeof user.$inferSelect & {
   isAdmin?: boolean;
+  publicUsername?: string | null;
   credits?: UserCredits;
   roles?: Role[];
   permissions?: Permission[];
@@ -80,6 +81,22 @@ export async function getUserInfo() {
   const signUser = await getSignUser();
 
   return signUser;
+}
+
+export async function getUserPublicUsername(userId: string) {
+  const [profile] = await db()
+    .select({ username: communityUserProfile.username })
+    .from(communityUserProfile)
+    .where(
+      and(
+        eq(communityUserProfile.userId, userId),
+        eq(communityUserProfile.isHidden, false),
+        isNotNull(communityUserProfile.currentPublishedRevisionId)
+      )
+    )
+    .limit(1);
+
+  return profile?.username || null;
 }
 
 export async function getUserCredits(userId: string) {

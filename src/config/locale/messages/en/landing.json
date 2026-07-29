@@ -14,6 +14,11 @@
     "nav": {
       "items": [
         {
+          "title": "Home",
+          "url": "/",
+          "icon": "House"
+        },
+        {
           "title": "Resources",
           "url": "/resources",
           "icon": "Box"
@@ -27,21 +32,6 @@
           "title": "Articles",
           "url": "/blog",
           "icon": "Newspaper"
-        },
-        {
-          "title": "Submit",
-          "url": "/submit",
-          "icon": "Send"
-        },
-        {
-          "title": "About",
-          "url": "/about",
-          "icon": "User"
-        },
-        {
-          "title": "AI Assistant",
-          "url": "/chat",
-          "icon": "RiMessage2Line"
         }
       ]
     },
@@ -126,11 +116,6 @@
             {
               "title": "AI Assistant",
               "url": "/chat",
-              "target": "_self"
-            },
-            {
-              "title": "About Ziying",
-              "url": "/about",
               "target": "_self"
             }
           ]

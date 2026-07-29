@@ -1,16 +1,16 @@
 import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 
-import { envConfigs } from '@/config';
+import { PublicProfileCard } from '@/shared/blocks/community/public-profile-card';
 import { getMetadata } from '@/shared/lib/seo';
 import { getPublishedCollections } from '@/shared/models/collection';
+import { listPublicCommunityProfiles } from '@/shared/models/community';
 import { searchPublishedPosts } from '@/shared/models/post';
-import { getPublishedProfile } from '@/shared/models/profile';
 import { getPublishedResources } from '@/shared/models/resource';
 
 export const generateMetadata = getMetadata({
   title: '搜索',
-  description: '搜索资源、专题、文章和关于我。',
+  description: '搜索资源、专题、文章和公开作者。',
   canonicalUrl: '/search',
 });
 
@@ -26,18 +26,12 @@ export default async function SearchPage({
   setRequestLocale(locale);
   const isZh = locale === 'zh';
   const keyword = q.trim().toLowerCase();
-  const [resources, allCollections, posts, profile] = await Promise.all([
+  const [resources, allCollections, posts, profiles] = await Promise.all([
     getPublishedResources({ locale, query: keyword }),
     getPublishedCollections(locale),
     searchPublishedPosts({ locale, query: keyword }),
-    envConfigs.community_about_username
-      ? Promise.resolve(null)
-      : getPublishedProfile(locale),
+    listPublicCommunityProfiles({ query: q, limit: 24 }),
   ]);
-  const profileMatches = Boolean(
-    profile &&
-      (!keyword || JSON.stringify(profile).toLowerCase().includes(keyword))
-  );
   const collections = allCollections.filter(
     (collection) =>
       !keyword ||
@@ -46,10 +40,7 @@ export default async function SearchPage({
         .includes(keyword)
   );
   const resultCount =
-    resources.length +
-    collections.length +
-    posts.length +
-    Number(profileMatches);
+    resources.length + collections.length + posts.length + profiles.length;
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 md:py-24">
@@ -62,8 +53,8 @@ export default async function SearchPage({
         </h1>
         <p className="text-muted-foreground mt-6 text-lg">
           {isZh
-            ? '搜索已发布的资源、专题和已有文章。'
-            : 'Search published resources, collections, and available articles.'}
+            ? '搜索已发布的资源、专题、文章和公开作者。'
+            : 'Search published resources, collections, articles, and public authors.'}
         </p>
       </section>
       <form className="mt-10 flex gap-3" action={`/${locale}/search`}>
@@ -171,29 +162,26 @@ export default async function SearchPage({
             </div>
           </div>
         ) : null}
-        {profileMatches ? (
+        {profiles.length ? (
           <div>
             <h2 className="text-2xl font-semibold">
-              {isZh ? '关于我' : 'About'}
+              {isZh ? '作者' : 'Authors'}
             </h2>
-            <article className="mt-4 rounded-3xl border p-6">
-              <h3 className="text-xl font-semibold">
-                {isZh
-                  ? '梓颖的个人介绍与经历'
-                  : 'Ziying profile and experience'}
-              </h3>
-              <p className="text-muted-foreground mt-3 text-sm leading-6">
-                {isZh
-                  ? '教育、项目、论文、奖项、联系方式与证明材料。'
-                  : 'Education, projects, publications, awards, contact details, and supporting materials.'}
-              </p>
-              <Link
-                href={`/${locale}/about`}
-                className="text-primary mt-4 inline-flex text-sm font-medium"
-              >
-                {isZh ? '查看关于我' : 'View profile'}
-              </Link>
-            </article>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {profiles.map((profile) => (
+                <PublicProfileCard
+                  key={profile.id}
+                  profile={profile}
+                  locale={locale}
+                  viewProfileLabel={isZh ? '查看主页' : 'View profile'}
+                  articleCountLabel={(count) =>
+                    isZh
+                      ? `${count} 篇文章`
+                      : `${count} ${count === 1 ? 'article' : 'articles'}`
+                  }
+                />
+              ))}
+            </div>
           </div>
         ) : null}
         {!resultCount ? (

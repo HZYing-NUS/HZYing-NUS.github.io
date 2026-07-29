@@ -1,6 +1,5 @@
 import { getPublishedCollections } from '@/shared/models/collection';
 import { searchPublishedPosts } from '@/shared/models/post';
-import { getPublishedProfile } from '@/shared/models/profile';
 import { getPublishedResources } from '@/shared/models/resource';
 
 export type AssistantSource = {
@@ -14,11 +13,10 @@ export async function retrieveAssistantSources(
   question: string,
   locale: string
 ) {
-  const [resources, collections, articles, profile] = await Promise.all([
+  const [resources, collections, articles] = await Promise.all([
     getPublishedResources({ locale, allowAiCitation: true }),
     getPublishedCollections(locale, true),
     searchPublishedPosts({ locale, limit: 50 }),
-    Promise.resolve(null),
   ]);
   const terms = Array.from(
     new Set(
@@ -86,13 +84,5 @@ export async function retrieveAssistantSources(
         excerpt: item.summary,
       })),
   ];
-  if (profile && score(JSON.stringify(profile)) >= minimumScore) {
-    sources.push({
-      type: 'profile',
-      title: locale === 'zh' ? '关于我' : 'About',
-      url: `/${locale}/about`,
-      excerpt: JSON.stringify(profile).slice(0, 4000),
-    });
-  }
   return sources;
 }

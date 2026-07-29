@@ -61,9 +61,21 @@ export default async function Page({
   if (!row) {
     const legacy = await getPost({ slug, locale });
     if (!legacy) notFound();
+    const legacyAuthorProfileHref = envConfigs.community_about_username
+      ? `/u/${envConfigs.community_about_username}`
+      : '/about';
     return (
       <main className="mx-auto max-w-4xl px-5 py-16">
         <h1 className="text-4xl font-semibold">{legacy.title}</h1>
+        <Link
+          href={legacyAuthorProfileHref}
+          className="text-primary mt-6 inline-flex text-sm font-medium hover:underline"
+        >
+          {legacy.author_name ||
+            (locale === 'zh' ? 'WebTools 编辑部' : 'WebTools editorial')}
+          {' · '}
+          {locale === 'zh' ? '查看主页' : 'View profile'}
+        </Link>
         <div className="mt-10">{legacy.body}</div>
       </main>
     );
@@ -111,9 +123,29 @@ export default async function Page({
       {row.profile?.username && (
         <Link
           href={`/u/${row.profile.username}`}
-          className="mt-7 inline-block text-sm font-medium"
+          className="hover:bg-muted mt-7 inline-flex items-center gap-3 rounded-lg p-2 transition-colors"
         >
-          {row.profile.displayName || row.profile.username}
+          {row.profile.avatarUrl ? (
+            <img
+              src={row.profile.avatarUrl}
+              alt={row.profile.displayName || row.profile.username}
+              className="size-9 rounded-lg object-cover"
+            />
+          ) : (
+            <span className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-lg text-sm font-semibold">
+              {(row.profile.displayName || row.profile.username)
+                .charAt(0)
+                .toUpperCase()}
+            </span>
+          )}
+          <span>
+            <span className="block text-sm font-medium">
+              {row.profile.displayName || row.profile.username}
+            </span>
+            <span className="text-primary block text-xs font-medium">
+              {locale === 'zh' ? '查看主页' : 'View profile'}
+            </span>
+          </span>
         </Link>
       )}
       {Array.isArray(row.revision.tags) && row.revision.tags.length > 0 && (

@@ -119,7 +119,7 @@ export default function ChatPage() {
   return initialChat && initialMessages ? (
     <ChatBox initialChat={initialChat} initialMessages={initialMessages} />
   ) : (
-    <div className="flex h-screen items-center justify-center p-8">
+    <div className="flex h-[calc(100dvh-3.5rem)] items-center justify-center p-8">
       <Loader />
     </div>
   );

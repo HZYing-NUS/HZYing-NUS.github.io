@@ -17,6 +17,25 @@ export function getCommunityArticleHttpStatus(
   return article.currentPublishedRevisionId ? 200 : 404;
 }
 
+export function isCommunityProfilePublic(profile: {
+  isHidden: boolean;
+  currentPublishedRevisionId: string | null;
+  publishedRevision: {
+    id: string;
+    profileId: string;
+    moderationStatus: string;
+  } | null;
+  id: string;
+}) {
+  return Boolean(
+    !profile.isHidden &&
+      profile.currentPublishedRevisionId &&
+      profile.publishedRevision?.id === profile.currentPublishedRevisionId &&
+      profile.publishedRevision.profileId === profile.id &&
+      profile.publishedRevision.moderationStatus === 'published'
+  );
+}
+
 export function buildCommunityPermanentRedirectPath({
   localePrefix,
   type,

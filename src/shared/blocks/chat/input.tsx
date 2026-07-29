@@ -128,6 +128,7 @@ export function ChatInput({
   const [estimating, setEstimating] = useState(false);
   const [estimateFailed, setEstimateFailed] = useState(false);
   const estimateRequestId = useRef(0);
+  const initialQuestionApplied = useRef(false);
   const dynamicModels = useMemo(
     () =>
       models.length
@@ -159,6 +160,18 @@ export function ChatInput({
   const requiredCredits = estimate ?? 1;
   const isInsufficient = Boolean(user && availableCredits < requiredCredits);
   const isDisabled = status === 'submitted' || isCheckSign || isInsufficient;
+
+  useEffect(() => {
+    if (initialQuestionApplied.current) return;
+    initialQuestionApplied.current = true;
+    const question = new URLSearchParams(window.location.search).get(
+      'question'
+    );
+    if (question) {
+      setInput(question);
+      onInputChange?.(question);
+    }
+  }, [onInputChange]);
 
   useEffect(() => {
     fetch('/api/ai/models')

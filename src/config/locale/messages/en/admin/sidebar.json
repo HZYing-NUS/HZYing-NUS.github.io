@@ -56,6 +56,11 @@
               "url": "/admin/community/articles"
             },
             {
+              "title": "Creator Profiles",
+              "icon": "UserRound",
+              "url": "/admin/community/profiles"
+            },
+            {
               "title": "Community Governance",
               "icon": "ShieldCheck",
               "url": "/admin/community/comments"
@@ -94,11 +99,6 @@
               "title": "Submissions",
               "icon": "MessageSquarePlus",
               "url": "/admin/submissions"
-            },
-            {
-              "title": "Profile",
-              "icon": "UserRound",
-              "url": "/admin/profile"
             }
           ]
         }

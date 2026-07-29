@@ -1,7 +1,13 @@
 'use client';
 
 import { Fragment, useEffect, useRef, useSyncExternalStore } from 'react';
-import { ChevronsUpDown, Loader2, LogOut, User } from 'lucide-react';
+import {
+  ChevronsUpDown,
+  ExternalLink,
+  Loader2,
+  LogOut,
+  User,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { signOut, useSession } from '@/core/auth/client';
@@ -185,6 +191,21 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
+                {authUser.publicUsername ? (
+                  <>
+                    <DropdownMenuItem className="cursor-pointer" asChild>
+                      <Link
+                        href={`/u/${authUser.publicUsername}`}
+                        target="_blank"
+                        className="flex w-full items-center gap-2"
+                      >
+                        <ExternalLink />
+                        {t('public_profile_title')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : null}
                 {user.nav?.items.map((item: NavItem | undefined) => (
                   <Fragment key={item?.title || item?.url}>
                     <DropdownMenuItem className="cursor-pointer">

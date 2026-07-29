@@ -30,7 +30,13 @@ type Review = {
   internalCostUsd: string | null;
 };
 
-export function CommunityModerationAdmin({ isZh }: { isZh: boolean }) {
+export function CommunityModerationAdmin({
+  isZh,
+  initialReviewId = '',
+}: {
+  isZh: boolean;
+  initialReviewId?: string;
+}) {
   const [queue, setQueue] = useState<Queue>({ reviews: [], appeals: [] });
   const [selected, setSelected] = useState<Review | null>(null);
   const [note, setNote] = useState('');
@@ -42,14 +48,24 @@ export function CommunityModerationAdmin({ isZh }: { isZh: boolean }) {
     setQueue(payload.data);
   }
   useEffect(() => {
-    void fetch('/api/admin/community/moderation')
+    const queueRequest = fetch('/api/admin/community/moderation')
       .then((response) => response.json())
       .then((payload) => {
         if (payload.code !== 0) throw new Error(payload.message);
         setQueue(payload.data);
-      })
-      .catch((error) => toast.error(error.message));
-  }, []);
+      });
+    const selectedRequest = initialReviewId
+      ? fetch(`/api/admin/community/moderation/${initialReviewId}`)
+          .then((response) => response.json())
+          .then((payload) => {
+            if (payload.code !== 0) throw new Error(payload.message);
+            setSelected(payload.data.review || payload.data);
+          })
+      : Promise.resolve();
+    void Promise.all([queueRequest, selectedRequest]).catch((error) =>
+      toast.error(error.message)
+    );
+  }, [initialReviewId]);
   async function act(action: string) {
     if (!selected || !note.trim())
       return toast.error(isZh ? '请填写复核说明。' : 'Enter a review note.');

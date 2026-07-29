@@ -153,14 +153,25 @@ export default async function ResourceDetailPage({
       </section>
 
       <div className="mx-auto max-w-6xl px-6">
-        {currentUser ? (
-          <CommunityContentActions
-            targetId={resource.id}
-            targetType="resource"
-            initialBookmarked={interactionState.bookmarked}
-            locale={locale}
-          />
-        ) : null}
+        <CommunityContentActions
+          targetId={resource.id}
+          targetType="resource"
+          canInteract={Boolean(currentUser)}
+          initialBookmarked={interactionState.bookmarked}
+          locale={locale}
+          callbackUrl={`/${locale}/resources/${resource.slug}`}
+          projectHref="/chat/projects"
+          aiHref={`/chat?question=${encodeURIComponent(
+            isZh
+              ? `我正在评估 ${resource.name}，请结合这个资源告诉我下一步应该怎么用。`
+              : `I am evaluating ${resource.name}. Based on this resource, tell me what I should do next.`
+          )}`}
+          restrictedActionDescription={
+            isZh
+              ? '资源说明可以直接阅读。登录后可以收藏资源、进入项目工作区，或让 AI 结合当前资源继续回答。'
+              : 'You can read the resource guidance now. Sign in to bookmark it, continue in a project, or ask AI about it.'
+          }
+        />
 
         <section className="bg-border mt-14 grid gap-px overflow-hidden rounded-3xl border lg:grid-cols-3">
           <EditorialBlock

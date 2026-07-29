@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 
-import { Link, usePathname, useRouter } from '@/core/i18n/navigation';
+import { Link, usePathname } from '@/core/i18n/navigation';
 import { SmartIcon } from '@/shared/blocks/common/smart-icon';
 import {
   Collapsible,
@@ -25,12 +24,14 @@ import { NavItem, type Nav as NavType } from '@/shared/types/blocks/common';
 
 export function Nav({ nav, className }: { nav: NavType; className?: string }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isPathActive = (url?: string) => {
+    if (!url) return false;
+    if (url === '/') return pathname === url;
+    if (url === '/chat') {
+      return pathname === url || /^\/chat\/[^/]+$/.test(pathname);
+    }
+    return pathname === url || pathname.startsWith(`${url}/`);
+  };
 
   return (
     <SidebarGroup className={className}>
@@ -50,10 +51,7 @@ export function Nav({ nav, className }: { nav: NavType; className?: string }) {
                     <SidebarMenuButton
                       tooltip={item?.title}
                       className={`${
-                        item?.is_active ||
-                        (mounted &&
-                          item?.url &&
-                          pathname.startsWith(item?.url as string))
+                        item?.is_active || isPathActive(item?.url)
                           ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground active:bg-sidebar-accent/90 active:text-sidebar-accent-foreground min-w-8 duration-200 ease-linear'
                           : ''
                       }`}
@@ -68,10 +66,7 @@ export function Nav({ nav, className }: { nav: NavType; className?: string }) {
                     asChild
                     tooltip={item?.title}
                     className={`${
-                      item?.is_active ||
-                      (mounted &&
-                        item?.url &&
-                        pathname.startsWith(item?.url as string))
+                      item?.is_active || isPathActive(item?.url)
                         ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground active:bg-sidebar-accent/90 active:text-sidebar-accent-foreground min-w-8 duration-200 ease-linear'
                         : ''
                     }`}
@@ -95,9 +90,7 @@ export function Nav({ nav, className }: { nav: NavType; className?: string }) {
                           <SidebarMenuSubButton
                             asChild
                             className={`${
-                              subItem.is_active ||
-                              (mounted &&
-                                pathname.endsWith(subItem.url as string))
+                              subItem.is_active || isPathActive(subItem.url)
                                 ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground active:bg-sidebar-accent/90 active:text-sidebar-accent-foreground min-w-8 duration-200 ease-linear'
                                 : ''
                             }`}

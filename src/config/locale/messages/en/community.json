@@ -43,7 +43,7 @@
       {
         "title": "Edit profile",
         "description": "Maintain your public profile and About.",
-        "href": "/settings/community/profile"
+        "href": "/settings/profile"
       },
       {
         "title": "Credits and billing",

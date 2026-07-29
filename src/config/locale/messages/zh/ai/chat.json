@@ -1,4 +1,18 @@
 {
+  "workspace_shell": {
+    "home": "主页",
+    "assistant": "AI 助手",
+    "projects": "项目",
+    "resources": "资源库",
+    "collections": "行动专题",
+    "articles": "文章",
+    "submit": "投稿建议",
+    "profile": "个人资料",
+    "settings": "设置",
+    "new_chat": "新建对话",
+    "search": "搜索资源、专题和文章",
+    "credit": "Credit"
+  },
   "sidebar": {
     "header": {
       "brand": {
@@ -98,7 +112,27 @@
     "skill_label": "对话模式",
     "auto_model": "自动选择",
     "auto_model_with_name": "自动选择 · {model}",
-    "auto_model_description": "使用当前推荐模型，也可以展开菜单指定模型。"
+    "auto_model_description": "使用当前推荐模型，也可以展开菜单指定模型。",
+    "quick_validate": "帮我判断这个产品想法值不值得做",
+    "quick_mvp": "把我的想法缩小成一个可测试的 MVP",
+    "quick_launch": "告诉我产品上线前还缺哪些关键步骤",
+    "quick_growth": "为我的产品设计第一条获客路径",
+    "recent_projects_eyebrow": "继续推进",
+    "recent_projects": "最近项目",
+    "view_projects": "查看全部",
+    "project_no_description": "继续整理这个项目的进度和下一步。",
+    "projects_empty_title": "还没有项目",
+    "projects_empty_description": "创建项目后，对话、文件和关键进度会在这里持续沉淀。",
+    "create_project": "创建第一个项目",
+    "recommended_eyebrow": "阶段相关推荐",
+    "recommended_for_stage": "围绕“{stage}”继续推进",
+    "recommended_for_stage_description": "根据最近项目填写的当前阶段，优先展示可以直接使用的资源、行动专题和文章。",
+    "recommended_default_title": "从这些精选内容开始",
+    "recommended_default_description": "项目尚未填写明确阶段，先展示精选资源、行动专题和近期文章。",
+    "recommended_resources": "资源",
+    "recommended_collections": "行动专题",
+    "recommended_articles": "文章",
+    "recommended_view_all": "查看全部"
   },
   "history": {
     "title": "搜索聊天",

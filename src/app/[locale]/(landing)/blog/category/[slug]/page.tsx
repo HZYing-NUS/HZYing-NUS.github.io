@@ -66,6 +66,10 @@ export default async function CategoryBlogPage({
               profile?.username ||
               (locale === 'zh' ? '社区作者' : 'Community author')
             }
+            authorHref={
+              profile?.username ? `/u/${profile.username}` : undefined
+            }
+            viewProfileLabel={locale === 'zh' ? '查看主页' : 'View profile'}
           />
         ))}
         {legacy.map((post) => (
@@ -75,6 +79,12 @@ export default async function CategoryBlogPage({
             title={post.title}
             summary={post.description}
             author={post.authorName}
+            authorHref={
+              envConfigs.community_about_username
+                ? `/u/${envConfigs.community_about_username}`
+                : '/about'
+            }
+            viewProfileLabel={locale === 'zh' ? '查看主页' : 'View profile'}
           />
         ))}
       </div>
@@ -87,19 +97,34 @@ function ArticleCard({
   title,
   summary,
   author,
+  authorHref,
+  viewProfileLabel,
 }: {
   href: string;
   title?: string | null;
   summary?: string | null;
   author?: string | null;
+  authorHref?: string;
+  viewProfileLabel?: string;
 }) {
   return (
-    <Link href={href} className="rounded-2xl border p-5">
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <p className="text-muted-foreground mt-3 line-clamp-3 text-sm">
-        {summary}
-      </p>
-      {author && <p className="text-muted-foreground mt-5 text-xs">{author}</p>}
-    </Link>
+    <article className="rounded-2xl border p-5">
+      <Link href={href}>
+        <h2 className="text-xl font-semibold">{title}</h2>
+        <p className="text-muted-foreground mt-3 line-clamp-3 text-sm">
+          {summary}
+        </p>
+      </Link>
+      {authorHref ? (
+        <Link
+          href={authorHref}
+          className="text-primary mt-5 inline-flex text-xs font-medium hover:underline"
+        >
+          {author} · {viewProfileLabel}
+        </Link>
+      ) : author ? (
+        <p className="text-muted-foreground mt-5 text-xs">{author}</p>
+      ) : null}
+    </article>
   );
 }

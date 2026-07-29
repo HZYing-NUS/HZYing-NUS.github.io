@@ -19,6 +19,7 @@ export function ConsoleLayout({
   description,
   nav,
   topNav,
+  embedded = false,
   className,
   children,
 }: {
@@ -26,6 +27,7 @@ export function ConsoleLayout({
   description?: string;
   nav?: Nav;
   topNav?: Nav;
+  embedded?: boolean;
   className?: string;
   children: ReactNode;
 }) {
@@ -55,6 +57,64 @@ export function ConsoleLayout({
       ))}
     </nav>
   );
+
+  if (embedded) {
+    return (
+      <div className={`bg-background min-w-0 ${className || ''}`}>
+        {topNav ? (
+          <nav className="border-border scrollbar-hide flex items-center gap-1 overflow-x-auto border-b px-4 text-sm md:px-8">
+            {topNav.items.map((item, idx) => (
+              <Link
+                key={idx}
+                href={item.url || ''}
+                className={`flex shrink-0 items-center gap-2 border-b-2 px-3 py-3 transition-colors ${
+                  item.is_active || pathname?.startsWith(item.url as string)
+                    ? 'border-primary text-foreground'
+                    : 'text-muted-foreground hover:text-foreground border-transparent'
+                }`}
+              >
+                {item.icon ? (
+                  <SmartIcon name={item.icon as string} size={16} />
+                ) : null}
+                {item.title}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
+        <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8 md:py-10">
+          <h1 className="text-foreground text-2xl font-semibold md:text-3xl">
+            {title}
+          </h1>
+          {description ? (
+            <p className="text-muted-foreground mt-2 text-sm">{description}</p>
+          ) : null}
+          {nav ? (
+            <nav className="scrollbar-hide mt-6 flex gap-2 overflow-x-auto border-b pb-3">
+              {filteredItems?.map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={item.url || ''}
+                  className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    item.is_active ||
+                    pathname === item.url ||
+                    pathname.startsWith(`${item.url}/`)
+                      ? 'bg-secondary text-secondary-foreground font-medium'
+                      : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                  }`}
+                >
+                  {item.icon ? (
+                    <SmartIcon name={item.icon as string} size={16} />
+                  ) : null}
+                  {item.title}
+                </Link>
+              ))}
+            </nav>
+          ) : null}
+          <div className="min-w-0 py-8">{children}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`bg-background min-h-screen ${className}`}>
