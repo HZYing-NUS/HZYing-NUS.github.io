@@ -31,6 +31,7 @@ export function ChatGenerator({
   recommendations,
   collectionProgress = [],
   workspaceHome = false,
+  publicLanding = false,
 }: {
   recentProjects?: Array<{
     id: string;
@@ -48,6 +49,7 @@ export function ChatGenerator({
     percentage: number;
   }>;
   workspaceHome?: boolean;
+  publicLanding?: boolean;
 }) {
   const router = useRouter();
   const locale = useLocale();
@@ -60,6 +62,7 @@ export function ChatGenerator({
 
   const [status, setStatus] = useState<UseChatHelpers<UIMessage>['status']>();
   const [error, setError] = useState<string | null>(null);
+  const [suggestedQuestion, setSuggestedQuestion] = useState<string>();
 
   const fetchNewChat = async (
     msg: PromptInputMessage,
@@ -117,7 +120,7 @@ export function ChatGenerator({
   ) => {
     // check user sign
     if (!user) {
-      setSignCallbackUrl('/chat');
+      setSignCallbackUrl('/');
       setIsShowSignModal(true);
       return;
     }
@@ -158,18 +161,18 @@ export function ChatGenerator({
         <div className="absolute right-[5%] bottom-[-16rem] size-[34rem] rounded-full bg-[#c9c4a7]/30 blur-3xl dark:bg-[#77725e]/10" />
         <div className="absolute inset-0 [background-image:linear-gradient(to_right,#9a8d7a18_1px,transparent_1px),linear-gradient(to_bottom,#9a8d7a18_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.22]" />
       </div>
-      <main className="relative z-[1] mx-auto flex w-full flex-1 flex-col px-5 py-10 md:max-w-5xl md:px-8 md:py-14">
-        <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center">
+      <main className="relative z-[1] mx-auto flex w-full flex-1 flex-col px-5 py-12 md:max-w-6xl md:px-8 md:py-20">
+        <div className="mx-auto flex w-full max-w-4xl flex-col justify-center">
           <div className="mb-8 max-w-3xl">
             <p className="mb-4 flex items-center gap-2 font-mono text-[10px] tracking-[.24em] text-[#a34e32] uppercase">
               <SparklesIcon className="size-3" />
-              {t('eyebrow')}
+              {t(publicLanding ? 'public_eyebrow' : 'eyebrow')}
             </p>
             <h2 className="text-4xl leading-[0.98] font-semibold tracking-[-.055em] text-balance sm:text-6xl">
-              {t('title')}
+              {t(publicLanding ? 'public_title' : 'title')}
             </h2>
             <p className="dark:text-muted-foreground mt-5 max-w-2xl text-sm leading-6 text-[#6d685f] sm:text-base sm:leading-7">
-              {t('description')}
+              {t(publicLanding ? 'public_description' : 'description')}
             </p>
           </div>
           <div className="relative">
@@ -187,23 +190,98 @@ export function ChatGenerator({
                 }
               }}
               status={status}
+              suggestedQuestion={suggestedQuestion}
+              onSuggestedQuestionApplied={() => setSuggestedQuestion(undefined)}
+              compact={publicLanding}
             />
           </div>
           {workspaceHome ? (
             <div className="mt-5 grid gap-2 sm:grid-cols-2">
               {quickTasks.map((task) => (
-                <Link
+                <button
+                  type="button"
                   key={task}
-                  href={`/chat?question=${encodeURIComponent(task)}`}
-                  className="dark:border-border dark:bg-card/35 group flex items-center justify-between gap-4 rounded-xl border border-black/10 bg-white/45 px-4 py-3 text-sm transition hover:-translate-y-0.5 hover:border-[#c45d38]/45 hover:bg-white/70"
+                  onClick={() => setSuggestedQuestion(task)}
+                  className="dark:border-border dark:bg-card/35 group flex w-full items-center justify-between gap-4 rounded-xl border border-black/10 bg-white/45 px-4 py-3 text-left text-sm transition hover:-translate-y-0.5 hover:border-[#c45d38]/45 hover:bg-white/70"
                 >
                   <span>{task}</span>
                   <ArrowUpRight className="size-4 shrink-0 text-[#a34e32] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
+                </button>
               ))}
             </div>
           ) : null}
         </div>
+        {publicLanding ? (
+          <section className="mx-auto mt-14 w-full max-w-5xl">
+            <div className="grid gap-3 md:grid-cols-3">
+              {[
+                {
+                  href: '/resources',
+                  icon: Boxes,
+                  title: t('public_resources_title'),
+                  description: t('public_resources_description'),
+                },
+                {
+                  href: '/collections',
+                  icon: ListChecks,
+                  title: t('public_collections_title'),
+                  description: t('public_collections_description'),
+                },
+                {
+                  href: '/blog',
+                  icon: Newspaper,
+                  title: t('public_articles_title'),
+                  description: t('public_articles_description'),
+                },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="dark:border-border dark:bg-card/35 group rounded-2xl border border-black/10 bg-white/55 p-5 transition hover:-translate-y-1 hover:border-[#c45d38]/45 hover:bg-white/80"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <span className="flex size-10 items-center justify-center rounded-xl bg-[#a34e32]/10 text-[#a34e32]">
+                        <Icon className="size-5" />
+                      </span>
+                      <ArrowUpRight className="size-4 text-[#a34e32] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </div>
+                    <h2 className="mt-6 text-lg font-semibold tracking-tight">
+                      {item.title}
+                    </h2>
+                    <p className="dark:text-muted-foreground mt-2 text-sm leading-6 text-[#6d685f]">
+                      {item.description}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="mt-12 border-t border-black/10 pt-8 dark:border-white/10">
+              <p className="font-mono text-[10px] tracking-[.2em] text-[#a34e32] uppercase">
+                {t('public_flow_eyebrow')}
+              </p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  t('public_flow_validate'),
+                  t('public_flow_build'),
+                  t('public_flow_launch'),
+                  t('public_flow_grow'),
+                ].map((stage, index) => (
+                  <div
+                    key={stage}
+                    className="flex items-center gap-3 border-l border-black/15 py-2 pl-4 dark:border-white/15"
+                  >
+                    <span className="font-mono text-xs text-[#a34e32]">
+                      0{index + 1}
+                    </span>
+                    <span className="text-sm font-medium">{stage}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
         {workspaceHome ? (
           <section className="mx-auto mt-12 w-full max-w-4xl border-t border-black/10 pt-7 dark:border-white/10">
             <div className="mb-5 flex items-end justify-between gap-4">

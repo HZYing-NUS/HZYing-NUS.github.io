@@ -8,7 +8,7 @@
         "icon": "LayoutDashboard"
       },
       {
-        "title": "个人资料",
+        "title": "公开主页与账号资料",
         "url": "/settings/profile",
         "icon": "User"
       },

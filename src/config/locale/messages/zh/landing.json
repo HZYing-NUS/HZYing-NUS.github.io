@@ -42,7 +42,7 @@
       "show_sign_out": true,
       "items": [
         {
-          "title": "个人资料",
+          "title": "编辑公开主页",
           "url": "/settings/profile",
           "icon": "User"
         },

@@ -24,6 +24,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
@@ -151,15 +152,10 @@ export function SignUser({
           <DropdownMenuContent>
             {userNav?.show_name && (
               <>
-                <DropdownMenuItem asChild>
-                  <Link
-                    className="w-full cursor-pointer"
-                    href="/settings/profile"
-                  >
-                    <User />
-                    {displayUser.name}
-                  </Link>
-                </DropdownMenuItem>
+                <DropdownMenuLabel className="flex items-center gap-2 font-normal">
+                  <User />
+                  {displayUser.name}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
               </>
             )}

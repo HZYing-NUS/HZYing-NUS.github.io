@@ -75,6 +75,9 @@ export function ChatInput({
   estimateProjectId,
   estimateSkillVersionId,
   estimateLocale,
+  suggestedQuestion,
+  onSuggestedQuestionApplied,
+  compact = false,
 }: {
   handleSubmit: (
     message: PromptInputMessage,
@@ -93,11 +96,19 @@ export function ChatInput({
   estimateProjectId?: string | null;
   estimateSkillVersionId?: string | null;
   estimateLocale?: string;
+  suggestedQuestion?: string;
+  onSuggestedQuestionApplied?: () => void;
+  compact?: boolean;
 }) {
   const t = useTranslations('ai.chat.generator');
   const locale = useLocale();
-  const { user, isCheckSign, setIsShowSignModal, setIsShowPaymentModal } =
-    useAppContext();
+  const {
+    user,
+    isCheckSign,
+    setIsShowSignModal,
+    setIsShowPaymentModal,
+    setSignCallbackUrl,
+  } = useAppContext();
   const generalSkill = useMemo(
     () => ({
       ...chatSkills[0],
@@ -172,6 +183,13 @@ export function ChatInput({
       onInputChange?.(question);
     }
   }, [onInputChange]);
+
+  useEffect(() => {
+    if (!suggestedQuestion) return;
+    setInput(suggestedQuestion);
+    onInputChange?.(suggestedQuestion);
+    onSuggestedQuestionApplied?.();
+  }, [onInputChange, onSuggestedQuestionApplied, suggestedQuestion]);
 
   useEffect(() => {
     fetch('/api/ai/models')
@@ -411,6 +429,7 @@ export function ChatInput({
               } catch {
                 // The current in-memory draft remains available if storage is blocked.
               }
+              setSignCallbackUrl('/');
               setIsShowSignModal(true);
               return;
             }
@@ -459,159 +478,169 @@ export function ChatInput({
             />
           </PromptInputBody>
           <PromptInputFooter className="border-t px-3 py-2">
-            <PromptInputTools className="min-w-0 flex-wrap gap-1.5">
-              <PromptInputSelect
-                disabled={Boolean(lockedModel)}
-                onValueChange={(nextModel) => {
-                  setModel(nextModel);
-                  if (
-                    !dynamicModels.find((item) => item.id === nextModel)
-                      ?.supportsReasoning
-                  ) {
-                    setReasoning(false);
-                  }
-                }}
-                value={lockedModel || model}
-              >
-                <PromptInputSelectTrigger
-                  aria-label={t('model_label')}
-                  className="border-border/70 bg-muted/45 hover:bg-muted max-w-64 rounded-lg border px-2.5"
+            {!compact ? (
+              <PromptInputTools className="min-w-0 flex-wrap gap-1.5">
+                <PromptInputSelect
+                  disabled={Boolean(lockedModel)}
+                  onValueChange={(nextModel) => {
+                    setModel(nextModel);
+                    if (
+                      !dynamicModels.find((item) => item.id === nextModel)
+                        ?.supportsReasoning
+                    ) {
+                      setReasoning(false);
+                    }
+                  }}
+                  value={lockedModel || model}
                 >
-                  <PromptInputSelectValue>
-                    <span className="flex min-w-0 items-center gap-2">
-                      {selectedDynamicModel?.id === 'auto' ? (
-                        <RouteIcon className="text-primary size-3.5 shrink-0" />
-                      ) : (
-                        <CpuIcon className="text-primary size-3.5 shrink-0" />
-                      )}
-                      <span className="truncate">
-                        {selectedDynamicModel?.name || selectedModel.label}
-                      </span>
-                    </span>
-                  </PromptInputSelectValue>
-                </PromptInputSelectTrigger>
-                <PromptInputSelectContent>
-                  {dynamicModels.map((item) => (
-                    <PromptInputSelectItem key={item.id} value={item.id}>
-                      <span className="flex min-w-72 items-start gap-3 py-1">
-                        <span className="bg-primary/10 text-primary mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md">
-                          {item.id === 'auto' ? (
-                            <RouteIcon className="size-3.5" />
-                          ) : (
-                            <CpuIcon className="size-3.5" />
-                          )}
+                  <PromptInputSelectTrigger
+                    aria-label={t('model_label')}
+                    className="border-border/70 bg-muted/45 hover:bg-muted max-w-64 rounded-lg border px-2.5"
+                  >
+                    <PromptInputSelectValue>
+                      <span className="flex min-w-0 items-center gap-2">
+                        {selectedDynamicModel?.id === 'auto' ? (
+                          <RouteIcon className="text-primary size-3.5 shrink-0" />
+                        ) : (
+                          <CpuIcon className="text-primary size-3.5 shrink-0" />
+                        )}
+                        <span className="truncate">
+                          {selectedDynamicModel?.name || selectedModel.label}
                         </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block font-medium">{item.name}</span>
-                          <span className="text-muted-foreground block text-xs">
-                            {item.description || t('model_description')}
+                      </span>
+                    </PromptInputSelectValue>
+                  </PromptInputSelectTrigger>
+                  <PromptInputSelectContent>
+                    {dynamicModels.map((item) => (
+                      <PromptInputSelectItem key={item.id} value={item.id}>
+                        <span className="flex min-w-72 items-start gap-3 py-1">
+                          <span className="bg-primary/10 text-primary mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md">
+                            {item.id === 'auto' ? (
+                              <RouteIcon className="size-3.5" />
+                            ) : (
+                              <CpuIcon className="size-3.5" />
+                            )}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block font-medium">
+                              {item.name}
+                            </span>
+                            <span className="text-muted-foreground block text-xs">
+                              {item.description || t('model_description')}
+                            </span>
                           </span>
                         </span>
-                      </span>
-                    </PromptInputSelectItem>
-                  ))}
-                </PromptInputSelectContent>
-              </PromptInputSelect>
+                      </PromptInputSelectItem>
+                    ))}
+                  </PromptInputSelectContent>
+                </PromptInputSelect>
 
-              <PromptInputSelect
-                disabled={Boolean(lockedSkill)}
-                onValueChange={setSkill}
-                value={lockedSkill || skill}
-              >
-                <PromptInputSelectTrigger
-                  aria-label={t('skill_label')}
-                  className="border-border/70 bg-muted/45 hover:bg-muted max-w-48 rounded-lg border px-2.5"
+                <PromptInputSelect
+                  disabled={Boolean(lockedSkill)}
+                  onValueChange={setSkill}
+                  value={lockedSkill || skill}
                 >
-                  <PromptInputSelectValue>
-                    <span className="flex min-w-0 items-center gap-2">
-                      <BotIcon className="text-muted-foreground size-3.5 shrink-0" />
-                      <span className="truncate">{selectedSkill.label}</span>
-                    </span>
-                  </PromptInputSelectValue>
-                </PromptInputSelectTrigger>
-                <PromptInputSelectContent>
-                  {skills.map((item) => (
-                    <PromptInputSelectItem key={item.id} value={item.id}>
-                      <span className="block min-w-56">
-                        <span className="block font-medium">{item.label}</span>
-                        <span className="text-muted-foreground block text-xs">
-                          {item.description}
-                        </span>
-                      </span>
-                    </PromptInputSelectItem>
-                  ))}
-                </PromptInputSelectContent>
-              </PromptInputSelect>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
-                    <BrainCircuitIcon className="text-muted-foreground size-3.5" />
-                    <Label
-                      htmlFor="prompt-reasoning-switch"
-                      className="text-muted-foreground cursor-pointer text-xs"
-                    >
-                      {t('reasoning')}
-                    </Label>
-                    <Switch
-                      id="prompt-reasoning-switch"
-                      checked={reasoning}
-                      disabled={isDisabled || !reasoningAvailable}
-                      onCheckedChange={setReasoning}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent sideOffset={6}>
-                  {reasoningAvailable
-                    ? t('reasoning_available')
-                    : t('reasoning_unavailable')}
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
-                    <Globe2Icon className="text-muted-foreground size-3.5" />
-                    <Label
-                      htmlFor="prompt-web-search-switch"
-                      className="text-muted-foreground cursor-pointer text-xs"
-                    >
-                      {t('web')}
-                    </Label>
-                    <Switch
-                      id="prompt-web-search-switch"
-                      checked={lockedWebSearch ?? webSearch}
-                      disabled={
-                        isDisabled ||
-                        lockedWebSearch !== undefined ||
-                        !webSearchAvailable
-                      }
-                      onCheckedChange={setWebSearch}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent sideOffset={6}>
-                  {webSearchAvailable
-                    ? t('web_available')
-                    : t('web_unavailable')}
-                </TooltipContent>
-              </Tooltip>
-              {lockedSkill && lockedSkill !== 'general' ? (
-                <div className="ml-1 flex items-center gap-2 px-2">
-                  <Switch
-                    id="prompt-skill-switch"
-                    checked={!skillDisabled}
-                    disabled={isDisabled || skillPermanentlyDisabled}
-                    onCheckedChange={(enabled) => setSkillDisabled(!enabled)}
-                  />
-                  <Label
-                    htmlFor="prompt-skill-switch"
-                    className="text-muted-foreground text-xs"
+                  <PromptInputSelectTrigger
+                    aria-label={t('skill_label')}
+                    className="border-border/70 bg-muted/45 hover:bg-muted max-w-48 rounded-lg border px-2.5"
                   >
-                    Skill
-                  </Label>
-                </div>
-              ) : null}
-            </PromptInputTools>
+                    <PromptInputSelectValue>
+                      <span className="flex min-w-0 items-center gap-2">
+                        <BotIcon className="text-muted-foreground size-3.5 shrink-0" />
+                        <span className="truncate">{selectedSkill.label}</span>
+                      </span>
+                    </PromptInputSelectValue>
+                  </PromptInputSelectTrigger>
+                  <PromptInputSelectContent>
+                    {skills.map((item) => (
+                      <PromptInputSelectItem key={item.id} value={item.id}>
+                        <span className="block min-w-56">
+                          <span className="block font-medium">
+                            {item.label}
+                          </span>
+                          <span className="text-muted-foreground block text-xs">
+                            {item.description}
+                          </span>
+                        </span>
+                      </PromptInputSelectItem>
+                    ))}
+                  </PromptInputSelectContent>
+                </PromptInputSelect>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
+                      <BrainCircuitIcon className="text-muted-foreground size-3.5" />
+                      <Label
+                        htmlFor="prompt-reasoning-switch"
+                        className="text-muted-foreground cursor-pointer text-xs"
+                      >
+                        {t('reasoning')}
+                      </Label>
+                      <Switch
+                        id="prompt-reasoning-switch"
+                        checked={reasoning}
+                        disabled={isDisabled || !reasoningAvailable}
+                        onCheckedChange={setReasoning}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent sideOffset={6}>
+                    {reasoningAvailable
+                      ? t('reasoning_available')
+                      : t('reasoning_unavailable')}
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
+                      <Globe2Icon className="text-muted-foreground size-3.5" />
+                      <Label
+                        htmlFor="prompt-web-search-switch"
+                        className="text-muted-foreground cursor-pointer text-xs"
+                      >
+                        {t('web')}
+                      </Label>
+                      <Switch
+                        id="prompt-web-search-switch"
+                        checked={lockedWebSearch ?? webSearch}
+                        disabled={
+                          isDisabled ||
+                          lockedWebSearch !== undefined ||
+                          !webSearchAvailable
+                        }
+                        onCheckedChange={setWebSearch}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent sideOffset={6}>
+                    {webSearchAvailable
+                      ? t('web_available')
+                      : t('web_unavailable')}
+                  </TooltipContent>
+                </Tooltip>
+                {lockedSkill && lockedSkill !== 'general' ? (
+                  <div className="ml-1 flex items-center gap-2 px-2">
+                    <Switch
+                      id="prompt-skill-switch"
+                      checked={!skillDisabled}
+                      disabled={isDisabled || skillPermanentlyDisabled}
+                      onCheckedChange={(enabled) => setSkillDisabled(!enabled)}
+                    />
+                    <Label
+                      htmlFor="prompt-skill-switch"
+                      className="text-muted-foreground text-xs"
+                    >
+                      Skill
+                    </Label>
+                  </div>
+                ) : null}
+              </PromptInputTools>
+            ) : (
+              <p className="text-muted-foreground hidden pl-1 text-xs sm:block">
+                {t('public_input_hint')}
+              </p>
+            )}
             <div className="ml-auto flex items-center gap-2">
               {user ? (
                 <Tooltip>

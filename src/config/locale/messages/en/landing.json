@@ -42,7 +42,7 @@
       "show_sign_out": true,
       "items": [
         {
-          "title": "Profile",
+          "title": "Edit public profile",
           "url": "/settings/profile",
           "icon": "User"
         },

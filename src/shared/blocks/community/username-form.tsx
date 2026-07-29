@@ -36,22 +36,26 @@ export function CommunityUsernameForm({
     }
   }
   return (
-    <div className="space-y-3 rounded-xl border p-5">
+    <div className="bg-card space-y-4 rounded-2xl border p-5">
       <div>
-        <h2 className="font-semibold">
-          {isZh ? '公开用户名' : 'Public username'}
-        </h2>
+        <h2 className="font-semibold">{isZh ? '主页地址' : 'Profile URL'}</h2>
         <p className="text-muted-foreground mt-1 text-sm">
           {isZh
-            ? '每 90 天最多修改一次；历史用户名永久保留。'
-            : 'Change at most once every 90 days. Previous usernames remain reserved.'}
+            ? '用户名会显示在主页地址中。每 90 天最多修改一次，旧地址会永久重定向到新地址。'
+            : 'Your username appears in the profile URL. It can be changed once every 90 days, and old URLs permanently redirect.'}
         </p>
       </div>
-      <div className="flex gap-3">
-        <Input
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
-        />
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="border-input bg-background flex min-w-0 flex-1 items-center rounded-md border">
+          <span className="text-muted-foreground hidden border-r px-3 text-sm sm:block">
+            /u/
+          </span>
+          <Input
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            className="border-0 shadow-none focus-visible:ring-0"
+          />
+        </div>
         <Button
           disabled={busy || username === current}
           onClick={() => void save()}

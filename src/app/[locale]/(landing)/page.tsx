@@ -1,8 +1,7 @@
 import { unstable_noStore as noStore } from 'next/cache';
 import { headers } from 'next/headers';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 
-import { getThemePage } from '@/core/theme';
 import { ChatGenerator } from '@/shared/blocks/chat/generator';
 import { PublicLandingShell } from '@/shared/blocks/landing/public-shell';
 import { WorkspaceLayout } from '@/shared/blocks/workspace/layout';
@@ -17,7 +16,6 @@ import {
   resolveWorkspaceStage,
   type WorkspaceRecommendations,
 } from '@/shared/services/workspace/recommendations';
-import { DynamicPage } from '@/shared/types/blocks/landing';
 
 export default async function LandingPage({
   params,
@@ -124,17 +122,9 @@ export default async function LandingPage({
     );
   }
 
-  const t = await getTranslations('pages.index');
-
-  // get page data
-  const page: DynamicPage = t.raw('page');
-
-  // load page component
-  const Page = await getThemePage('dynamic-page');
-
   return (
     <PublicLandingShell>
-      <Page locale={locale} page={page} />
+      <ChatGenerator publicLanding />
     </PublicLandingShell>
   );
 }

@@ -5,10 +5,10 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import NextTopLoader from 'nextjs-toploader';
 
-import { envConfigs } from '@/config';
-import { locales } from '@/config/locale';
 import { routing } from '@/core/i18n/config';
 import { ThemeProvider } from '@/core/theme/provider';
+import { envConfigs } from '@/config';
+import { locales } from '@/config/locale';
 import { UtmCapture } from '@/shared/blocks/common/utm-capture';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { AppContextProvider } from '@/shared/contexts/app';
@@ -85,11 +85,7 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html
-      lang={locale}
-      className="font-sans"
-      suppressHydrationWarning
-    >
+    <html lang={locale} className="font-sans" suppressHydrationWarning>
       <head>
         <link rel="icon" href={envConfigs.app_favicon} />
         <link rel="alternate icon" href="/favicon.ico" />
@@ -101,7 +97,7 @@ export default async function LocaleLayout({
                 key={loc}
                 rel="alternate"
                 hrefLang={loc}
-                href={`${appUrl}${loc === 'en' ? '' : `/${loc}`}`}
+                href={`${appUrl}${loc === routing.defaultLocale ? '' : `/${loc}`}`}
               />
             ))
           : null}
