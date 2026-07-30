@@ -49,8 +49,12 @@ export function Nav({ nav, className }: { nav: NavType; className?: string }) {
 
   return (
     <SidebarGroup className={className}>
-      <SidebarGroupContent className="mt-0 flex flex-col gap-2">
-        {nav.title && <SidebarGroupLabel>{nav.title}</SidebarGroupLabel>}
+      <SidebarGroupContent className="mt-0 flex flex-col gap-1">
+        {nav.title && (
+          <SidebarGroupLabel className="text-sidebar-foreground/45 h-7 px-2 text-[11px] font-semibold tracking-[0.08em] uppercase">
+            {nav.title}
+          </SidebarGroupLabel>
+        )}
         <SidebarMenu>
           {nav.items.map((item: NavItem | undefined) => (
             <Collapsible
@@ -66,7 +70,7 @@ export function Nav({ nav, className }: { nav: NavType; className?: string }) {
                       tooltip={item?.title}
                       className={`${
                         item?.is_active || isPathActive(item?.url)
-                          ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground active:bg-sidebar-accent/90 active:text-sidebar-accent-foreground min-w-8 duration-200 ease-linear'
+                          ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground active:bg-sidebar-accent/90 active:text-sidebar-accent-foreground min-w-8 font-medium duration-200 ease-linear'
                           : ''
                       }`}
                     >
@@ -81,7 +85,7 @@ export function Nav({ nav, className }: { nav: NavType; className?: string }) {
                     tooltip={item?.title}
                     className={`${
                       item?.is_active || isPathActive(item?.url)
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground active:bg-sidebar-accent/90 active:text-sidebar-accent-foreground min-w-8 duration-200 ease-linear'
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground active:bg-sidebar-accent/90 active:text-sidebar-accent-foreground min-w-8 font-medium duration-200 ease-linear'
                         : ''
                     }`}
                   >

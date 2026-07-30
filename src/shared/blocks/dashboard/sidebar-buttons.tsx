@@ -12,7 +12,7 @@ export function SidebarButtons({ buttons }: { buttons: ButtonType[] }) {
   const isCollapsed = state === 'collapsed';
 
   return (
-    <div className="flex flex-col gap-2 px-3 py-3">
+    <div className="flex flex-col gap-2 px-3 pb-2">
       {buttons.map((button, idx) => (
         <Button
           key={idx}
@@ -20,8 +20,9 @@ export function SidebarButtons({ buttons }: { buttons: ButtonType[] }) {
           variant={button.variant || 'outline'}
           size={button.size || 'default'}
           className={cn(
+            'h-9 rounded-xl border-black/[0.08] bg-white/55 text-sm font-medium shadow-none transition-all duration-200 hover:border-[#91a8ca]/60 hover:bg-white active:scale-[0.99] dark:border-white/10 dark:bg-white/[0.035] dark:hover:border-white/15 dark:hover:bg-white/[0.07]',
             isCollapsed
-              ? 'h-6 w-6 justify-center p-0 [&_svg]:size-4 [&_svg]:shrink-0'
+              ? 'h-8 w-8 justify-center p-0 [&_svg]:size-4 [&_svg]:shrink-0'
               : undefined
           )}
         >

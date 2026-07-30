@@ -2,6 +2,11 @@
   "workspace_shell": {
     "home": "主页",
     "assistant": "AI 助手",
+    "workspace_group": "AI 工作区",
+    "content_group": "知识与行动",
+    "chat_history": "全部对话",
+    "memory": "全局记忆",
+    "skills": "Skills",
     "projects": "项目",
     "resources": "资源库",
     "collections": "行动专题",
@@ -13,6 +18,7 @@
     "account_settings": "账号与安全",
     "new_chat": "新建对话",
     "search": "搜索资源、专题和文章",
+    "search_title": "站内搜索",
     "credit": "Credit"
   },
   "sidebar": {
@@ -180,6 +186,9 @@
     "project_benefit_memory": "延续项目进度",
     "project_benefit_memory_description": "系统从项目对话中提炼已完成事项、关键结论和下一步，并保留来源。",
     "project_no_description": "尚未填写项目介绍",
+    "project_overview": "项目概览",
+    "project_progress": "进度与决策",
+    "project_context": "对话、记忆与文件",
     "project_name": "项目名称",
     "project_description": "一句话介绍",
     "target_audience": "目标用户",

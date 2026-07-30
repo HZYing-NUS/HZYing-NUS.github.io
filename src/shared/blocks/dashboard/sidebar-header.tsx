@@ -14,13 +14,13 @@ import { SidebarHeader as SidebarHeaderType } from '@/shared/types/blocks/dashbo
 export function SidebarHeader({ header }: { header: SidebarHeaderType }) {
   const { open } = useSidebar();
   return (
-    <SidebarHeaderComponent className="mb-0">
+    <SidebarHeaderComponent className="mb-0 px-3 pt-3 pb-2">
       <SidebarMenu>
         <SidebarMenuItem className="flex items-center justify-between">
           {(open || !header.show_trigger) && (
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="h-10 rounded-xl data-[slot=sidebar-menu-button]:!p-1.5"
             >
               {header.brand && (
                 <Link href={header.brand.url || ''}>
@@ -28,10 +28,10 @@ export function SidebarHeader({ header }: { header: SidebarHeaderType }) {
                     <img
                       src={header.brand.logo.src}
                       alt={header.brand.logo.alt || ''}
-                      className="h-auto w-8 shrink-0 rounded-md"
+                      className="h-auto w-8 shrink-0 rounded-lg"
                     />
                   )}
-                  <div className="relative text-base font-semibold">
+                  <div className="relative text-[15px] font-semibold tracking-[-0.02em]">
                     {header.brand.title}
                     {header.version && (
                       <Badge

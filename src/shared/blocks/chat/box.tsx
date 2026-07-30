@@ -108,7 +108,7 @@ export function ChatBox({
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
           {showIntroduction ? (
             <div className="mb-8 max-w-2xl">
               {initialChat?.projectSummary ? (
@@ -222,7 +222,7 @@ export function ChatBox({
           <ChatMessages chatInstance={chatInstance} />
         </div>
       </div>
-      <div className="mx-auto w-full max-w-5xl px-4 pb-4 sm:px-6">
+      <div className="mx-auto w-full max-w-4xl px-4 pb-4 sm:px-8">
         <FollowUp chatInstance={chatInstance} />
       </div>
     </div>

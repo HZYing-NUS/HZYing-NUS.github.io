@@ -160,14 +160,14 @@ export function ChatGenerator({
         <div className="absolute -top-64 left-[8%] h-[34rem] w-[60rem] rounded-full bg-[#dce7fb]/55 blur-[110px] dark:bg-[#20304d]/25" />
         <div className="absolute top-[18rem] right-[-12rem] size-[30rem] rounded-full bg-white/90 blur-[100px] dark:bg-[#23262d]/35" />
       </div>
-      <main className="relative z-[1] mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-10 md:px-10 md:py-16">
+      <main className="relative z-[1] mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-9 md:px-10 md:py-12">
         <div className="mx-auto flex w-full max-w-4xl flex-col justify-center">
-          <div className="mb-8 max-w-3xl">
-            <p className="mb-4 flex items-center gap-2 text-xs font-semibold tracking-[.12em] text-[#5474a8] uppercase dark:text-[#8faee0]">
+          <div className="mb-7 max-w-3xl">
+            <p className="mb-3 flex items-center gap-2 text-[11px] font-semibold tracking-[.11em] text-[#5474a8] uppercase dark:text-[#8faee0]">
               <SparklesIcon className="size-3" />
               {t(publicLanding ? 'public_eyebrow' : 'eyebrow')}
             </p>
-            <h2 className="max-w-3xl text-4xl leading-[1.02] font-semibold tracking-[-.045em] text-balance sm:text-[3.5rem]">
+            <h2 className="max-w-3xl text-[2.6rem] leading-[1.04] font-semibold tracking-[-.045em] text-balance sm:text-[3.1rem]">
               {t(publicLanding ? 'public_title' : 'title')}
             </h2>
             <p className="mt-5 max-w-2xl text-sm leading-6 text-[#6e6e73] sm:text-base sm:leading-7 dark:text-[#a1a1a6]">

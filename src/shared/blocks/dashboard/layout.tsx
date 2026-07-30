@@ -21,7 +21,7 @@ export function DashboardLayout({
       className={className}
       style={
         {
-          '--sidebar-width': 'calc(var(--spacing) * 72)',
+          '--sidebar-width': 'calc(var(--spacing) * 64)',
           '--header-height': 'calc(var(--spacing) * 14)',
           ...style,
         } as React.CSSProperties

@@ -4,11 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ArchiveRestore,
   ArrowRight,
-  FileText,
   FolderKanban,
-  MessageSquareText,
+  Info,
   Plus,
-  Sparkles,
   Trash2,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -16,6 +14,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/core/i18n/navigation';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useAppContext } from '@/shared/contexts/app';
 
@@ -34,7 +33,7 @@ type Project = {
 export function ProjectsWorkspace() {
   const t = useTranslations('ai.chat.workspace');
   const locale = useLocale();
-  const { user, setIsShowSignModal } = useAppContext();
+  const { user, isCheckSign, setIsShowSignModal } = useAppContext();
   const [projects, setProjects] = useState<Project[]>([]);
   const [status, setStatus] = useState<'active' | 'deleted'>('active');
   const [creating, setCreating] = useState(false);
@@ -83,45 +82,11 @@ export function ProjectsWorkspace() {
         </Button>
       }
     >
-      <section className="mb-9 grid gap-3 md:grid-cols-3">
-        {[
-          {
-            icon: MessageSquareText,
-            title: t('project_benefit_chats'),
-            description: t('project_benefit_chats_description'),
-          },
-          {
-            icon: FileText,
-            title: t('project_benefit_files'),
-            description: t('project_benefit_files_description'),
-          },
-          {
-            icon: Sparkles,
-            title: t('project_benefit_memory'),
-            description: t('project_benefit_memory_description'),
-          },
-        ].map((benefit) => {
-          const Icon = benefit.icon;
-          return (
-            <article
-              key={benefit.title}
-              className="rounded-2xl border border-black/[0.07] bg-white/65 p-5 dark:border-white/10 dark:bg-white/[0.04]"
-            >
-              <span className="flex size-9 items-center justify-center rounded-xl bg-[#e8eef8] text-[#5474a8] dark:bg-[#28344a] dark:text-[#9bb7e2]">
-                <Icon className="size-4" />
-              </span>
-              <h2 className="mt-5 font-semibold">{benefit.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
-                {benefit.description}
-              </p>
-            </article>
-          );
-        })}
-      </section>
-      <p className="mb-7 text-sm text-[#6e6e73] dark:text-[#a1a1a6]">
-        {t('project_optional_hint')}
-      </p>
-      <div className="dark:border-border mb-7 flex gap-6 border-b border-black/10 text-sm">
+      <div className="mb-8 flex max-w-3xl items-start gap-3 rounded-2xl bg-black/[0.025] px-4 py-3.5 text-sm leading-6 text-[#6e6e73] dark:bg-white/[0.035] dark:text-[#a1a1a6]">
+        <Info className="mt-1 size-4 shrink-0 text-[#5474a8] dark:text-[#8faee0]" />
+        <p>{t('project_optional_hint')}</p>
+      </div>
+      <div className="mb-5 flex gap-6 border-b border-black/[0.07] text-sm dark:border-white/10">
         {(['active', 'deleted'] as const).map((item) => (
           <button
             key={item}
@@ -152,7 +117,12 @@ export function ProjectsWorkspace() {
           </div>
         </div>
       ) : null}
-      {!user ? (
+      {isCheckSign ? (
+        <div className="space-y-3 py-3">
+          <Skeleton className="h-20 w-full rounded-2xl" />
+          <Skeleton className="h-20 w-full rounded-2xl" />
+        </div>
+      ) : !user ? (
         <WorkspaceEmpty>
           <button
             className="underline"
@@ -172,11 +142,11 @@ export function ProjectsWorkspace() {
           </p>
         </WorkspaceEmpty>
       ) : (
-        <div className="dark:divide-border dark:border-border divide-y divide-black/10 border-y border-black/10">
+        <div className="overflow-hidden rounded-2xl border border-black/[0.07] bg-white/60 dark:border-white/10 dark:bg-white/[0.025]">
           {projects.map((project, index) => (
             <article
               key={project.id}
-              className="group grid gap-4 py-6 md:grid-cols-[3rem_1fr_auto] md:items-center"
+              className="group grid gap-4 border-b border-black/[0.07] px-5 py-5 transition-colors last:border-b-0 hover:bg-black/[0.018] md:grid-cols-[2.5rem_1fr_auto] md:items-center dark:border-white/10 dark:hover:bg-white/[0.025]"
             >
               <span className="font-mono text-xs text-[#999287]">
                 {String(index + 1).padStart(2, '0')}

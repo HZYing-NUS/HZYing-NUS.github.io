@@ -458,7 +458,7 @@ export function ChatInput({
               // The parent keeps the draft when a request fails.
             }
           }}
-          className="overflow-hidden rounded-[1.4rem] border border-black/[0.08] bg-white/90 shadow-[0_18px_50px_-28px_rgba(31,45,70,0.45),0_2px_8px_rgba(31,45,70,0.05)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1c1d21]/90"
+          className="overflow-hidden rounded-[1.4rem] border border-black/[0.08] bg-white/92 shadow-[0_20px_60px_-32px_rgba(31,45,70,0.48),0_1px_3px_rgba(31,45,70,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1c1d21]/94"
           globalDrop={Boolean(user)}
           multiple
         >

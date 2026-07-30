@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { FileText, MessageSquare, Plus, Save, Trash2 } from 'lucide-react';
+import {
+  FileText,
+  LayoutDashboard,
+  MessageSquare,
+  Plus,
+  Save,
+  Sparkles,
+  Trash2,
+} from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { Link, useRouter } from '@/core/i18n/navigation';
@@ -10,6 +18,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Textarea } from '@/shared/components/ui/textarea';
 
 import { WorkspaceEmpty, WorkspaceShell } from './workspace-shell';
@@ -20,6 +29,23 @@ const fields = [
   'targetAudience',
   'stage',
   'technology',
+  'confirmedDecisions',
+  'completedItems',
+  'currentProblem',
+  'nextSteps',
+  'importantConclusions',
+  'recentProgress',
+] as const;
+
+const overviewFields = [
+  'name',
+  'description',
+  'targetAudience',
+  'stage',
+  'technology',
+] as const;
+
+const progressFields = [
   'confirmedDecisions',
   'completedItems',
   'currentProblem',
@@ -51,6 +77,9 @@ export function ProjectDetailWorkspace() {
   const [payload, setPayload] = useState<any>(null);
   const [project, setProject] = useState<any>({});
   const [memory, setMemory] = useState('');
+  const [section, setSection] = useState<'overview' | 'progress' | 'context'>(
+    'overview'
+  );
   const load = useCallback(async () => {
     const p = await fetch(`/api/projects/${id}`).then((r) => r.json());
     if (p.code === 0) {
@@ -127,12 +156,48 @@ export function ProjectDetailWorkspace() {
       </WorkspaceShell>
     );
   const isDeleted = project.status === 'deleted';
+  const renderFields = (selectedFields: readonly (typeof fields)[number][]) => (
+    <section className="grid gap-x-7 gap-y-6 md:grid-cols-2">
+      {selectedFields.map((field) => (
+        <div
+          key={field}
+          className={
+            field === 'name' || field === 'description' ? 'md:col-span-2' : ''
+          }
+        >
+          <Label className="mb-2 text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6]">
+            {t(fieldTranslationKeys[field])}
+          </Label>
+          {field === 'name' || field === 'stage' ? (
+            <Input
+              className="rounded-xl border-black/[0.08] bg-white/65 dark:border-white/10 dark:bg-white/[0.035]"
+              disabled={isDeleted}
+              value={project[field] || ''}
+              onChange={(event) =>
+                setProject({ ...project, [field]: event.target.value })
+              }
+            />
+          ) : (
+            <Textarea
+              className="min-h-28 rounded-xl border-black/[0.08] bg-white/65 leading-6 dark:border-white/10 dark:bg-white/[0.035]"
+              disabled={isDeleted}
+              value={project[field] || ''}
+              onChange={(event) =>
+                setProject({ ...project, [field]: event.target.value })
+              }
+            />
+          )}
+        </div>
+      ))}
+    </section>
+  );
+
   return (
     <WorkspaceShell
       title={project.name}
       description={project.description}
       actions={
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {isDeleted ? <Button onClick={restore}>{t('restore')}</Button> : null}
           <Button variant="outline" onClick={save} disabled={isDeleted}>
             <Save className="size-4" />
@@ -145,154 +210,160 @@ export function ProjectDetailWorkspace() {
         </div>
       }
     >
-      <section className="dark:border-border grid gap-x-8 gap-y-6 border-b border-black/10 pb-10 md:grid-cols-2">
-        {fields.map((field) => (
-          <div key={field} className={field === 'name' ? 'md:col-span-2' : ''}>
-            <Label className="mb-2 text-xs text-[#6e6e73] dark:text-[#a1a1a6]">
-              {t(fieldTranslationKeys[field])}
-            </Label>
-            {field === 'name' || field === 'stage' ? (
+      <Tabs
+        value={section}
+        onValueChange={(value) => setSection(value as typeof section)}
+      >
+        <TabsList className="mb-8 h-auto w-full justify-start gap-1 rounded-xl border-0 bg-black/[0.035] p-1 dark:bg-white/[0.045]">
+          <TabsTrigger
+            value="overview"
+            className="gap-2 rounded-lg px-4 py-2.5"
+          >
+            <LayoutDashboard className="size-4" />
+            {t('project_overview')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="progress"
+            className="gap-2 rounded-lg px-4 py-2.5"
+          >
+            <Sparkles className="size-4" />
+            {t('project_progress')}
+          </TabsTrigger>
+          <TabsTrigger value="context" className="gap-2 rounded-lg px-4 py-2.5">
+            <FileText className="size-4" />
+            {t('project_context')}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {section === 'overview' ? renderFields(overviewFields) : null}
+      {section === 'progress' ? renderFields(progressFields) : null}
+      {section === 'context' ? (
+        <section className="grid gap-5 lg:grid-cols-3">
+          <div className="rounded-2xl border border-black/[0.07] bg-white/55 p-5 dark:border-white/10 dark:bg-white/[0.025]">
+            <h2 className="mb-4 flex items-center gap-2 font-medium">
+              <MessageSquare className="size-4" />
+              {t('chats')}
+            </h2>
+            <div className="space-y-2">
+              {payload.chats.map((chat: any) => (
+                <Link
+                  key={chat.id}
+                  className="block border-b border-black/10 py-2 text-sm transition-colors hover:text-[#5474a8] dark:border-white/10 dark:hover:text-[#8faee0]"
+                  href={`/chat/${chat.id}`}
+                >
+                  {chat.title}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-black/[0.07] bg-white/55 p-5 dark:border-white/10 dark:bg-white/[0.025]">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-medium">{t('memories')}</h2>
+              <div className="flex items-center gap-2">
+                <Label className="text-xs">{t('auto_memory')}</Label>
+                <Switch
+                  disabled={isDeleted}
+                  checked={project.autoMemoryEnabled}
+                  onCheckedChange={(checked) =>
+                    setProject({ ...project, autoMemoryEnabled: checked })
+                  }
+                />
+              </div>
+            </div>
+            <div className="mb-3 flex gap-2">
               <Input
                 disabled={isDeleted}
-                value={project[field] || ''}
-                onChange={(e) =>
-                  setProject({ ...project, [field]: e.target.value })
-                }
+                value={memory}
+                onChange={(e) => setMemory(e.target.value)}
+                placeholder={t('new_memory')}
               />
-            ) : (
-              <Textarea
-                disabled={isDeleted}
-                value={project[field] || ''}
-                onChange={(e) =>
-                  setProject({ ...project, [field]: e.target.value })
-                }
-              />
-            )}
-          </div>
-        ))}
-      </section>
-      <section className="grid gap-10 py-10 lg:grid-cols-3">
-        <div>
-          <h2 className="mb-4 flex items-center gap-2 font-medium">
-            <MessageSquare className="size-4" />
-            {t('chats')}
-          </h2>
-          <div className="space-y-2">
-            {payload.chats.map((chat: any) => (
-              <Link
-                key={chat.id}
-                className="block border-b border-black/10 py-2 text-sm transition-colors hover:text-[#5474a8] dark:border-white/10 dark:hover:text-[#8faee0]"
-                href={`/chat/${chat.id}`}
+              <Button size="icon" onClick={addMemory} disabled={isDeleted}>
+                <Plus className="size-4" />
+              </Button>
+            </div>
+            {payload.memories.map((item: any) => (
+              <div
+                key={item.id}
+                className="group flex gap-2 border-b border-black/10 py-3 text-sm"
               >
-                {chat.title}
-              </Link>
+                <div className="min-w-0 flex-1">
+                  <Textarea
+                    className="min-h-20 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
+                    defaultValue={item.content}
+                    disabled={isDeleted}
+                    onBlur={(event) =>
+                      updateMemory(item.id, event.target.value)
+                    }
+                  />
+                  {item.sourceChatId ? (
+                    <Link
+                      className="text-muted-foreground mt-1 inline-block font-mono text-[10px] hover:underline"
+                      href={`/chat/${item.sourceChatId}`}
+                    >
+                      {locale === 'zh' ? '查看来源对话' : 'View source chat'}
+                    </Link>
+                  ) : null}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteMemory(item.id)}
+                  disabled={isDeleted}
+                >
+                  <Trash2 className="size-3" />
+                </Button>
+              </div>
             ))}
           </div>
-        </div>
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-medium">{t('memories')}</h2>
-            <div className="flex items-center gap-2">
-              <Label className="text-xs">{t('auto_memory')}</Label>
-              <Switch
+          <div className="rounded-2xl border border-black/[0.07] bg-white/55 p-5 dark:border-white/10 dark:bg-white/[0.025]">
+            <h2 className="mb-4 flex items-center gap-2 font-medium">
+              <FileText className="size-4" />
+              {t('files')}
+            </h2>
+            <label
+              className={`mb-4 block rounded-xl border border-dashed border-black/20 p-4 text-center text-sm ${isDeleted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+            >
+              <input
+                className="hidden"
+                type="file"
+                multiple
                 disabled={isDeleted}
-                checked={project.autoMemoryEnabled}
-                onCheckedChange={(checked) =>
-                  setProject({ ...project, autoMemoryEnabled: checked })
-                }
+                accept=".pdf,.txt,.md,.png,.jpg,.jpeg,.webp"
+                onChange={(e) => upload(e.target.files)}
               />
-            </div>
-          </div>
-          <div className="mb-3 flex gap-2">
-            <Input
-              disabled={isDeleted}
-              value={memory}
-              onChange={(e) => setMemory(e.target.value)}
-              placeholder={t('new_memory')}
-            />
-            <Button size="icon" onClick={addMemory} disabled={isDeleted}>
-              <Plus className="size-4" />
-            </Button>
-          </div>
-          {payload.memories.map((item: any) => (
-            <div
-              key={item.id}
-              className="group flex gap-2 border-b border-black/10 py-3 text-sm"
-            >
-              <div className="min-w-0 flex-1">
-                <Textarea
-                  className="min-h-20 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
-                  defaultValue={item.content}
+              {t('upload')}
+            </label>
+            {payload.files.map((file: any) => (
+              <div
+                key={file.id}
+                className="flex items-center gap-2 border-b border-black/10 py-3 text-sm"
+              >
+                <a
+                  href={`/api/files/${file.id}`}
+                  className="min-w-0 flex-1 truncate"
+                >
+                  <span>{file.originalName}</span>
+                  <span className="ml-2 font-mono text-[10px] text-[#6e6e73] dark:text-[#a1a1a6]">
+                    {file.parseStatus}
+                    {file.parseError === 'PDF_PARSER_NOT_CONFIGURED'
+                      ? ` · ${t('pdf_pending')}`
+                      : ''}
+                  </span>
+                </a>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   disabled={isDeleted}
-                  onBlur={(event) => updateMemory(item.id, event.target.value)}
-                />
-                {item.sourceChatId ? (
-                  <Link
-                    className="text-muted-foreground mt-1 inline-block font-mono text-[10px] hover:underline"
-                    href={`/chat/${item.sourceChatId}`}
-                  >
-                    {locale === 'zh' ? '查看来源对话' : 'View source chat'}
-                  </Link>
-                ) : null}
+                  onClick={() => removeFile(file.id)}
+                >
+                  <Trash2 className="size-3" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => deleteMemory(item.id)}
-                disabled={isDeleted}
-              >
-                <Trash2 className="size-3" />
-              </Button>
-            </div>
-          ))}
-        </div>
-        <div>
-          <h2 className="mb-4 flex items-center gap-2 font-medium">
-            <FileText className="size-4" />
-            {t('files')}
-          </h2>
-          <label
-            className={`mb-4 block border border-dashed border-black/20 p-4 text-center text-sm ${isDeleted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-          >
-            <input
-              className="hidden"
-              type="file"
-              multiple
-              disabled={isDeleted}
-              accept=".pdf,.txt,.md,.png,.jpg,.jpeg,.webp"
-              onChange={(e) => upload(e.target.files)}
-            />
-            {t('upload')}
-          </label>
-          {payload.files.map((file: any) => (
-            <div
-              key={file.id}
-              className="flex items-center gap-2 border-b border-black/10 py-3 text-sm"
-            >
-              <a
-                href={`/api/files/${file.id}`}
-                className="min-w-0 flex-1 truncate"
-              >
-                <span>{file.originalName}</span>
-                <span className="ml-2 font-mono text-[10px] text-[#6e6e73] dark:text-[#a1a1a6]">
-                  {file.parseStatus}
-                  {file.parseError === 'PDF_PARSER_NOT_CONFIGURED'
-                    ? ` · ${t('pdf_pending')}`
-                    : ''}
-                </span>
-              </a>
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={isDeleted}
-                onClick={() => removeFile(file.id)}
-              >
-                <Trash2 className="size-3" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </WorkspaceShell>
   );
 }

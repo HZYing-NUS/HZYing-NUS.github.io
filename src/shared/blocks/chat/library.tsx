@@ -1,41 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import {
-  IconDots,
-  IconFolder,
-  IconMessageCircle,
-  IconPencil,
-  IconShare3,
-  IconTrash,
-  type Icon,
-} from '@tabler/icons-react';
+import { IconDots, IconMessageCircle } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/core/i18n/navigation';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
-import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from '@/shared/components/ui/sidebar';
 import { useAppContext } from '@/shared/contexts/app';
 import { useChatContext } from '@/shared/contexts/chat';
 
 export function ChatLibrary({}) {
-  const { isMobile } = useSidebar();
-
   const t = useTranslations('ai.chat.library');
   const params = useParams();
 
@@ -44,16 +25,10 @@ export function ChatLibrary({}) {
   const { chats, setChats } = useChatContext();
   const [hasMore, setHasMore] = useState(false);
 
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const page = 1;
+  const limit = 6;
 
-  const fetchChats = async ({
-    page,
-    limit,
-  }: {
-    page: number;
-    limit: number;
-  }) => {
+  const fetchChats = useCallback(async () => {
     try {
       const resp = await fetch('/api/chat/list', {
         method: 'POST',
@@ -75,64 +50,37 @@ export function ChatLibrary({}) {
       console.log('fetch chats failed:', e);
       return [];
     }
-  };
+  }, [limit, page, setChats]);
 
   useEffect(() => {
     if (user) {
-      fetchChats({ page, limit });
+      void fetchChats();
     }
-  }, [user]);
+  }, [fetchChats, user]);
 
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>{t('title')}</SidebarGroupLabel>
+    <SidebarGroup className="border-sidebar-border/70 min-h-0 flex-1 border-t pt-3 group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel className="text-sidebar-foreground/45 h-7 px-2 text-[11px] font-semibold tracking-[0.08em] uppercase">
+        {t('title')}
+      </SidebarGroupLabel>
       <SidebarMenu>
         {chats.length > 0 &&
           chats.slice(0, limit).map((chat) => (
             <SidebarMenuItem key={chat.id}>
               <SidebarMenuButton
                 asChild
-                className={
+                tooltip={chat.title}
+                className={`h-8 rounded-lg text-[13px] ${
                   params.id === chat.id
                     ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                    : ''
-                }
+                    : 'text-sidebar-foreground/75 hover:text-sidebar-foreground'
+                }`}
               >
                 <Link href={`/chat/${chat.id}`}>
                   <IconMessageCircle className="text-sidebar-foreground/70" />
-                  <span>{chat.title}</span>
+                  <span className="truncate">{chat.title}</span>
                 </Link>
               </SidebarMenuButton>
-              {/* <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuAction
-                    showOnHover
-                    className="data-[state=open]:bg-accent rounded-sm"
-                  >
-                    <IconDots />
-                    <span className="sr-only">{t('more')}</span>
-                  </SidebarMenuAction>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-24 rounded-lg"
-                  side={isMobile ? 'bottom' : 'right'}
-                  align={isMobile ? 'end' : 'start'}
-                >
-                  <DropdownMenuItem>
-                    <IconPencil />
-                    <span>{t('actions.edit_title')}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <IconShare3 />
-                    <span>{t('actions.share')}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem variant="destructive">
-                    <IconTrash />
-                    <span>{t('actions.delete')}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu> */}
             </SidebarMenuItem>
           ))}
 

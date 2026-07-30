@@ -2,6 +2,11 @@
   "workspace_shell": {
     "home": "Home",
     "assistant": "AI Assistant",
+    "workspace_group": "AI workspace",
+    "content_group": "Knowledge and action",
+    "chat_history": "All chats",
+    "memory": "Global memory",
+    "skills": "Skills",
     "projects": "Projects",
     "resources": "Resources",
     "collections": "Action guides",
@@ -13,6 +18,7 @@
     "account_settings": "Account and security",
     "new_chat": "New chat",
     "search": "Search resources, guides, and articles",
+    "search_title": "Site search",
     "credit": "Credit"
   },
   "sidebar": {
@@ -192,6 +198,9 @@
     "project_benefit_memory": "Carry progress forward",
     "project_benefit_memory_description": "WebTools extracts completed work, decisions, and next steps from project chats while retaining sources.",
     "project_no_description": "No project description yet",
+    "project_overview": "Overview",
+    "project_progress": "Progress and decisions",
+    "project_context": "Chats, memory, and files",
     "project_name": "Project name",
     "project_description": "One-line description",
     "target_audience": "Target audience",

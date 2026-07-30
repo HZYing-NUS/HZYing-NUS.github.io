@@ -170,7 +170,7 @@ export function ChatMessages({
 
   return (
     <Conversation className="h-full">
-      <ConversationContent>
+      <ConversationContent className="mx-auto w-full max-w-3xl gap-10 px-1 py-2 sm:px-4">
         {messages.map((message) => {
           const metadata =
             message.metadata && typeof message.metadata === 'object'
@@ -216,54 +216,61 @@ export function ChatMessages({
               ) : null}
               {message.role === 'assistant' &&
               metadata?.sourceDetails?.length ? (
-                <div className="mb-4 grid gap-3 border-l-2 border-[#6f8fbe] pl-4 text-xs sm:grid-cols-3">
-                  {[
-                    {
-                      key: 'site',
-                      label: locale === 'zh' ? 'WebTools' : 'WebTools',
-                      types: ['resource', 'collection', 'article', 'profile'],
-                    },
-                    {
-                      key: 'web',
-                      label: locale === 'zh' ? '外部网页' : 'External web',
-                      types: ['web'],
-                    },
-                    {
-                      key: 'file',
-                      label: locale === 'zh' ? '项目文件' : 'Project files',
-                      types: ['file'],
-                    },
-                  ].map((group) => {
-                    const sources = metadata.sourceDetails!.filter((source) =>
-                      group.types.includes(source.type)
-                    );
-                    return sources.length ? (
-                      <div key={group.key}>
-                        <p className="mb-1 font-medium">{group.label}</p>
-                        {sources.map((source, index) =>
-                          source.url ? (
-                            <a
-                              className="text-muted-foreground block truncate underline"
-                              href={source.url}
-                              target="_blank"
-                              rel="noreferrer"
-                              key={`${source.title}-${index}`}
-                            >
-                              {source.title}
-                            </a>
-                          ) : (
-                            <p
-                              className="text-muted-foreground truncate"
-                              key={`${source.title}-${index}`}
-                            >
-                              {source.title}
-                            </p>
-                          )
-                        )}
-                      </div>
-                    ) : null;
-                  })}
-                </div>
+                <details className="mb-5 rounded-xl border border-black/[0.07] bg-black/[0.018] px-4 py-3 text-xs dark:border-white/10 dark:bg-white/[0.025]">
+                  <summary className="cursor-pointer font-medium text-[#5474a8] marker:text-[#8faee0] dark:text-[#8faee0]">
+                    {locale === 'zh'
+                      ? `参考来源 · ${metadata.sourceDetails.length}`
+                      : `References · ${metadata.sourceDetails.length}`}
+                  </summary>
+                  <div className="mt-3 grid gap-4 sm:grid-cols-3">
+                    {[
+                      {
+                        key: 'site',
+                        label: locale === 'zh' ? 'WebTools' : 'WebTools',
+                        types: ['resource', 'collection', 'article', 'profile'],
+                      },
+                      {
+                        key: 'web',
+                        label: locale === 'zh' ? '外部网页' : 'External web',
+                        types: ['web'],
+                      },
+                      {
+                        key: 'file',
+                        label: locale === 'zh' ? '项目文件' : 'Project files',
+                        types: ['file'],
+                      },
+                    ].map((group) => {
+                      const sources = metadata.sourceDetails!.filter((source) =>
+                        group.types.includes(source.type)
+                      );
+                      return sources.length ? (
+                        <div key={group.key}>
+                          <p className="mb-1.5 font-medium">{group.label}</p>
+                          {sources.map((source, index) =>
+                            source.url ? (
+                              <a
+                                className="text-muted-foreground block truncate underline"
+                                href={source.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                key={`${source.title}-${index}`}
+                              >
+                                {source.title}
+                              </a>
+                            ) : (
+                              <p
+                                className="text-muted-foreground truncate"
+                                key={`${source.title}-${index}`}
+                              >
+                                {source.title}
+                              </p>
+                            )
+                          )}
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </details>
               ) : null}
               {message.role === 'assistant' &&
                 message.parts.filter((part) => part.type === 'source-url')
@@ -298,6 +305,7 @@ export function ChatMessages({
                           <MessageContent>
                             <Response
                               className={cn(
+                                'leading-7 text-pretty [&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:tracking-tight [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-base [&_li]:my-1.5 [&_p]:my-4',
                                 isAssistantError && 'text-destructive'
                               )}
                             >
@@ -397,7 +405,7 @@ export function ChatMessages({
                     };
                     return (
                       <div
-                        className="text-muted-foreground mt-3 flex flex-wrap gap-3 border-t border-black/10 pt-2 font-mono text-[10px]"
+                        className="mt-4 flex flex-wrap gap-3 border-t border-black/[0.07] pt-3 font-mono text-[10px] text-[#86868b] dark:border-white/10 dark:text-[#8e8e93]"
                         key={`${message.id}-${i}`}
                       >
                         <span>{settlement.inputTokens} input tokens</span>
@@ -451,7 +459,7 @@ export function ChatMessages({
                 metadata?.outputTokens ||
                 metadata?.settledCredits ||
                 metadata?.errorReason) ? (
-                <div className="text-muted-foreground mt-3 flex flex-wrap gap-3 border-t border-black/10 pt-2 font-mono text-[10px]">
+                <div className="mt-4 flex flex-wrap gap-3 border-t border-black/[0.07] pt-3 font-mono text-[10px] text-[#86868b] dark:border-white/10 dark:text-[#8e8e93]">
                   <span>{metadata.inputTokens || 0} input tokens</span>
                   <span>{metadata.outputTokens || 0} output tokens</span>
                   <span>{metadata.settledCredits || 0} Credit</span>
