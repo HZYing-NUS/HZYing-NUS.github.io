@@ -195,7 +195,7 @@ export function ChatMessages({
             <div key={message.id}>
               {message.role === 'assistant' &&
               message.parts.some((part) => part.type === 'data-file-source') ? (
-                <div className="mb-3 border-l-2 border-[#c45d38] pl-4 text-xs">
+                <div className="mb-3 border-l-2 border-[#6f8fbe] pl-4 text-xs">
                   <p className="font-medium">
                     {locale === 'zh' ? '项目文件' : 'Project files'}
                   </p>
@@ -216,7 +216,7 @@ export function ChatMessages({
               ) : null}
               {message.role === 'assistant' &&
               metadata?.sourceDetails?.length ? (
-                <div className="mb-4 grid gap-3 border-l-2 border-[#c45d38] pl-4 text-xs sm:grid-cols-3">
+                <div className="mb-4 grid gap-3 border-l-2 border-[#6f8fbe] pl-4 text-xs sm:grid-cols-3">
                   {[
                     {
                       key: 'site',
@@ -346,7 +346,7 @@ export function ChatMessages({
                     };
                     return (
                       <div
-                        className="mt-3 border-l-2 border-[#c45d38] bg-black/[0.025] p-4 text-sm dark:bg-white/[0.025]"
+                        className="mt-3 border-l-2 border-[#6f8fbe] bg-black/[0.025] p-4 text-sm dark:bg-white/[0.025]"
                         key={`${message.id}-${i}`}
                       >
                         <p className="font-medium">
@@ -420,7 +420,7 @@ export function ChatMessages({
               {skillCandidates.some(
                 (candidate) => candidate.id === message.id
               ) ? (
-                <div className="mt-2 border-l-2 border-[#c45d38] pl-4 text-sm">
+                <div className="mt-2 border-l-2 border-[#6f8fbe] pl-4 text-sm">
                   <p>
                     {locale === 'zh'
                       ? '这个问题适合使用「产品想法诊断」。'

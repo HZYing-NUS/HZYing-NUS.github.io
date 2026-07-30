@@ -458,7 +458,7 @@ export function ChatInput({
               // The parent keeps the draft when a request fails.
             }
           }}
-          className="border-border/80 bg-card/95 overflow-hidden rounded-[1.35rem] border shadow-[0_28px_80px_-48px_rgba(62,48,31,0.95)] backdrop-blur"
+          className="overflow-hidden rounded-[1.4rem] border border-black/[0.08] bg-white/90 shadow-[0_18px_50px_-28px_rgba(31,45,70,0.45),0_2px_8px_rgba(31,45,70,0.05)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1c1d21]/90"
           globalDrop={Boolean(user)}
           multiple
         >
@@ -477,7 +477,7 @@ export function ChatInput({
               value={input}
             />
           </PromptInputBody>
-          <PromptInputFooter className="border-t px-3 py-2">
+          <PromptInputFooter className="border-t border-black/[0.07] px-3 py-2.5 dark:border-white/10">
             {!compact ? (
               <PromptInputTools className="min-w-0 flex-wrap gap-1.5">
                 <PromptInputSelect
@@ -495,7 +495,7 @@ export function ChatInput({
                 >
                   <PromptInputSelectTrigger
                     aria-label={t('model_label')}
-                    className="border-border/70 bg-muted/45 hover:bg-muted max-w-64 rounded-lg border px-2.5"
+                    className="max-w-64 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
                   >
                     <PromptInputSelectValue>
                       <span className="flex min-w-0 items-center gap-2">
@@ -542,7 +542,7 @@ export function ChatInput({
                 >
                   <PromptInputSelectTrigger
                     aria-label={t('skill_label')}
-                    className="border-border/70 bg-muted/45 hover:bg-muted max-w-48 rounded-lg border px-2.5"
+                    className="max-w-48 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
                   >
                     <PromptInputSelectValue>
                       <span className="flex min-w-0 items-center gap-2">
@@ -569,7 +569,7 @@ export function ChatInput({
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
+                    <div className="flex items-center gap-2 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 py-1.5 dark:border-white/10 dark:bg-white/[0.04]">
                       <BrainCircuitIcon className="text-muted-foreground size-3.5" />
                       <Label
                         htmlFor="prompt-reasoning-switch"
@@ -593,7 +593,7 @@ export function ChatInput({
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="border-border/70 bg-muted/35 flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
+                    <div className="flex items-center gap-2 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 py-1.5 dark:border-white/10 dark:bg-white/[0.04]">
                       <Globe2Icon className="text-muted-foreground size-3.5" />
                       <Label
                         htmlFor="prompt-web-search-switch"

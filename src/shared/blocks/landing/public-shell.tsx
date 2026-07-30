@@ -31,21 +31,31 @@ export async function PublicLandingShell({
   }
 
   return (
-    <Layout header={header} footer={footer}>
-      <LocaleDetector />
-      {header.topbanner?.text ? (
-        <TopBanner
-          id="topbanner"
-          text={header.topbanner.text}
-          buttonText={header.topbanner.buttonText}
-          href={header.topbanner.href}
-          target={header.topbanner.target}
-          closable
-          rememberDismiss
-          dismissedExpiryDays={header.topbanner.dismissedExpiryDays ?? 1}
-        />
-      ) : null}
-      {children}
-    </Layout>
+    <div className="webtools-public">
+      <a
+        href="#webtools-public-content"
+        className="bg-background text-foreground focus:ring-ring sr-only fixed top-3 left-3 z-[60] rounded-lg px-4 py-2 shadow-md focus:not-sr-only focus:ring-2 focus:outline-none"
+      >
+        {t('header.skip_to_content')}
+      </a>
+      <Layout header={header} footer={footer}>
+        <LocaleDetector />
+        {header.topbanner?.text ? (
+          <TopBanner
+            id="topbanner"
+            text={header.topbanner.text}
+            buttonText={header.topbanner.buttonText}
+            href={header.topbanner.href}
+            target={header.topbanner.target}
+            closable
+            rememberDismiss
+            dismissedExpiryDays={header.topbanner.dismissedExpiryDays ?? 1}
+          />
+        ) : null}
+        <div id="webtools-public-content" tabIndex={-1}>
+          {children}
+        </div>
+      </Layout>
+    </div>
   );
 }

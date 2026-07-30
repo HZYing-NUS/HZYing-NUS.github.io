@@ -84,9 +84,9 @@ export default async function ResourceDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="relative border-b bg-[radial-gradient(circle_at_75%_15%,hsl(var(--primary)/0.14),transparent_32%),linear-gradient(to_bottom,hsl(var(--muted)/0.35),transparent)]">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.24)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.24)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent)] bg-[size:54px_54px]" />
-        <div className="relative mx-auto max-w-6xl px-6 py-14 md:py-20">
+      <section className="relative border-b bg-[radial-gradient(circle_at_75%_15%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_32%),linear-gradient(to_bottom,color-mix(in_oklab,var(--muted)_35%,transparent),transparent)]">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklab,var(--border)_24%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--border)_24%,transparent)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent)] bg-[size:54px_54px]" />
+        <div className="relative mx-auto max-w-6xl px-5 py-14 md:px-10 md:py-20">
           <Link
             href={`/${locale}/resources`}
             className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition"
@@ -152,7 +152,7 @@ export default async function ResourceDetailPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-5 md:px-10">
         <CommunityContentActions
           targetId={resource.id}
           targetType="resource"
@@ -199,12 +199,12 @@ export default async function ResourceDetailPage({
         {resource.caution || resource.notFor ? (
           <section className="mt-10 grid gap-5 md:grid-cols-2">
             {resource.caution ? (
-              <div className="rounded-3xl border border-amber-300/60 bg-amber-50/60 p-6 dark:border-amber-800 dark:bg-amber-950/20">
-                <div className="flex items-center gap-2 font-semibold text-amber-900 dark:text-amber-200">
+              <div className="bg-accent/65 rounded-3xl border p-6">
+                <div className="text-accent-foreground flex items-center gap-2 font-semibold">
                   <CircleAlert className="size-5" aria-hidden="true" />
                   {isZh ? '使用前注意' : 'Watch before using'}
                 </div>
-                <p className="mt-4 text-sm leading-7 text-amber-950/75 dark:text-amber-100/75">
+                <p className="text-muted-foreground mt-4 text-sm leading-7">
                   {resource.caution}
                 </p>
               </div>
@@ -282,7 +282,7 @@ export default async function ResourceDetailPage({
                 <Link
                   key={collection.slug}
                   href={`/${locale}/collections/${collection.slug}`}
-                  className="group rounded-3xl border p-6 transition hover:-translate-y-1 hover:shadow-lg"
+                  className="group rounded-3xl border p-6 transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
                 >
                   <p className="text-muted-foreground text-xs font-semibold tracking-[0.14em] uppercase">
                     {isZh

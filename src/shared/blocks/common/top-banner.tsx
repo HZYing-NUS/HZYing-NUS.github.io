@@ -217,7 +217,7 @@ export function TopBanner({
       <div
         ref={bannerRef}
         className={cn(
-          'from-primary to-primary text-primary-foreground fixed top-0 right-0 left-0 z-[51] hidden min-h-12 bg-gradient-to-r py-1 shadow-lg md:block',
+          'bg-foreground text-background fixed top-0 right-0 left-0 z-[51] hidden min-h-11 border-b border-white/10 py-1 shadow-sm md:block',
           className
         )}
       >
@@ -277,7 +277,7 @@ export function TopBanner({
               {closable ? (
                 <button
                   onClick={handleDismiss}
-                  className="bg-primary/10 flex-shrink-0 rounded p-1 transition-colors"
+                  className="flex-shrink-0 rounded-md p-1.5 opacity-70 transition hover:bg-white/10 hover:opacity-100"
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />

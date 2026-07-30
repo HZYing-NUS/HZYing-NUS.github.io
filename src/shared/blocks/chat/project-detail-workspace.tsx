@@ -28,6 +28,20 @@ const fields = [
   'recentProgress',
 ] as const;
 
+const fieldTranslationKeys = {
+  name: 'project_name',
+  description: 'project_description',
+  targetAudience: 'target_audience',
+  stage: 'stage',
+  technology: 'technology',
+  confirmedDecisions: 'confirmed_decisions',
+  completedItems: 'completed_items',
+  currentProblem: 'current_problem',
+  nextSteps: 'next_steps',
+  importantConclusions: 'important_conclusions',
+  recentProgress: 'recent_progress',
+} as const;
+
 export function ProjectDetailWorkspace() {
   const t = useTranslations('ai.chat.workspace');
   const params = useParams();
@@ -134,14 +148,8 @@ export function ProjectDetailWorkspace() {
       <section className="dark:border-border grid gap-x-8 gap-y-6 border-b border-black/10 pb-10 md:grid-cols-2">
         {fields.map((field) => (
           <div key={field} className={field === 'name' ? 'md:col-span-2' : ''}>
-            <Label className="mb-2 text-xs text-[#6f6a61]">
-              {t(
-                field === 'name'
-                  ? 'project_name'
-                  : field === 'description'
-                    ? 'project_description'
-                    : field
-              )}
+            <Label className="mb-2 text-xs text-[#6e6e73] dark:text-[#a1a1a6]">
+              {t(fieldTranslationKeys[field])}
             </Label>
             {field === 'name' || field === 'stage' ? (
               <Input
@@ -173,7 +181,7 @@ export function ProjectDetailWorkspace() {
             {payload.chats.map((chat: any) => (
               <Link
                 key={chat.id}
-                className="block border-b border-black/10 py-2 text-sm hover:text-[#a34e32]"
+                className="block border-b border-black/10 py-2 text-sm transition-colors hover:text-[#5474a8] dark:border-white/10 dark:hover:text-[#8faee0]"
                 href={`/chat/${chat.id}`}
               >
                 {chat.title}
@@ -266,7 +274,7 @@ export function ProjectDetailWorkspace() {
                 className="min-w-0 flex-1 truncate"
               >
                 <span>{file.originalName}</span>
-                <span className="ml-2 font-mono text-[10px] text-[#777268]">
+                <span className="ml-2 font-mono text-[10px] text-[#6e6e73] dark:text-[#a1a1a6]">
                   {file.parseStatus}
                   {file.parseError === 'PDF_PARSER_NOT_CONFIGURED'
                     ? ` · ${t('pdf_pending')}`

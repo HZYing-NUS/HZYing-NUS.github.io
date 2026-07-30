@@ -152,26 +152,25 @@ export function ChatGenerator({
   ];
 
   return (
-    <div className="dark:bg-background dark:text-foreground relative flex min-h-[calc(100dvh-3.5rem)] flex-col overflow-hidden bg-[#f5f1e8] text-[#24231f]">
+    <div className="relative flex min-h-[calc(100dvh-3.5rem)] flex-col overflow-hidden bg-[#f7f7f8] text-[#1d1d1f] dark:bg-[#101114] dark:text-[#f5f5f7]">
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute -top-40 left-[12%] size-[28rem] rounded-full bg-[#d9bfa6]/25 blur-3xl dark:bg-[#7c5a43]/10" />
-        <div className="absolute right-[5%] bottom-[-16rem] size-[34rem] rounded-full bg-[#c9c4a7]/30 blur-3xl dark:bg-[#77725e]/10" />
-        <div className="absolute inset-0 [background-image:linear-gradient(to_right,#9a8d7a18_1px,transparent_1px),linear-gradient(to_bottom,#9a8d7a18_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.22]" />
+        <div className="absolute -top-64 left-[8%] h-[34rem] w-[60rem] rounded-full bg-[#dce7fb]/55 blur-[110px] dark:bg-[#20304d]/25" />
+        <div className="absolute top-[18rem] right-[-12rem] size-[30rem] rounded-full bg-white/90 blur-[100px] dark:bg-[#23262d]/35" />
       </div>
-      <main className="relative z-[1] mx-auto flex w-full flex-1 flex-col px-5 py-12 md:max-w-6xl md:px-8 md:py-20">
+      <main className="relative z-[1] mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-10 md:px-10 md:py-16">
         <div className="mx-auto flex w-full max-w-4xl flex-col justify-center">
           <div className="mb-8 max-w-3xl">
-            <p className="mb-4 flex items-center gap-2 font-mono text-[10px] tracking-[.24em] text-[#a34e32] uppercase">
+            <p className="mb-4 flex items-center gap-2 text-xs font-semibold tracking-[.12em] text-[#5474a8] uppercase dark:text-[#8faee0]">
               <SparklesIcon className="size-3" />
               {t(publicLanding ? 'public_eyebrow' : 'eyebrow')}
             </p>
-            <h2 className="text-4xl leading-[0.98] font-semibold tracking-[-.055em] text-balance sm:text-6xl">
+            <h2 className="max-w-3xl text-4xl leading-[1.02] font-semibold tracking-[-.045em] text-balance sm:text-[3.5rem]">
               {t(publicLanding ? 'public_title' : 'title')}
             </h2>
-            <p className="dark:text-muted-foreground mt-5 max-w-2xl text-sm leading-6 text-[#6d685f] sm:text-base sm:leading-7">
+            <p className="mt-5 max-w-2xl text-sm leading-6 text-[#6e6e73] sm:text-base sm:leading-7 dark:text-[#a1a1a6]">
               {t(publicLanding ? 'public_description' : 'description')}
             </p>
           </div>
@@ -202,10 +201,10 @@ export function ChatGenerator({
                   type="button"
                   key={task}
                   onClick={() => setSuggestedQuestion(task)}
-                  className="dark:border-border dark:bg-card/35 group flex w-full items-center justify-between gap-4 rounded-xl border border-black/10 bg-white/45 px-4 py-3 text-left text-sm transition hover:-translate-y-0.5 hover:border-[#c45d38]/45 hover:bg-white/70"
+                  className="group flex w-full items-center justify-between gap-4 rounded-xl border border-black/[0.07] bg-white/65 px-4 py-3 text-left text-sm shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition duration-200 hover:-translate-y-0.5 hover:border-[#91a8ca]/60 hover:bg-white active:translate-y-0 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
                 >
                   <span>{task}</span>
-                  <ArrowUpRight className="size-4 shrink-0 text-[#a34e32] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ArrowUpRight className="size-4 shrink-0 text-[#5474a8] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-[#8faee0]" />
                 </button>
               ))}
             </div>
@@ -239,18 +238,18 @@ export function ChatGenerator({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="dark:border-border dark:bg-card/35 group rounded-2xl border border-black/10 bg-white/55 p-5 transition hover:-translate-y-1 hover:border-[#c45d38]/45 hover:bg-white/80"
+                    className="group rounded-2xl border border-black/[0.07] bg-white/70 p-5 transition duration-200 hover:-translate-y-1 hover:border-[#91a8ca]/60 hover:bg-white dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <span className="flex size-10 items-center justify-center rounded-xl bg-[#a34e32]/10 text-[#a34e32]">
+                      <span className="flex size-10 items-center justify-center rounded-xl bg-[#e8eef8] text-[#5474a8] dark:bg-[#28344a] dark:text-[#9bb7e2]">
                         <Icon className="size-5" />
                       </span>
-                      <ArrowUpRight className="size-4 text-[#a34e32] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      <ArrowUpRight className="size-4 text-[#5474a8] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-[#8faee0]" />
                     </div>
                     <h2 className="mt-6 text-lg font-semibold tracking-tight">
                       {item.title}
                     </h2>
-                    <p className="dark:text-muted-foreground mt-2 text-sm leading-6 text-[#6d685f]">
+                    <p className="mt-2 text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
                       {item.description}
                     </p>
                   </Link>
@@ -258,7 +257,7 @@ export function ChatGenerator({
               })}
             </div>
             <div className="mt-12 border-t border-black/10 pt-8 dark:border-white/10">
-              <p className="font-mono text-[10px] tracking-[.2em] text-[#a34e32] uppercase">
+              <p className="text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
                 {t('public_flow_eyebrow')}
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -272,7 +271,7 @@ export function ChatGenerator({
                     key={stage}
                     className="flex items-center gap-3 border-l border-black/15 py-2 pl-4 dark:border-white/15"
                   >
-                    <span className="font-mono text-xs text-[#a34e32]">
+                    <span className="font-mono text-xs text-[#5474a8] dark:text-[#8faee0]">
                       0{index + 1}
                     </span>
                     <span className="text-sm font-medium">{stage}</span>
@@ -283,10 +282,10 @@ export function ChatGenerator({
           </section>
         ) : null}
         {workspaceHome ? (
-          <section className="mx-auto mt-12 w-full max-w-4xl border-t border-black/10 pt-7 dark:border-white/10">
+          <section className="mx-auto mt-14 w-full max-w-4xl border-t border-black/[0.07] pt-8 dark:border-white/10">
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
-                <p className="font-mono text-[10px] tracking-[.2em] text-[#a34e32] uppercase">
+                <p className="text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
                   {t('recent_projects_eyebrow')}
                 </p>
                 <h2 className="mt-2 text-xl font-semibold tracking-tight">
@@ -306,11 +305,11 @@ export function ChatGenerator({
                   <Link
                     key={project.id}
                     href={`/chat/projects/${project.id}`}
-                    className="dark:border-border dark:bg-card/35 rounded-xl border border-black/10 bg-white/45 p-4 transition hover:-translate-y-0.5 hover:border-[#c45d38]/45"
+                    className="rounded-2xl border border-black/[0.07] bg-white/70 p-5 shadow-[0_8px_30px_-24px_rgba(31,45,70,0.35)] transition duration-200 hover:-translate-y-0.5 hover:border-[#91a8ca]/60 hover:bg-white dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
                   >
-                    <FolderKanban className="size-4 text-[#a34e32]" />
+                    <FolderKanban className="size-4 text-[#5474a8] dark:text-[#8faee0]" />
                     <h3 className="mt-4 font-medium">{project.name}</h3>
-                    <p className="dark:text-muted-foreground mt-1 line-clamp-2 text-xs leading-5 text-[#6d685f]">
+                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#6e6e73] dark:text-[#a1a1a6]">
                       {project.description ||
                         project.stage ||
                         t('project_no_description')}
@@ -319,16 +318,16 @@ export function ChatGenerator({
                 ))}
               </div>
             ) : (
-              <div className="dark:border-border dark:bg-card/25 flex flex-col items-start gap-4 rounded-xl border border-dashed border-black/15 bg-white/30 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-black/15 bg-white/55 p-5 sm:flex-row sm:items-center sm:justify-between dark:border-white/15 dark:bg-white/[0.03]">
                 <div>
                   <p className="font-medium">{t('projects_empty_title')}</p>
-                  <p className="dark:text-muted-foreground mt-1 text-sm text-[#6d685f]">
+                  <p className="mt-1 text-sm text-[#6e6e73] dark:text-[#a1a1a6]">
                     {t('projects_empty_description')}
                   </p>
                 </div>
                 <Link
                   href="/chat/projects"
-                  className="shrink-0 text-sm font-medium text-[#a34e32]"
+                  className="shrink-0 text-sm font-medium text-[#5474a8] dark:text-[#8faee0]"
                 >
                   {t('create_project')}
                 </Link>
@@ -337,10 +336,10 @@ export function ChatGenerator({
           </section>
         ) : null}
         {workspaceHome && collectionProgress.length ? (
-          <section className="mx-auto mt-10 w-full max-w-4xl border-t border-black/10 pt-7 dark:border-white/10">
+          <section className="mx-auto mt-10 w-full max-w-4xl border-t border-black/[0.07] pt-8 dark:border-white/10">
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
-                <p className="font-mono text-[10px] tracking-[.2em] text-[#a34e32] uppercase">
+                <p className="text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
                   {locale === 'zh' ? '继续推进' : 'Continue guides'}
                 </p>
                 <h2 className="mt-2 text-xl font-semibold tracking-tight">
@@ -361,10 +360,10 @@ export function ChatGenerator({
                 <Link
                   key={item.collectionId}
                   href={`/collections/${item.slug}`}
-                  className="dark:border-border dark:bg-card/35 rounded-xl border border-black/10 bg-white/45 p-4 transition hover:-translate-y-0.5 hover:border-[#c45d38]/45"
+                  className="rounded-2xl border border-black/[0.07] bg-white/70 p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#91a8ca]/60 hover:bg-white dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
                 >
                   <div className="flex items-center justify-between gap-3 text-xs">
-                    <span className="text-[#a34e32]">
+                    <span className="text-[#5474a8] dark:text-[#8faee0]">
                       {locale === 'zh'
                         ? `${item.completedCount}／${item.totalCount} 步`
                         : `${item.completedCount}/${item.totalCount} steps`}
@@ -375,7 +374,7 @@ export function ChatGenerator({
                   </div>
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
                     <div
-                      className="h-full rounded-full bg-[#a34e32]"
+                      className="h-full rounded-full bg-[#6f8fbe]"
                       style={{ width: `${item.percentage}%` }}
                     />
                   </div>
@@ -430,9 +429,9 @@ function WorkspaceRecommendationsSection({
   if (!groups.length) return null;
 
   return (
-    <section className="mx-auto mt-12 w-full max-w-4xl border-t border-black/10 pt-7 dark:border-white/10">
+    <section className="mx-auto mt-12 w-full max-w-4xl border-t border-black/[0.07] pt-8 dark:border-white/10">
       <div className="mb-6 max-w-2xl">
-        <p className="font-mono text-[10px] tracking-[.2em] text-[#a34e32] uppercase">
+        <p className="text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
           {t('recommended_eyebrow')}
         </p>
         <h2 className="mt-2 text-xl font-semibold tracking-tight">
@@ -442,7 +441,7 @@ function WorkspaceRecommendationsSection({
               })
             : t('recommended_default_title')}
         </h2>
-        <p className="dark:text-muted-foreground mt-2 text-sm leading-6 text-[#6d685f]">
+        <p className="mt-2 text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
           {recommendations.stageLabel
             ? t('recommended_for_stage_description')
             : t('recommended_default_description')}
@@ -455,7 +454,7 @@ function WorkspaceRecommendationsSection({
             <div key={group.key} className="min-w-0">
               <div className="mb-2 flex items-center justify-between gap-3 border-b border-black/10 pb-3 dark:border-white/10">
                 <h3 className="flex items-center gap-2 text-sm font-semibold">
-                  <Icon className="size-4 text-[#a34e32]" />
+                  <Icon className="size-4 text-[#5474a8] dark:text-[#8faee0]" />
                   {group.title}
                 </h3>
                 <Link
@@ -486,13 +485,13 @@ function WorkspaceRecommendationLink({
   return (
     <Link href={item.href} className="group block py-4 first:pt-3 last:pb-0">
       <div className="flex items-start justify-between gap-3">
-        <h4 className="line-clamp-2 text-sm leading-5 font-medium transition-colors group-hover:text-[#a34e32]">
+        <h4 className="line-clamp-2 text-sm leading-5 font-medium transition-colors group-hover:text-[#5474a8] dark:group-hover:text-[#8faee0]">
           {item.title}
         </h4>
-        <ArrowUpRight className="mt-0.5 size-3.5 shrink-0 text-[#a34e32] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        <ArrowUpRight className="mt-0.5 size-3.5 shrink-0 text-[#5474a8] transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-[#8faee0]" />
       </div>
       {item.summary ? (
-        <p className="dark:text-muted-foreground mt-1.5 line-clamp-2 text-xs leading-5 text-[#6d685f]">
+        <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-[#6e6e73] dark:text-[#a1a1a6]">
           {item.summary}
         </p>
       ) : null}

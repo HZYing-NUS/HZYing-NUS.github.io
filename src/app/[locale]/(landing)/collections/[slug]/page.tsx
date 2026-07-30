@@ -96,9 +96,9 @@ export default async function CollectionDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="relative border-b bg-[radial-gradient(circle_at_78%_18%,hsl(var(--primary)/0.13),transparent_30%),linear-gradient(to_bottom,hsl(var(--muted)/0.3),transparent)]">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.2)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent)] bg-[size:52px_52px]" />
-        <div className="relative mx-auto max-w-6xl px-6 py-14 md:py-20">
+      <section className="relative border-b bg-[radial-gradient(circle_at_78%_18%,color-mix(in_oklab,var(--primary)_13%,transparent),transparent_30%),linear-gradient(to_bottom,color-mix(in_oklab,var(--muted)_30%,transparent),transparent)]">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklab,var(--border)_20%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--border)_20%,transparent)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent)] bg-[size:52px_52px]" />
+        <div className="relative mx-auto max-w-6xl px-5 py-14 md:px-10 md:py-20">
           <Link
             href={`/${locale}/collections`}
             className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition"
@@ -146,7 +146,7 @@ export default async function CollectionDetailPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-5 md:px-10">
         <CommunityContentActions
           targetId={collection.id}
           targetType="collection"
@@ -346,7 +346,7 @@ export default async function CollectionDetailPage({
             </p>
             <Link
               href={`/${locale}/collections/${collection.nextSlug}`}
-              className="group mt-4 flex items-center justify-between gap-6 rounded-3xl border p-6 transition hover:-translate-y-1 hover:shadow-lg md:p-8"
+              className="group mt-4 flex items-center justify-between gap-6 rounded-3xl border p-6 transition duration-200 hover:-translate-y-0.5 hover:shadow-md md:p-8"
             >
               <div>
                 <p className="font-serif text-3xl tracking-tight">

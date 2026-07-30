@@ -174,7 +174,7 @@ export function SkillsWorkspace() {
             className="dark:border-border grid gap-8 border-y border-black/15 py-8 md:grid-cols-[1fr_18rem]"
           >
             <div>
-              <p className="mb-3 font-mono text-[10px] tracking-[.2em] text-[#a34e32] uppercase">
+              <p className="mb-3 text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
                 Skill {String(index + 1).padStart(2, '0')}
               </p>
               <h2 className="text-2xl font-medium">{skill.name}</h2>
@@ -186,7 +186,7 @@ export function SkillsWorkspace() {
                   <dt className="font-medium">
                     {locale === 'zh' ? '适合' : 'Suitable for'}
                   </dt>
-                  <dd className="mt-2 text-[#6f6a61]">
+                  <dd className="mt-2 text-[#6e6e73] dark:text-[#a1a1a6]">
                     {skill.suitableFor ||
                       (locale === 'zh'
                         ? '早期产品想法、MVP 和付费验证。'
@@ -197,7 +197,7 @@ export function SkillsWorkspace() {
                   <dt className="font-medium">
                     {locale === 'zh' ? '不适合' : 'Not suitable for'}
                   </dt>
-                  <dd className="mt-2 text-[#6f6a61]">
+                  <dd className="mt-2 text-[#6e6e73] dark:text-[#a1a1a6]">
                     {skill.unsuitableFor ||
                       (locale === 'zh'
                         ? '替代法律、财务或医疗专业判断。'
@@ -207,7 +207,7 @@ export function SkillsWorkspace() {
               </dl>
             </div>
             <div className="dark:border-border border-l border-black/10 pl-7">
-              <p className="mb-5 text-sm leading-6 text-[#6f6a61]">
+              <p className="mb-5 text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
                 {locale === 'zh'
                   ? '启用后创建新对话。一条对话最多启用一个 Skill。'
                   : 'Enabling this starts a new chat. Each chat can use at most one Skill.'}
@@ -333,7 +333,7 @@ export function CreditsWorkspace() {
   return (
     <WorkspaceShell title={t('credits')} description={t('credits_description')}>
       {loadFailed ? (
-        <p className="mb-8 border-l-2 border-[#c45d38] pl-4 text-sm text-[#6f6a61] dark:text-[#b8b0a5]">
+        <p className="mb-8 border-l-2 border-[#6f8fbe] pl-4 text-sm text-[#6e6e73] dark:text-[#a1a1a6]">
           {t('credits_load_failed')}
         </p>
       ) : null}
@@ -353,7 +353,7 @@ export function CreditsWorkspace() {
           <section>
             <div className="mb-5 flex items-end justify-between gap-5">
               <div>
-                <p className="font-mono text-[10px] tracking-[.18em] text-[#a34e32] uppercase">
+                <p className="text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
                   {t('one_time_purchase')}
                 </p>
                 <h2 className="mt-2 text-xl font-medium">
@@ -373,9 +373,9 @@ export function CreditsWorkspace() {
                 {packages.map((creditPackage) => (
                   <article
                     key={creditPackage.code}
-                    className={`relative flex min-h-64 flex-col bg-[#f5f1e8] p-6 dark:bg-[#171715] ${
+                    className={`relative flex min-h-64 flex-col bg-[#f7f7f8] p-6 dark:bg-[#17181b] ${
                       creditPackage.recommended
-                        ? 'shadow-[inset_0_3px_0_#c45d38]'
+                        ? 'shadow-[inset_0_3px_0_#6f8fbe]'
                         : ''
                     }`}
                   >
@@ -384,7 +384,7 @@ export function CreditsWorkspace() {
                         {creditPackage.name}
                       </h3>
                       {creditPackage.recommended ? (
-                        <span className="bg-[#c45d38] px-2 py-1 font-mono text-[9px] tracking-[.12em] text-white uppercase">
+                        <span className="bg-[#6f8fbe] px-2 py-1 font-mono text-[9px] tracking-[.12em] text-white uppercase">
                           {t('recommended')}
                         </span>
                       ) : null}
@@ -428,10 +428,10 @@ export function CreditsWorkspace() {
             <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
               <div className="min-w-0">
                 <div className="flex items-center gap-3">
-                  <Gift className="size-5 text-[#c45d38]" />
+                  <Gift className="size-5 text-[#5474a8] dark:text-[#8faee0]" />
                   <h2 className="text-xl font-medium">{t('invite_rewards')}</h2>
                 </div>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6f6a61] dark:text-[#b8b0a5]">
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
                   {t('invite_description')}
                 </p>
                 <div className="mt-6 flex min-w-0 gap-2">
@@ -537,7 +537,7 @@ function ReferralStat({
   value: string | number;
 }) {
   return (
-    <div className="bg-[#f5f1e8] p-4 dark:bg-[#171715]">
+    <div className="bg-[#f7f7f8] p-4 dark:bg-[#17181b]">
       <dt className="text-[11px] leading-4 text-[#777268] dark:text-[#aaa399]">
         {label}
       </dt>

@@ -14,6 +14,7 @@
     "sections": {
       "hero": {
         "id": "hero",
+        "variant": "webtools-public",
         "title": "The right tools for your first web product.",
         "highlight_text": "right tools",
         "description": "From demand discovery and idea validation to building and launch, find field-tested tools, action guides, and practical experience for your current stage.",
@@ -23,6 +24,21 @@
           "url": "/collections"
         },
         "tip": "Public resources and action guides require no sign-in. Start with the next step you need to finish.",
+        "aside_label": "Product-building route",
+        "items": [
+          {
+            "title": "Locate the stage",
+            "description": "Identify the problem that matters most right now."
+          },
+          {
+            "title": "Choose narrowly",
+            "description": "Only compare tools that support the current task."
+          },
+          {
+            "title": "Keep evidence",
+            "description": "Finish one step and preserve what unlocks the next."
+          }
+        ],
         "buttons": [
           {
             "title": "Find resources by stage",

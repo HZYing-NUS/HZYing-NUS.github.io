@@ -21,6 +21,8 @@
     "featured": "Featured",
     "following": "Following",
     "write": "Write article",
+    "publicReadingHint": "Articles are public. Sign in only when you are ready to publish from the creator workspace.",
+    "signInToWrite": "Sign in to publish articles, manage drafts, and maintain your author profile.",
     "followingSignIn": "Sign in to see articles from authors you follow.",
     "signIn": "Sign in",
     "communityAuthor": "Community author",

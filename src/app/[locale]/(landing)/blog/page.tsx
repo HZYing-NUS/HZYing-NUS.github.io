@@ -82,8 +82,9 @@ export default async function BlogPage({
   let legacy: Awaited<ReturnType<typeof getPostsAndCategories>>['posts'] = [];
   if (!showingAuthors && filter === 'all') {
     try {
-      legacy = (await getPostsAndCategories({ locale, page: 1, limit: 50 }))
-        .posts;
+      legacy = (
+        await getPostsAndCategories({ locale, page: 1, limit: 50 })
+      ).posts.filter((post) => post.slug !== 'what-is-xxx');
     } catch {}
   }
   const authorRows = showingAuthors
@@ -111,33 +112,37 @@ export default async function BlogPage({
     .slice(0, 7);
 
   return (
-    <main className="bg-muted/35 min-h-screen border-t">
-      <div className="mx-auto max-w-7xl px-4 pt-28 pb-12 sm:px-6 md:pt-36 lg:px-8 lg:pb-16">
-        <header className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+    <main className="min-h-screen border-t bg-[linear-gradient(to_bottom,color-mix(in_oklab,var(--muted)_22%,transparent),transparent_34rem)]">
+      <div className="mx-auto max-w-7xl px-5 pt-28 pb-12 md:px-10 md:pt-40 lg:pb-20">
+        <header className="mb-10 grid gap-8 border-b pb-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                {t('page.title')}
-              </h1>
-              <span className="border-primary/20 bg-primary/8 text-primary rounded-full border px-3 py-1 text-xs font-semibold">
-                {t('messages.eyebrow')}
-              </span>
-            </div>
-            <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
+            <p className="text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase">
+              {t('messages.eyebrow')}
+            </p>
+            <h1 className="mt-4 max-w-3xl text-5xl leading-[1.02] font-semibold tracking-[-0.04em] text-balance sm:text-6xl">
+              {t('page.title')}
+            </h1>
+            <p className="text-muted-foreground mt-5 max-w-2xl text-base leading-8 md:text-lg">
               {t('page.sections.blog.description')}
             </p>
           </div>
-          <Link
-            href="/settings/community/articles"
-            className="bg-primary text-primary-foreground inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition hover:opacity-90 active:scale-[0.98]"
-          >
-            <PenLine className="size-4" />
-            {t('messages.write')}
-          </Link>
+          {user ? (
+            <Link
+              href="/settings/community/articles"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 active:translate-y-0"
+            >
+              <PenLine className="size-4" />
+              {t('messages.write')}
+            </Link>
+          ) : (
+            <p className="text-muted-foreground max-w-sm text-sm leading-6 lg:text-right">
+              {t('messages.publicReadingHint')}
+            </p>
+          )}
         </header>
 
         <nav
-          className="bg-card mb-4 inline-flex rounded-xl border p-1 shadow-sm"
+          className="bg-background mb-5 inline-flex rounded-xl border p-1 shadow-sm"
           aria-label={t('messages.contentType')}
         >
           <Link
@@ -247,7 +252,7 @@ export default async function BlogPage({
           </section>
         ) : (
           <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <section className="bg-card overflow-hidden rounded-xl border shadow-sm">
+            <section className="bg-background overflow-hidden rounded-2xl border shadow-sm">
               <nav
                 className="flex items-center gap-1 overflow-x-auto border-b px-4 py-3"
                 aria-label={t('messages.feedFilter')}
@@ -258,7 +263,7 @@ export default async function BlogPage({
                     href={item === 'all' ? '/blog' : `/blog?filter=${item}`}
                     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                       filter === item
-                        ? 'bg-primary/10 text-primary'
+                        ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     }`}
                   >
@@ -330,23 +335,29 @@ export default async function BlogPage({
             </section>
 
             <aside className="space-y-4 lg:sticky lg:top-24">
-              <div className="from-primary/12 via-primary/7 border-primary/15 overflow-hidden rounded-xl border bg-gradient-to-br to-transparent p-5">
-                <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
+              <div className="bg-foreground text-background overflow-hidden rounded-2xl p-6 shadow-sm">
+                <div className="bg-background/10 flex size-10 items-center justify-center rounded-xl">
                   <Sparkles className="size-5" />
                 </div>
                 <h2 className="mt-4 text-lg font-semibold">
                   {t('messages.contributeTitle')}
                 </h2>
-                <p className="text-muted-foreground mt-2 text-sm leading-6">
+                <p className="text-background/60 mt-2 text-sm leading-6">
                   {t('messages.contributeDescription')}
                 </p>
-                <Link
-                  href="/settings/community/articles"
-                  className="text-primary mt-4 inline-flex items-center gap-1 text-sm font-semibold hover:underline"
-                >
-                  {t('messages.startWriting')}
-                  <ChevronRight className="size-4" />
-                </Link>
+                {user ? (
+                  <Link
+                    href="/settings/community/articles"
+                    className="mt-4 inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+                  >
+                    {t('messages.startWriting')}
+                    <ChevronRight className="size-4" />
+                  </Link>
+                ) : (
+                  <p className="text-background/55 mt-4 text-xs leading-5">
+                    {t('messages.signInToWrite')}
+                  </p>
+                )}
               </div>
 
               {rankedArticles.length > 0 && (
@@ -487,7 +498,7 @@ function CommunityArticle({
             <img
               src={coverImage}
               alt={title || ''}
-              className="h-28 w-44 rounded-lg object-cover transition duration-300 group-hover:scale-[1.02]"
+              className="h-28 w-44 rounded-lg object-cover transition duration-200 group-hover:scale-[1.015]"
             />
           </Link>
         )}
@@ -580,7 +591,7 @@ function LegacyArticle({
             <img
               src={post.image}
               alt={post.title || ''}
-              className="h-28 w-44 rounded-lg object-cover transition duration-300 group-hover:scale-[1.02]"
+              className="h-28 w-44 rounded-lg object-cover transition duration-200 group-hover:scale-[1.015]"
             />
           </Link>
         )}
@@ -598,12 +609,13 @@ function buildAuthorDirectoryHref(query: string, page: number) {
 
 function AuthorAvatar({ src, name }: { src?: string | null; name: string }) {
   if (src) {
-    return (
-      <img src={src} alt={name} className="size-7 rounded-md object-cover" />
-    );
+    return <img src={src} alt="" className="size-7 rounded-md object-cover" />;
   }
   return (
-    <span className="bg-primary/10 text-primary flex size-7 items-center justify-center rounded-md text-xs font-semibold">
+    <span
+      aria-hidden="true"
+      className="bg-foreground/8 text-foreground flex size-7 items-center justify-center rounded-md text-xs font-semibold"
+    >
       {name.charAt(0).toUpperCase()}
     </span>
   );

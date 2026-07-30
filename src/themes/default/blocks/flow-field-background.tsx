@@ -19,10 +19,10 @@ type 烟雾粒子 = 坐标 & {
 };
 
 const 光团配置 = [
-  { x: 0.18, y: 0.35, size: 0.42, color: [99, 102, 241] },
-  { x: 0.76, y: 0.26, size: 0.38, color: [56, 189, 248] },
-  { x: 0.58, y: 0.78, size: 0.34, color: [139, 92, 246] },
-  { x: 0.38, y: 0.67, size: 0.25, color: [245, 158, 11] },
+  { x: 0.2, y: 0.32, size: 0.42, color: [91, 118, 153] },
+  { x: 0.76, y: 0.24, size: 0.38, color: [126, 145, 170] },
+  { x: 0.6, y: 0.78, size: 0.34, color: [104, 128, 158] },
+  { x: 0.36, y: 0.68, size: 0.25, color: [143, 156, 174] },
 ] as const;
 
 export function FlowFieldBackground() {
@@ -99,7 +99,7 @@ export function FlowFieldBackground() {
             life: 1500 + Math.random() * 1700,
             age: 0,
             alpha: 0.08 + Math.random() * 0.11,
-            color: 索引 % 3 === 0 ? [56, 189, 248] : [99, 102, 241],
+            color: 索引 % 3 === 0 ? [126, 145, 170] : [91, 118, 153],
             phase: Math.random() * Math.PI * 2,
           });
         }
@@ -215,7 +215,7 @@ export function FlowFieldBackground() {
           x,
           y,
           Math.max(宽度, 高度) * (0.1 + 指针强度 * 0.045),
-          [79, 70, 229],
+          [91, 118, 153],
           0.06 + 指针强度 * 0.08
         );
       }

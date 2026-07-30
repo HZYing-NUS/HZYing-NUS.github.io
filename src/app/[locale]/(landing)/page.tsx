@@ -4,14 +4,12 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { getThemePage } from '@/core/theme';
 import { ChatGenerator } from '@/shared/blocks/chat/generator';
-import { PublicLandingShell } from '@/shared/blocks/landing/public-shell';
-import { WorkspaceLayout } from '@/shared/blocks/workspace/layout';
 import { getPublishedCollections } from '@/shared/models/collection';
 import { getIncompleteCollectionProgress } from '@/shared/models/collection-progress';
 import { searchPublishedPosts } from '@/shared/models/post';
 import { getProjects, type Project } from '@/shared/models/project';
 import { getPublishedResources } from '@/shared/models/resource';
-import { getSignUser, getUserCredits } from '@/shared/models/user';
+import { getSignUser } from '@/shared/models/user';
 import {
   rankWorkspaceRecommendationCandidates,
   resolveWorkspaceStage,
@@ -31,10 +29,7 @@ export default async function LandingPage({
   if (hasSession) noStore();
   const user = hasSession ? await getSignUser() : null;
   if (user) {
-    const [recentProjectsResult, credits] = await Promise.all([
-      getProjects(user.id),
-      getUserCredits(user.id),
-    ]);
+    const recentProjectsResult = await getProjects(user.id);
     const recentProjects: Project[] = recentProjectsResult.slice(0, 3);
     const projectStage = resolveWorkspaceStage(
       recentProjects.map((project) => project.stage)
@@ -111,16 +106,12 @@ export default async function LandingPage({
       })),
     };
     return (
-      <WorkspaceLayout
-        initialUser={{ ...user, credits: { ...credits, expiresAt: null } }}
-      >
-        <ChatGenerator
-          recentProjects={recentProjects}
-          recommendations={recommendations}
-          collectionProgress={collectionProgress}
-          workspaceHome
-        />
-      </WorkspaceLayout>
+      <ChatGenerator
+        recentProjects={recentProjects}
+        recommendations={recommendations}
+        collectionProgress={collectionProgress}
+        workspaceHome
+      />
     );
   }
 
@@ -128,9 +119,5 @@ export default async function LandingPage({
   const page: DynamicPage = t.raw('page');
   const Page = await getThemePage('dynamic-page');
 
-  return (
-    <PublicLandingShell>
-      <Page locale={locale} page={page} />
-    </PublicLandingShell>
-  );
+  return <Page locale={locale} page={page} />;
 }

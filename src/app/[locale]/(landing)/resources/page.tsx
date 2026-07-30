@@ -27,13 +27,13 @@ export const generateMetadata = getMetadata({
 });
 
 const stageStyle = [
-  { icon: Compass, accent: 'text-amber-700 dark:text-amber-300' },
-  { icon: Lightbulb, accent: 'text-orange-700 dark:text-orange-300' },
-  { icon: Palette, accent: 'text-rose-700 dark:text-rose-300' },
-  { icon: Blocks, accent: 'text-sky-700 dark:text-sky-300' },
-  { icon: Rocket, accent: 'text-violet-700 dark:text-violet-300' },
-  { icon: BarChart3, accent: 'text-emerald-700 dark:text-emerald-300' },
-  { icon: Megaphone, accent: 'text-fuchsia-700 dark:text-fuchsia-300' },
+  { icon: Compass },
+  { icon: Lightbulb },
+  { icon: Palette },
+  { icon: Blocks },
+  { icon: Rocket },
+  { icon: BarChart3 },
+  { icon: Megaphone },
 ];
 
 export default async function ResourcesPage({
@@ -103,9 +103,9 @@ export default async function ResourcesPage({
 
   return (
     <main className="overflow-hidden pb-24">
-      <section className="relative border-b bg-[radial-gradient(circle_at_20%_10%,hsl(var(--primary)/0.12),transparent_34%),linear-gradient(to_bottom,hsl(var(--muted)/0.25),transparent)]">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.22)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.22)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent_85%)] bg-[size:48px_48px]" />
-        <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24">
+      <section className="relative border-b bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--primary)_12%,transparent),transparent_34%),linear-gradient(to_bottom,color-mix(in_oklab,var(--muted)_25%,transparent),transparent)]">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklab,var(--border)_22%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--border)_22%,transparent)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent_85%)] bg-[size:48px_48px]" />
+        <div className="relative mx-auto max-w-6xl px-5 py-16 md:px-10 md:py-24">
           <div className="grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
             <div>
               <div className="flex items-center gap-3 text-xs font-semibold tracking-[0.24em] uppercase">
@@ -170,14 +170,14 @@ export default async function ResourcesPage({
                 className="h-14 min-w-0 flex-1 bg-transparent text-sm outline-none"
               />
             </label>
-            <button className="bg-foreground text-background h-14 rounded-2xl px-7 text-sm font-semibold transition hover:opacity-85">
+            <button className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 rounded-xl px-7 text-sm font-semibold shadow-sm transition duration-200">
               {isZh ? '搜索资源' : 'Search resources'}
             </button>
           </form>
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-5 md:px-10">
         <section className="relative z-10 -mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-7">
           {filters.stages.map((item, index) => {
             const stageVisual = stageStyle[index] || stageStyle.at(-1)!;
@@ -186,10 +186,10 @@ export default async function ResourcesPage({
               <Link
                 key={item.id}
                 href={queryFor({ stage: stage === item.id ? '' : item.id })}
-                className={`group rounded-2xl border p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${stage === item.id ? 'bg-foreground text-background' : 'bg-background'}`}
+                className={`group rounded-2xl border p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${stage === item.id ? 'bg-foreground text-background' : 'bg-background'}`}
               >
                 <Icon
-                  className={`size-5 ${stage === item.id ? 'text-background' : stageVisual.accent}`}
+                  className={`size-5 ${stage === item.id ? 'text-background' : 'text-primary'}`}
                   aria-hidden="true"
                 />
                 <p className="mt-5 text-sm leading-5 font-semibold">
@@ -280,7 +280,7 @@ export default async function ResourcesPage({
             {visibleResources.map((resource, index) => (
               <article
                 key={resource.slug}
-                className="group bg-background relative flex min-h-[390px] flex-col overflow-hidden rounded-3xl border p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="group bg-background relative flex min-h-[390px] flex-col overflow-hidden rounded-3xl border p-6 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
                 <span className="text-muted-foreground/35 absolute top-3 right-5 font-serif text-5xl italic">
                   {String(index + 1).padStart(2, '0')}

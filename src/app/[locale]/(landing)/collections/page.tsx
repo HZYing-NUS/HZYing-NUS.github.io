@@ -41,9 +41,9 @@ export default async function CollectionsPage({
 
   return (
     <main className="overflow-hidden pb-24">
-      <section className="relative border-b bg-[radial-gradient(circle_at_82%_18%,hsl(var(--primary)/0.13),transparent_30%),linear-gradient(to_bottom,hsl(var(--muted)/0.3),transparent)]">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.2)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent_88%)] bg-[size:52px_52px]" />
-        <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24">
+      <section className="relative border-b bg-[radial-gradient(circle_at_82%_18%,color-mix(in_oklab,var(--primary)_13%,transparent),transparent_30%),linear-gradient(to_bottom,color-mix(in_oklab,var(--muted)_30%,transparent),transparent)]">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklab,var(--border)_20%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--border)_20%,transparent)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent_88%)] bg-[size:52px_52px]" />
+        <div className="relative mx-auto max-w-6xl px-5 py-16 md:px-10 md:py-24">
           <div className="grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_330px]">
             <div>
               <p className="text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase">
@@ -80,7 +80,7 @@ export default async function CollectionsPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-5 md:px-10">
         {collections.length ? (
           <section className="mt-14 space-y-7">
             {collections.map((collection, index) => {
@@ -90,7 +90,7 @@ export default async function CollectionsPage({
               return (
                 <article
                   key={collection.slug}
-                  className="group bg-background relative overflow-hidden rounded-3xl border p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl md:p-9"
+                  className="group bg-background relative overflow-hidden rounded-3xl border p-6 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md md:p-9"
                 >
                   <span className="text-muted-foreground/25 absolute top-3 right-6 font-serif text-7xl italic tabular-nums">
                     {String(index + 1).padStart(2, '0')}
@@ -144,7 +144,7 @@ export default async function CollectionsPage({
 
                       <Link
                         href={`/${locale}/collections/${collection.slug}`}
-                        className="bg-foreground text-background mt-8 inline-flex items-center gap-3 rounded-2xl px-5 py-3 text-sm font-semibold transition hover:opacity-85 active:translate-y-px"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 inline-flex items-center gap-3 rounded-xl px-5 py-3 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 active:translate-y-0"
                       >
                         {isZh ? '开始执行这条路线' : 'Start this guide'}
                         <IconArrowUpRight

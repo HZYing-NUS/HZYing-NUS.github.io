@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import { Search } from 'lucide-react';
+import { Coins, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/core/i18n/navigation';
@@ -47,16 +47,14 @@ function WorkspaceFrame({
       },
       show_trigger: false,
     },
-    buttons: showChatLibrary
-      ? [
-          {
-            title: t('new_chat'),
-            icon: 'Plus',
-            url: '/chat',
-            variant: 'outline',
-          },
-        ]
-      : [],
+    buttons: [
+      {
+        title: t('new_chat'),
+        icon: 'Plus',
+        url: '/chat',
+        variant: 'outline',
+      },
+    ],
     main_navs: [
       {
         items: [
@@ -99,26 +97,49 @@ function WorkspaceFrame({
   return (
     <>
       <WorkspaceSessionBootstrap user={initialUser} />
-      <DashboardLayout sidebar={sidebar}>
+      <DashboardLayout
+        sidebar={sidebar}
+        className="[--sidebar-accent:#e8edf7] [--sidebar-border:#dfe3ea] [--sidebar-foreground:#1d1d1f] [--sidebar:#f5f5f7] dark:[--sidebar-accent:#252933] dark:[--sidebar-border:#30333a] dark:[--sidebar-foreground:#f5f5f7] dark:[--sidebar:#17181b]"
+        style={{
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif',
+        }}
+      >
         <LocaleDetector />
-        <div className="bg-background text-foreground flex min-h-dvh min-w-0 flex-col">
-          <header className="bg-background/92 border-border sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b px-3 backdrop-blur md:px-5">
-            <SidebarTrigger className="size-8" />
+        <div className="flex min-h-dvh min-w-0 flex-col bg-[#f7f7f8] text-[#1d1d1f] dark:bg-[#101114] dark:text-[#f5f5f7]">
+          <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-black/[0.07] bg-white/85 px-3 backdrop-blur-xl md:px-5 dark:border-white/10 dark:bg-[#16171a]/85">
+            <SidebarTrigger className="size-8 rounded-lg" />
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              className="ml-1 hidden h-8 min-w-52 justify-start rounded-lg border-black/[0.08] bg-black/[0.025] px-3 text-[#6e6e73] shadow-none hover:bg-black/[0.05] sm:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07]"
+            >
+              <Link href="/search" aria-label={t('search')} title={t('search')}>
+                <Search className="size-4" />
+                <span className="truncate">{t('search')}</span>
+              </Link>
+            </Button>
             <Button
               variant="ghost"
               size="icon"
               asChild
-              className="text-muted-foreground ml-1"
+              className="size-8 rounded-lg sm:hidden"
             >
               <Link href="/search" aria-label={t('search')} title={t('search')}>
                 <Search className="size-4" />
               </Link>
             </Button>
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
-              <Button variant="ghost" size="sm" asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="h-8 rounded-lg px-2.5"
+              >
                 <Link href="/chat/credits">
-                  <span className="hidden sm:inline">{t('credit')}</span>
-                  <span className="sm:hidden">Credit</span>
+                  <Coins className="size-4" />
+                  <span>{t('credit')}</span>
                 </Link>
               </Button>
               <LocaleSelector type="button" />
@@ -140,7 +161,9 @@ export function WorkspaceLayout({
 }) {
   return (
     <ChatContextProvider>
-      <WorkspaceFrame initialUser={initialUser}>{children}</WorkspaceFrame>
+      <WorkspaceFrame initialUser={initialUser} showChatLibrary>
+        {children}
+      </WorkspaceFrame>
     </ChatContextProvider>
   );
 }

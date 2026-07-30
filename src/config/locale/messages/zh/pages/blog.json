@@ -21,6 +21,8 @@
     "featured": "精华",
     "following": "关注",
     "write": "写文章",
+    "publicReadingHint": "文章可以直接阅读；需要发布内容时，再登录创作者工作区。",
+    "signInToWrite": "登录后可以发布文章、管理草稿和维护作者主页。",
     "followingSignIn": "登录后可查看你关注的作者发布的文章。",
     "signIn": "前往登录",
     "communityAuthor": "社区作者",

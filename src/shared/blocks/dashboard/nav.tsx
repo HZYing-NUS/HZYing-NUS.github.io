@@ -26,9 +26,23 @@ export function Nav({ nav, className }: { nav: NavType; className?: string }) {
   const pathname = usePathname();
   const isPathActive = (url?: string) => {
     if (!url) return false;
-    if (url === '/') return pathname === url;
+    if (url === '/') {
+      return (
+        pathname === url ||
+        pathname === '/chat' ||
+        /^\/chat\/(?!projects(?:\/|$)|history(?:\/|$)|skills(?:\/|$)|credits(?:\/|$)|memories(?:\/|$))[^/]+$/.test(
+          pathname
+        )
+      );
+    }
     if (url === '/chat') {
-      return pathname === url || /^\/chat\/[^/]+$/.test(pathname);
+      return (
+        pathname === '/' ||
+        pathname === url ||
+        /^\/chat\/(?!projects(?:\/|$)|history(?:\/|$)|skills(?:\/|$)|credits(?:\/|$)|memories(?:\/|$))[^/]+$/.test(
+          pathname
+        )
+      );
     }
     return pathname === url || pathname.startsWith(`${url}/`);
   };

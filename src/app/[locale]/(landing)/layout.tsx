@@ -12,20 +12,6 @@ export default async function LandingLayout({
   children: ReactNode;
 }) {
   const requestHeaders = await headers();
-  const pathname =
-    requestHeaders.get('x-pathname') ||
-    (() => {
-      const requestUrl = requestHeaders.get('x-url');
-      if (!requestUrl) return '';
-      try {
-        return new URL(requestUrl).pathname;
-      } catch {
-        return '';
-      }
-    })();
-  const normalizedPath = pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
-  if (pathname && normalizedPath === '/') return <>{children}</>;
-
   const hasSession = requestHeaders.get('x-session-present') === '1';
   if (!hasSession) return <PublicLandingShell>{children}</PublicLandingShell>;
 

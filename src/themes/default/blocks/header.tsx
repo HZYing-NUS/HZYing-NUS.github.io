@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Menu, X } from 'lucide-react';
 
 import { Link, usePathname } from '@/core/i18n/navigation';
@@ -34,10 +34,11 @@ import { Header as HeaderType } from '@/shared/types/blocks/landing';
 function NavigationMenuTrigger(
   props: React.ComponentProps<typeof RawNavigationMenuTrigger>
 ) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   // Only render after client has mounted, to avoid SSR/client render id mismatch
   if (!mounted) return null;
   return <RawNavigationMenuTrigger {...props} />;
@@ -50,6 +51,12 @@ export function Header({ header }: { header: HeaderType }) {
   const scrollRafRef = useRef<number | null>(null);
   const isLarge = useMedia('(min-width: 64rem)');
   const pathname = usePathname();
+
+  const isNavActive = (url?: string) => {
+    if (!url) return false;
+    if (url === '/') return pathname === '/';
+    return pathname === url || pathname.startsWith(`${url}/`);
+  };
 
   useEffect(() => {
     // Listen to scroll event to enable header styles on scroll
@@ -84,9 +91,9 @@ export function Header({ header }: { header: HeaderType }) {
     return (
       <NavigationMenu
         viewport={false}
-        className="**:data-[slot=navigation-menu-content]:top-10 max-lg:hidden"
+        className="**:data-[slot=navigation-menu-content]:top-12 max-lg:hidden"
       >
-        <NavigationMenuList className="gap-2">
+        <NavigationMenuList className="bg-background/80 gap-1 rounded-2xl border p-1 shadow-sm backdrop-blur">
           {header.nav?.items?.map((item, idx) => {
             if (!item.children || item.children.length === 0) {
               return (
@@ -94,11 +101,13 @@ export function Header({ header }: { header: HeaderType }) {
                   <Link
                     href={item.url || ''}
                     target={item.target || '_self'}
-                    className={`flex flex-row items-center gap-2 px-4 py-1.5 text-sm ${
-                      item.is_active || pathname.endsWith(item.url as string)
-                        ? 'bg-muted/40 text-muted-foreground'
-                        : ''
-                    }`}
+                    aria-current={isNavActive(item.url) ? 'page' : undefined}
+                    className={cn(
+                      'flex flex-row items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition duration-200',
+                      isNavActive(item.url)
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    )}
                   >
                     {item.icon && <SmartIcon name={item.icon as string} />}
                     {item.title}
@@ -194,7 +203,13 @@ export function Header({ header }: { header: HeaderType }) {
                   <Link
                     href={item.url || ''}
                     onClick={closeMenu}
-                    className="data-[state=open]:bg-muted flex items-center justify-between px-4 py-3 text-lg **:!font-normal"
+                    aria-current={isNavActive(item.url) ? 'page' : undefined}
+                    className={cn(
+                      'flex items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition',
+                      isNavActive(item.url)
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-muted'
+                    )}
                   >
                     {item.title}
                   </Link>
@@ -253,20 +268,17 @@ export function Header({ header }: { header: HeaderType }) {
       >
         <div
           className={cn(
-            'absolute inset-x-0 top-0 z-50 h-18 border-transparent ring-1 ring-transparent transition-all duration-300',
-            'in-data-scrolled:border-foreground/5 in-data-scrolled:bg-background/75 in-data-scrolled:border-b in-data-scrolled:backdrop-blur',
+            'absolute inset-x-0 top-0 z-50 h-18 border-transparent ring-1 ring-transparent transition-all duration-200',
+            'in-data-scrolled:border-foreground/8 in-data-scrolled:bg-background/88 in-data-scrolled:border-b in-data-scrolled:shadow-sm in-data-scrolled:backdrop-blur-xl',
             'has-data-[state=open]:ring-foreground/5 has-data-[state=open]:bg-card/75 has-data-[state=open]:h-[calc(var(--navigation-menu-viewport-height)+3.4rem)] has-data-[state=open]:border-b has-data-[state=open]:shadow-lg has-data-[state=open]:shadow-black/10 has-data-[state=open]:backdrop-blur',
             'max-lg:in-data-[state=active]:bg-background/75 max-lg:h-14 max-lg:overflow-hidden max-lg:border-b max-lg:in-data-[state=active]:h-screen max-lg:in-data-[state=active]:backdrop-blur'
           )}
         >
           <div className="container">
-            <div className="relative flex flex-wrap items-center justify-between lg:py-5">
-              <div className="flex justify-between gap-8 max-lg:h-14 max-lg:w-full max-lg:border-b">
+            <div className="relative flex flex-wrap items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] lg:py-4">
+              <div className="flex justify-between gap-8 max-lg:h-14 max-lg:w-full max-lg:border-b lg:justify-self-start">
                 {/* Brand Logo */}
                 {header.brand && <BrandLogo brand={header.brand} />}
-
-                {/* Desktop Navigation Menu */}
-                {isLarge && <NavMenu />}
                 {/* Hamburger menu button for mobile navigation */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -280,13 +292,16 @@ export function Header({ header }: { header: HeaderType }) {
                 </button>
               </div>
 
+              {/* Desktop Navigation Menu */}
+              {isLarge && <NavMenu />}
+
               {/* Show mobile menu if needed */}
               {!isLarge && isMobileMenuOpen && (
                 <MobileMenu closeMenu={() => setIsMobileMenuOpen(false)} />
               )}
 
               {/* Header right section: theme toggler, locale selector, sign, buttons */}
-              <div className="mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 in-data-[state=active]:flex max-lg:in-data-[state=active]:mt-6 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
+              <div className="mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 in-data-[state=active]:flex max-lg:in-data-[state=active]:mt-6 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-5 lg:space-y-0 lg:justify-self-end lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
                 <div className="flex w-full flex-row items-center gap-4 sm:flex-row sm:gap-6 sm:space-y-0 md:w-fit">
                   {header.buttons &&
                     header.buttons.map((button, idx) => (

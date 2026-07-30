@@ -1,6 +1,7 @@
 {
   "header": {
     "id": "header",
+    "skip_to_content": "跳到正文",
     "brand": {
       "title": "WebTools",
       "logo": {

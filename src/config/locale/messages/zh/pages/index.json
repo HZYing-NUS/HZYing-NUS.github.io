@@ -14,6 +14,7 @@
     "sections": {
       "hero": {
         "id": "hero",
+        "variant": "webtools-public",
         "title": "第一次做 Web 产品，用对工具。",
         "highlight_text": "用对工具",
         "description": "从发现需求、验证想法到开发上线，按当前阶段找到经过整理的工具、行动路线和实战经验。",
@@ -23,6 +24,21 @@
           "url": "/collections"
         },
         "tip": "公开资源与行动专题无需登录，先找到你现在要完成的下一步。",
+        "aside_label": "建站路线图",
+        "items": [
+          {
+            "title": "先判断",
+            "description": "确认当前阶段和最需要解决的问题。"
+          },
+          {
+            "title": "再选择",
+            "description": "只看与当前任务直接相关的工具。"
+          },
+          {
+            "title": "留下结果",
+            "description": "完成一步，并保留能进入下一步的证据。"
+          }
+        ],
         "buttons": [
           {
             "title": "按阶段找资源",

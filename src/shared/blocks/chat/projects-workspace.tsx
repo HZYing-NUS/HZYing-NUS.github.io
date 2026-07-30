@@ -1,7 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArchiveRestore, ArrowRight, Plus, Trash2 } from 'lucide-react';
+import {
+  ArchiveRestore,
+  ArrowRight,
+  FileText,
+  FolderKanban,
+  MessageSquareText,
+  Plus,
+  Sparkles,
+  Trash2,
+} from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { Link } from '@/core/i18n/navigation';
@@ -74,11 +83,49 @@ export function ProjectsWorkspace() {
         </Button>
       }
     >
+      <section className="mb-9 grid gap-3 md:grid-cols-3">
+        {[
+          {
+            icon: MessageSquareText,
+            title: t('project_benefit_chats'),
+            description: t('project_benefit_chats_description'),
+          },
+          {
+            icon: FileText,
+            title: t('project_benefit_files'),
+            description: t('project_benefit_files_description'),
+          },
+          {
+            icon: Sparkles,
+            title: t('project_benefit_memory'),
+            description: t('project_benefit_memory_description'),
+          },
+        ].map((benefit) => {
+          const Icon = benefit.icon;
+          return (
+            <article
+              key={benefit.title}
+              className="rounded-2xl border border-black/[0.07] bg-white/65 p-5 dark:border-white/10 dark:bg-white/[0.04]"
+            >
+              <span className="flex size-9 items-center justify-center rounded-xl bg-[#e8eef8] text-[#5474a8] dark:bg-[#28344a] dark:text-[#9bb7e2]">
+                <Icon className="size-4" />
+              </span>
+              <h2 className="mt-5 font-semibold">{benefit.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
+                {benefit.description}
+              </p>
+            </article>
+          );
+        })}
+      </section>
+      <p className="mb-7 text-sm text-[#6e6e73] dark:text-[#a1a1a6]">
+        {t('project_optional_hint')}
+      </p>
       <div className="dark:border-border mb-7 flex gap-6 border-b border-black/10 text-sm">
         {(['active', 'deleted'] as const).map((item) => (
           <button
             key={item}
-            className={`border-b-2 px-1 pb-3 ${status === item ? 'border-[#c45d38] text-[#9f4529]' : 'border-transparent text-[#777268]'}`}
+            className={`border-b-2 px-1 pb-3 transition-colors ${status === item ? 'border-[#6f8fbe] text-[#45658f] dark:text-[#9bb7e2]' : 'border-transparent text-[#6e6e73] dark:text-[#a1a1a6]'}`}
             onClick={() => setStatus(item)}
           >
             {item === 'active' ? t('active') : t('trash')}
@@ -86,7 +133,7 @@ export function ProjectsWorkspace() {
         ))}
       </div>
       {creating ? (
-        <div className="dark:bg-card mb-8 grid gap-3 border-l-2 border-[#c45d38] bg-white/45 p-5">
+        <div className="mb-8 grid gap-3 rounded-2xl border border-black/[0.07] bg-white/70 p-5 shadow-[0_12px_36px_-28px_rgba(31,45,70,0.4)] dark:border-white/10 dark:bg-white/[0.04]">
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -115,7 +162,15 @@ export function ProjectsWorkspace() {
           </button>
         </WorkspaceEmpty>
       ) : projects.length === 0 ? (
-        <WorkspaceEmpty>{t('empty_projects')}</WorkspaceEmpty>
+        <WorkspaceEmpty>
+          <FolderKanban className="mx-auto mb-4 size-6 text-[#5474a8] dark:text-[#8faee0]" />
+          <p className="font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+            {t('empty_projects')}
+          </p>
+          <p className="mx-auto mt-2 max-w-md leading-6">
+            {t('projects_description')}
+          </p>
+        </WorkspaceEmpty>
       ) : (
         <div className="dark:divide-border dark:border-border divide-y divide-black/10 border-y border-black/10">
           {projects.map((project, index) => (
@@ -130,8 +185,8 @@ export function ProjectsWorkspace() {
                 <h2 className="text-xl font-medium tracking-tight">
                   {project.name}
                 </h2>
-                <p className="dark:text-muted-foreground mt-1 text-sm text-[#6f6a61]">
-                  {project.description || '—'}
+                <p className="mt-1 text-sm text-[#6e6e73] dark:text-[#a1a1a6]">
+                  {project.description || t('project_no_description')}
                   {project.stage ? ` · ${project.stage}` : ''}
                 </p>
               </div>
