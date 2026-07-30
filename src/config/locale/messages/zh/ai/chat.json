@@ -2,6 +2,12 @@
   "workspace_shell": {
     "home": "主页",
     "assistant": "AI 助手",
+    "assistant_short": "AI",
+    "knowledge": "内容",
+    "knowledge_and_action": "知识与行动",
+    "primary_navigation": "主要导航",
+    "collapse_sidebar": "收起二级导航",
+    "toggle_sidebar": "打开或关闭导航",
     "workspace_group": "AI 工作区",
     "content_group": "知识与行动",
     "chat_history": "全部对话",
@@ -85,6 +91,7 @@
     "actions": { "edit_title": "编辑标题", "share": "分享", "delete": "删除" }
   },
   "generator": {
+    "home_title": "今天想推进什么？",
     "eyebrow": "AI 工作区",
     "title": "把你的第一个 Web 产品做出来。",
     "description": "结合 WebTools 站内知识、项目进度和你主动开启的能力，找到当前最值得做的下一步。",

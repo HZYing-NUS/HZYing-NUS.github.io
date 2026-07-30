@@ -79,11 +79,7 @@ export default async function CategoryBlogPage({
             title={post.title}
             summary={post.description}
             author={post.authorName}
-            authorHref={
-              envConfigs.community_about_username
-                ? `/u/${envConfigs.community_about_username}`
-                : '/about'
-            }
+            authorHref="/about"
             viewProfileLabel={locale === 'zh' ? '查看主页' : 'View profile'}
           />
         ))}

@@ -108,11 +108,7 @@ export default async function TagBlogPage({
               </p>
             </Link>
             <Link
-              href={
-                envConfigs.community_about_username
-                  ? `/u/${envConfigs.community_about_username}`
-                  : '/about'
-              }
+              href="/about"
               className="text-primary mt-5 inline-flex text-xs font-medium hover:underline"
             >
               {locale === 'zh' ? '查看作者主页' : 'View author profile'}

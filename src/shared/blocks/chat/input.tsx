@@ -37,6 +37,7 @@ import {
   TooltipTrigger,
 } from '@/shared/components/ui/tooltip';
 import { useAppContext } from '@/shared/contexts/app';
+import { cn } from '@/shared/lib/utils';
 
 import {
   chatModels,
@@ -78,6 +79,7 @@ export function ChatInput({
   suggestedQuestion,
   onSuggestedQuestionApplied,
   compact = false,
+  home = false,
 }: {
   handleSubmit: (
     message: PromptInputMessage,
@@ -99,6 +101,7 @@ export function ChatInput({
   suggestedQuestion?: string;
   onSuggestedQuestionApplied?: () => void;
   compact?: boolean;
+  home?: boolean;
 }) {
   const t = useTranslations('ai.chat.generator');
   const locale = useLocale();
@@ -458,13 +461,20 @@ export function ChatInput({
               // The parent keeps the draft when a request fails.
             }
           }}
-          className="overflow-hidden rounded-[1.4rem] border border-black/[0.08] bg-white/92 shadow-[0_20px_60px_-32px_rgba(31,45,70,0.48),0_1px_3px_rgba(31,45,70,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1c1d21]/94"
+          className={cn(
+            'overflow-hidden rounded-[1.4rem] border border-black/[0.08] bg-white/92 shadow-[0_20px_60px_-32px_rgba(31,45,70,0.48),0_1px_3px_rgba(31,45,70,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1c1d21]/94',
+            home &&
+              'rounded-[1.75rem] border-black/[0.07] shadow-[0_18px_55px_-32px_rgba(31,31,35,0.32),0_1px_2px_rgba(31,31,35,0.04)] dark:border-white/[0.09]'
+          )}
           globalDrop={Boolean(user)}
           multiple
         >
           <PromptInputBody>
             <PromptInputTextarea
-              className="min-h-28 overflow-hidden p-4 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className={cn(
+                'min-h-28 overflow-hidden p-4 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0',
+                home && 'min-h-32 px-5 py-5 text-base'
+              )}
               disabled={isDisabled}
               placeholder={user ? t('input_placeholder') : t('signin_title')}
               onChange={(event) => {
@@ -477,7 +487,12 @@ export function ChatInput({
               value={input}
             />
           </PromptInputBody>
-          <PromptInputFooter className="border-t border-black/[0.07] px-3 py-2.5 dark:border-white/10">
+          <PromptInputFooter
+            className={cn(
+              'border-t border-black/[0.07] px-3 py-2.5 dark:border-white/10',
+              home && 'border-t-0 px-4 pb-3.5'
+            )}
+          >
             {!compact ? (
               <PromptInputTools className="min-w-0 flex-wrap gap-1.5">
                 <PromptInputSelect

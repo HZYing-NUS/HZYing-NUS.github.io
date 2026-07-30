@@ -6,15 +6,9 @@ import { IconDots, IconMessageCircle } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/core/i18n/navigation';
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/shared/components/ui/sidebar';
 import { useAppContext } from '@/shared/contexts/app';
 import { useChatContext } from '@/shared/contexts/chat';
+import { cn } from '@/shared/lib/utils';
 
 export function ChatLibrary({}) {
   const t = useTranslations('ai.chat.library');
@@ -59,42 +53,37 @@ export function ChatLibrary({}) {
   }, [fetchChats, user]);
 
   return (
-    <SidebarGroup className="border-sidebar-border/70 min-h-0 flex-1 border-t pt-3 group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel className="text-sidebar-foreground/45 h-7 px-2 text-[11px] font-semibold tracking-[0.08em] uppercase">
+    <section className="mt-5 border-t border-black/[0.06] pt-4 dark:border-white/[0.08]">
+      <p className="mb-2 px-3 text-[11px] font-semibold tracking-[0.08em] text-[#86868b] uppercase dark:text-[#77777c]">
         {t('title')}
-      </SidebarGroupLabel>
-      <SidebarMenu>
-        {chats.length > 0 &&
-          chats.slice(0, limit).map((chat) => (
-            <SidebarMenuItem key={chat.id}>
-              <SidebarMenuButton
-                asChild
-                tooltip={chat.title}
-                className={`h-8 rounded-lg text-[13px] ${
-                  params.id === chat.id
-                    ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                    : 'text-sidebar-foreground/75 hover:text-sidebar-foreground'
-                }`}
-              >
-                <Link href={`/chat/${chat.id}`}>
-                  <IconMessageCircle className="text-sidebar-foreground/70" />
-                  <span className="truncate">{chat.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+      </p>
+      <div className="space-y-1">
+        {chats.slice(0, limit).map((chat) => (
+          <Link
+            key={chat.id}
+            href={`/chat/${chat.id}`}
+            title={chat.title}
+            className={cn(
+              'flex h-8 items-center gap-2.5 rounded-lg px-3 text-[13px] text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
+              params.id === chat.id &&
+                'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
+            )}
+          >
+            <IconMessageCircle className="size-4 shrink-0" />
+            <span className="truncate">{chat.title}</span>
+          </Link>
+        ))}
 
-        {hasMore && (
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href="/chat/history">
-                <IconDots className="text-sidebar-foreground/70" />
-                <span>{t('more')}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        )}
-      </SidebarMenu>
-    </SidebarGroup>
+        {hasMore ? (
+          <Link
+            href="/chat/history"
+            className="flex h-8 items-center gap-2.5 rounded-lg px-3 text-[13px] text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]"
+          >
+            <IconDots className="size-4 shrink-0" />
+            <span>{t('more')}</span>
+          </Link>
+        ) : null}
+      </div>
+    </section>
   );
 }

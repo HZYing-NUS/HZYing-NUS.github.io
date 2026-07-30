@@ -1,9 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { permanentRedirect } from 'next/navigation';
 import { ExternalLink, Github, Mail, MapPin } from 'lucide-react';
 
-import { envConfigs } from '@/config';
 import { legacyProfileContent } from '@/config/seed/legacy-content';
 import { getPublishedProfile } from '@/shared/models/profile';
 
@@ -312,8 +310,6 @@ export default async function AboutPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  if (envConfigs.community_about_username)
-    permanentRedirect(`/${locale}/u/${envConfigs.community_about_username}`);
   const profile = await getPublishedProfile(locale);
   const publishedContent =
     profile.content && typeof profile.content === 'object'

@@ -2,6 +2,12 @@
   "workspace_shell": {
     "home": "Home",
     "assistant": "AI Assistant",
+    "assistant_short": "AI",
+    "knowledge": "Library",
+    "knowledge_and_action": "Knowledge and action",
+    "primary_navigation": "Primary navigation",
+    "collapse_sidebar": "Collapse secondary navigation",
+    "toggle_sidebar": "Open or close navigation",
     "workspace_group": "AI workspace",
     "content_group": "Knowledge and action",
     "chat_history": "All chats",
@@ -97,6 +103,7 @@
     }
   },
   "generator": {
+    "home_title": "What do you want to move forward today?",
     "eyebrow": "AI WORKSPACE",
     "title": "Build your first Web product.",
     "description": "Use WebTools knowledge, project progress, and capabilities you explicitly enable to find the next useful step.",

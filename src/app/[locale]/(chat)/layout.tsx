@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 
+import { envConfigs } from '@/config';
 import { ChatWorkspaceLayout } from '@/shared/blocks/workspace/layout';
 import { getSignUser, getUserCredits } from '@/shared/models/user';
 
@@ -20,7 +21,10 @@ export default async function ChatLayout({
     : null;
 
   return (
-    <ChatWorkspaceLayout initialUser={initialUser}>
+    <ChatWorkspaceLayout
+      initialUser={initialUser}
+      officialProfileUsername={envConfigs.community_about_username}
+    >
       {children}
     </ChatWorkspaceLayout>
   );

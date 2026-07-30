@@ -323,11 +323,7 @@ export default async function BlogPage({
                       post={post}
                       fallbackAuthor={t('messages.webtoolsEditorial')}
                       viewProfileLabel={t('messages.viewProfile')}
-                      authorProfileHref={
-                        envConfigs.community_about_username
-                          ? `/u/${envConfigs.community_about_username}`
-                          : '/about'
-                      }
+                      authorProfileHref="/about"
                     />
                   ))}
                 </div>

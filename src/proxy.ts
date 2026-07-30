@@ -3,7 +3,6 @@ import { getSessionCookie } from 'better-auth/cookies';
 import createIntlMiddleware from 'next-intl/middleware';
 
 import { routing } from '@/core/i18n/config';
-import { envConfigs } from '@/config';
 import {
   buildCommunityPermanentRedirectPath,
   resolveCommunityRedirectLookupResponse,
@@ -34,16 +33,6 @@ export async function proxy(request: NextRequest) {
     pathWithoutLocale.startsWith('/u/') ||
     pathWithoutLocale === '/privacy-policy' ||
     pathWithoutLocale === '/terms-of-service';
-
-  if (pathWithoutLocale === '/about' && envConfigs.community_about_username) {
-    const target = buildCommunityPermanentRedirectPath({
-      localePrefix,
-      type: 'profile',
-      target: envConfigs.community_about_username,
-      search: request.nextUrl.search,
-    });
-    return NextResponse.redirect(new URL(target, request.url), 301);
-  }
 
   const resolveRedirect = async (
     type: 'article' | 'profile',

@@ -202,7 +202,11 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
                   <>
                     <DropdownMenuItem className="cursor-pointer" asChild>
                       <Link
-                        href={`/u/${authUser.publicUsername}`}
+                        href={
+                          user.official_username === authUser.publicUsername
+                            ? '/about'
+                            : `/u/${authUser.publicUsername}`
+                        }
                         target="_blank"
                         className="flex w-full items-center gap-2"
                       >

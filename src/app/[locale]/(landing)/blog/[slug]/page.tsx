@@ -61,9 +61,7 @@ export default async function Page({
   if (!row) {
     const legacy = await getPost({ slug, locale });
     if (!legacy) notFound();
-    const legacyAuthorProfileHref = envConfigs.community_about_username
-      ? `/u/${envConfigs.community_about_username}`
-      : '/about';
+    const legacyAuthorProfileHref = '/about';
     return (
       <main className="mx-auto max-w-4xl px-5 py-16">
         <h1 className="text-4xl font-semibold">{legacy.title}</h1>
