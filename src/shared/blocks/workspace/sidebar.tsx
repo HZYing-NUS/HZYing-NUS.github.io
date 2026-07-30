@@ -169,37 +169,37 @@ export function WorkspaceSidebar({
     },
     {
       title: t('stage_discover'),
-      href: '/resources?stage=discover',
+      href: '/resources?stage=platform%3Astage%3Adiscover-demand',
       icon: CircleDotDashed,
     },
     {
       title: t('stage_validate'),
-      href: '/resources?stage=validate',
+      href: '/resources?stage=platform%3Astage%3Avalidate-the-idea',
       icon: Lightbulb,
     },
     {
       title: t('stage_design'),
-      href: '/resources?stage=design',
+      href: '/resources?stage=platform%3Astage%3Adesign-and-prototype',
       icon: LayoutTemplate,
     },
     {
       title: t('stage_develop'),
-      href: '/resources?stage=develop',
+      href: '/resources?stage=platform%3Astage%3Abuild-the-product',
       icon: Code2,
     },
     {
       title: t('stage_launch'),
-      href: '/resources?stage=launch',
+      href: '/resources?stage=platform%3Astage%3Alaunch',
       icon: Rocket,
     },
     {
       title: t('stage_optimize'),
-      href: '/resources?stage=optimize',
+      href: '/resources?stage=platform%3Astage%3Ameasure-and-optimize',
       icon: ChartNoAxesColumnIncreasing,
     },
     {
       title: t('stage_operate'),
-      href: '/resources?stage=operate',
+      href: '/resources?stage=platform%3Astage%3Aoperate-and-grow',
       icon: Megaphone,
     },
   ];
