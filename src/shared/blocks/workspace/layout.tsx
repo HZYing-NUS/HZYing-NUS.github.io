@@ -89,7 +89,7 @@ function WorkspaceFrame({
             <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-black/[0.07] bg-white/88 px-3 backdrop-blur-xl md:px-5 dark:border-white/10 dark:bg-[#16171a]/88">
               <SidebarTrigger
                 aria-label={t('toggle_sidebar')}
-                className="size-8 rounded-lg text-[#6e6e73] hover:bg-black/[0.045] md:hidden dark:text-[#a1a1a6] dark:hover:bg-white/[0.07]"
+                className="size-8 rounded-lg text-[#6e6e73] hover:bg-black/[0.045] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07]"
               />
               <span className="mr-2 hidden min-w-20 text-sm font-medium tracking-[-0.01em] text-[#3a3a3c] lg:block dark:text-[#e5e5e7]">
                 {pageTitle}

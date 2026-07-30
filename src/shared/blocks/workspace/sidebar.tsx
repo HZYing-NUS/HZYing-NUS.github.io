@@ -1,23 +1,34 @@
 'use client';
 
-import { useEffect, useRef, type ComponentType } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import {
   Blocks,
   Boxes,
   Brain,
+  ChartNoAxesColumnIncreasing,
+  CircleDotDashed,
+  Code2,
   Coins,
+  Compass,
   FolderKanban,
   History,
-  Home,
-  LibraryBig,
+  LayoutTemplate,
+  Lightbulb,
   ListChecks,
+  Megaphone,
   MessageSquareText,
   Newspaper,
   PanelLeftClose,
+  PanelLeftOpen,
+  PenLine,
   Plus,
+  Rocket,
   Search,
   Send,
+  Sparkles,
+  UsersRound,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -33,23 +44,55 @@ import {
 } from '@/shared/components/ui/sidebar';
 import { cn } from '@/shared/lib/utils';
 
-type WorkspaceModule = 'home' | 'assistant' | 'knowledge';
+type WorkspaceModule =
+  | 'home'
+  | 'assistant'
+  | 'resources'
+  | 'collections'
+  | 'articles';
 
 type NavigationItem = {
   title: string;
   href: string;
   icon: ComponentType<{ className?: string }>;
+  exact?: boolean;
 };
 
 function resolveModule(pathname: string): WorkspaceModule {
-  if (pathname === '/') return 'home';
-  if (pathname.startsWith('/chat')) return 'assistant';
-  return 'knowledge';
+  if (pathname.startsWith('/chat') || pathname.startsWith('/settings')) {
+    return 'assistant';
+  }
+  if (pathname.startsWith('/collections')) return 'collections';
+  if (pathname.startsWith('/blog') || pathname.startsWith('/submit')) {
+    return 'articles';
+  }
+  if (pathname.startsWith('/resources') || pathname.startsWith('/search')) {
+    return 'resources';
+  }
+  return 'home';
 }
 
-function isPathActive(pathname: string, href: string) {
-  if (href === '/') return pathname === '/';
-  if (href === '/chat') {
+function isPathActive(
+  pathname: string,
+  searchParams: URLSearchParams,
+  item: NavigationItem
+) {
+  const [hrefPath, query = ''] = item.href.split('?');
+  const expectedParams = new URLSearchParams(query);
+
+  if (expectedParams.size > 0) {
+    return (
+      pathname === hrefPath &&
+      Array.from(expectedParams.entries()).every(
+        ([key, value]) => searchParams.get(key) === value
+      )
+    );
+  }
+  if (item.exact) {
+    return pathname === hrefPath && searchParams.size === 0;
+  }
+  if (item.href === '/') return pathname === '/';
+  if (item.href === '/chat') {
     return (
       pathname === '/chat' ||
       /^\/chat\/(?!projects(?:\/|$)|history(?:\/|$)|skills(?:\/|$)|credits(?:\/|$)|memories(?:\/|$))/.test(
@@ -57,7 +100,7 @@ function isPathActive(pathname: string, href: string) {
       )
     );
   }
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === hrefPath || pathname.startsWith(`${hrefPath}/`);
 }
 
 export function WorkspaceSidebar({
@@ -67,24 +110,22 @@ export function WorkspaceSidebar({
 }) {
   const t = useTranslations('ai.chat.workspace_shell');
   const pathname = usePathname();
-  const { isMobile, setOpen, setOpenMobile } = useSidebar();
-  const previousPathname = useRef(pathname);
-  const activeModule = resolveModule(pathname);
+  const searchParams = useSearchParams();
+  const { isMobile, state, setOpen, setOpenMobile } = useSidebar();
+  const routeModule = resolveModule(pathname);
+  const [selectedModule, setSelectedModule] =
+    useState<WorkspaceModule>(routeModule);
 
   useEffect(() => {
-    if (previousPathname.current === '/' && pathname.startsWith('/chat')) {
-      setOpen(true);
-    }
-    previousPathname.current = pathname;
-  }, [pathname, setOpen]);
+    setSelectedModule(routeModule);
+  }, [routeModule]);
 
   const modules: Array<{
-    id: WorkspaceModule;
+    id: Exclude<WorkspaceModule, 'home'>;
     title: string;
     href: string;
     icon: NavigationItem['icon'];
   }> = [
-    { id: 'home', title: t('home'), href: '/', icon: Home },
     {
       id: 'assistant',
       title: t('assistant_short'),
@@ -92,10 +133,22 @@ export function WorkspaceSidebar({
       icon: MessageSquareText,
     },
     {
-      id: 'knowledge',
-      title: t('knowledge'),
+      id: 'resources',
+      title: t('resources'),
       href: '/resources',
-      icon: LibraryBig,
+      icon: Boxes,
+    },
+    {
+      id: 'collections',
+      title: t('collections'),
+      href: '/collections',
+      icon: ListChecks,
+    },
+    {
+      id: 'articles',
+      title: t('articles'),
+      href: '/blog',
+      icon: Newspaper,
     },
   ];
 
@@ -106,37 +159,133 @@ export function WorkspaceSidebar({
     { title: t('memory'), href: '/chat/memories', icon: Brain },
     { title: t('credit'), href: '/chat/credits', icon: Coins },
   ];
-  const knowledgeItems: NavigationItem[] = [
-    { title: t('search_title'), href: '/search', icon: Search },
-    { title: t('resources'), href: '/resources', icon: Boxes },
-    { title: t('collections'), href: '/collections', icon: ListChecks },
-    { title: t('articles'), href: '/blog', icon: Newspaper },
-    { title: t('submit'), href: '/submit', icon: Send },
+  const resourceItems: NavigationItem[] = [
+    { title: t('site_search'), href: '/search', icon: Search },
+    {
+      title: t('all_resources'),
+      href: '/resources',
+      icon: Compass,
+      exact: true,
+    },
+    {
+      title: t('stage_discover'),
+      href: '/resources?stage=discover',
+      icon: CircleDotDashed,
+    },
+    {
+      title: t('stage_validate'),
+      href: '/resources?stage=validate',
+      icon: Lightbulb,
+    },
+    {
+      title: t('stage_design'),
+      href: '/resources?stage=design',
+      icon: LayoutTemplate,
+    },
+    {
+      title: t('stage_develop'),
+      href: '/resources?stage=develop',
+      icon: Code2,
+    },
+    {
+      title: t('stage_launch'),
+      href: '/resources?stage=launch',
+      icon: Rocket,
+    },
+    {
+      title: t('stage_optimize'),
+      href: '/resources?stage=optimize',
+      icon: ChartNoAxesColumnIncreasing,
+    },
+    {
+      title: t('stage_operate'),
+      href: '/resources?stage=operate',
+      icon: Megaphone,
+    },
   ];
-  const homeItems: NavigationItem[] = [
-    { title: t('assistant'), href: '/chat', icon: MessageSquareText },
-    { title: t('projects'), href: '/chat/projects', icon: FolderKanban },
-    { title: t('resources'), href: '/resources', icon: Boxes },
+  const collectionItems: NavigationItem[] = [
+    {
+      title: t('all_collections'),
+      href: '/collections',
+      icon: ListChecks,
+      exact: true,
+    },
+    {
+      title: t('collection_discover'),
+      href: '/collections/find-a-product-problem',
+      icon: Search,
+      exact: true,
+    },
+    {
+      title: t('collection_validate'),
+      href: '/collections/validate-product-idea',
+      icon: Lightbulb,
+      exact: true,
+    },
+    {
+      title: t('collection_prototype'),
+      href: '/collections/build-testable-prototype',
+      icon: LayoutTemplate,
+      exact: true,
+    },
   ];
-  const panelItems =
-    activeModule === 'assistant'
-      ? assistantItems
-      : activeModule === 'knowledge'
-        ? knowledgeItems
-        : homeItems;
-  const panelTitle =
-    activeModule === 'assistant'
-      ? t('assistant')
-      : activeModule === 'knowledge'
-        ? t('knowledge_and_action')
-        : t('home');
+  const articleItems: NavigationItem[] = [
+    {
+      title: t('all_articles'),
+      href: '/blog',
+      icon: Newspaper,
+      exact: true,
+    },
+    {
+      title: t('featured_articles'),
+      href: '/blog?filter=featured',
+      icon: Sparkles,
+    },
+    {
+      title: t('following_articles'),
+      href: '/blog?filter=following',
+      icon: UsersRound,
+    },
+    {
+      title: t('author_directory'),
+      href: '/blog?view=authors',
+      icon: PenLine,
+    },
+  ];
 
-  const handleNavigation = (openDesktop: boolean) => {
+  const panelItems =
+    selectedModule === 'assistant' || selectedModule === 'home'
+      ? assistantItems
+      : selectedModule === 'resources'
+        ? resourceItems
+        : selectedModule === 'collections'
+          ? collectionItems
+          : articleItems;
+  const panelTitle =
+    selectedModule === 'assistant' || selectedModule === 'home'
+      ? t('assistant')
+      : selectedModule === 'resources'
+        ? t('resources')
+        : selectedModule === 'collections'
+          ? t('collections')
+          : t('articles');
+
+  const handleHomeNavigation = () => {
+    setSelectedModule('home');
     if (isMobile) {
       setOpenMobile(false);
       return;
     }
-    setOpen(openDesktop);
+    setOpen(false);
+  };
+
+  const handleModuleNavigation = (module: Exclude<WorkspaceModule, 'home'>) => {
+    setSelectedModule(module);
+    if (!isMobile) setOpen(true);
+  };
+
+  const handleSecondaryNavigation = () => {
+    if (isMobile) setOpenMobile(false);
   };
 
   return (
@@ -147,13 +296,18 @@ export function WorkspaceSidebar({
       <SidebarContent className="flex-row gap-0 overflow-hidden">
         <nav
           aria-label={t('primary_navigation')}
-          className="flex w-[4.5rem] shrink-0 flex-col items-center border-r border-black/[0.06] px-2 py-3 dark:border-white/[0.08]"
+          className="relative flex w-[4.5rem] shrink-0 flex-col items-center border-r border-black/[0.06] px-2 py-3 dark:border-white/[0.08]"
         >
           <Link
             href="/"
-            onClick={() => handleNavigation(false)}
-            aria-label="WebTools"
-            className="mb-5 flex size-10 items-center justify-center rounded-xl transition duration-200 hover:bg-black/[0.045] active:scale-[0.97] dark:hover:bg-white/[0.07]"
+            onClick={handleHomeNavigation}
+            aria-current={routeModule === 'home' ? 'page' : undefined}
+            aria-label={`${t('home')} · WebTools`}
+            className={cn(
+              'mb-3 flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.98] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
+              routeModule === 'home' &&
+                'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
+            )}
           >
             <Image
               src="/logo.png"
@@ -162,20 +316,35 @@ export function WorkspaceSidebar({
               height={32}
               className="size-8 rounded-lg"
             />
+            <span>{t('home')}</span>
           </Link>
 
-          <div className="flex w-full flex-col gap-1.5">
+          {state === 'collapsed' && !isMobile ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => setOpen(true)}
+              aria-label={t('expand_sidebar')}
+              title={t('expand_sidebar')}
+              className="mb-2 size-9 rounded-xl border border-black/[0.06] text-[#6e6e73] shadow-sm hover:bg-white hover:text-[#1d1d1f] dark:border-white/10 dark:text-[#98989d] dark:hover:bg-white/[0.08] dark:hover:text-[#f5f5f7]"
+            >
+              <PanelLeftOpen className="size-4" />
+            </Button>
+          ) : null}
+
+          <div className="flex w-full flex-col gap-1">
             {modules.map((item) => {
               const Icon = item.icon;
-              const active = activeModule === item.id;
+              const active = routeModule === item.id;
               return (
                 <Link
                   key={item.id}
                   href={item.href}
-                  onClick={() => handleNavigation(item.id !== 'home')}
+                  onClick={() => handleModuleNavigation(item.id)}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-xl px-1.5 py-2 text-[10px] font-medium text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.98] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
+                    'flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.98] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
                     active &&
                       'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
                   )}
@@ -190,16 +359,14 @@ export function WorkspaceSidebar({
 
         <aside className="flex min-w-0 flex-1 flex-col group-data-[collapsible=icon]:hidden">
           <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-black/[0.06] px-4 dark:border-white/[0.08]">
-            <div className="min-w-0">
-              <p className="truncate text-[15px] font-semibold tracking-[-0.02em]">
-                {panelTitle}
-              </p>
-            </div>
+            <p className="truncate text-[15px] font-semibold tracking-[-0.02em]">
+              {panelTitle}
+            </p>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => setOpen(false)}
+              onClick={() => (isMobile ? setOpenMobile(false) : setOpen(false))}
               aria-label={t('collapse_sidebar')}
               title={t('collapse_sidebar')}
               className="size-8 shrink-0 rounded-lg text-[#86868b] hover:bg-black/[0.05] dark:text-[#98989d] dark:hover:bg-white/[0.08]"
@@ -209,10 +376,10 @@ export function WorkspaceSidebar({
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-            {activeModule === 'assistant' ? (
+            {selectedModule === 'assistant' || selectedModule === 'home' ? (
               <Link
                 href="/chat"
-                onClick={() => handleNavigation(true)}
+                onClick={handleSecondaryNavigation}
                 className="mb-3 flex h-10 items-center justify-center gap-2 rounded-xl bg-[#1d1d1f] px-3 text-sm font-medium text-white transition duration-200 hover:bg-[#343437] active:scale-[0.99] dark:bg-[#f5f5f7] dark:text-[#1d1d1f] dark:hover:bg-white"
               >
                 <Plus className="size-4" />
@@ -223,16 +390,19 @@ export function WorkspaceSidebar({
             <WorkspaceNavigationList
               items={panelItems}
               pathname={pathname}
-              onNavigate={() => handleNavigation(true)}
+              searchParams={searchParams}
+              onNavigate={handleSecondaryNavigation}
             />
 
-            {activeModule === 'assistant' ? <ChatLibrary /> : null}
+            {selectedModule === 'assistant' || selectedModule === 'home' ? (
+              <ChatLibrary />
+            ) : null}
 
-            {activeModule === 'home' ? (
+            {selectedModule !== 'assistant' && selectedModule !== 'home' ? (
               <Link
                 href="/submit"
-                onClick={() => handleNavigation(true)}
-                className="mt-5 flex h-9 items-center gap-3 border-t border-black/[0.06] px-3 pt-4 text-[13px] font-medium text-[#6e6e73] transition hover:text-[#1d1d1f] dark:border-white/[0.08] dark:text-[#98989d] dark:hover:text-[#f5f5f7]"
+                onClick={handleSecondaryNavigation}
+                className="mt-5 flex h-10 items-center gap-3 border-t border-black/[0.06] px-3 pt-4 text-[13px] font-medium text-[#6e6e73] transition hover:text-[#1d1d1f] dark:border-white/[0.08] dark:text-[#98989d] dark:hover:text-[#f5f5f7]"
               >
                 <Send className="size-4" />
                 {t('submit')}
@@ -274,17 +444,19 @@ export function WorkspaceSidebar({
 function WorkspaceNavigationList({
   items,
   pathname,
+  searchParams,
   onNavigate,
 }: {
   items: NavigationItem[];
   pathname: string;
+  searchParams: URLSearchParams;
   onNavigate: () => void;
 }) {
   return (
     <div className="space-y-1">
       {items.map((item) => {
         const Icon = item.icon;
-        const active = isPathActive(pathname, item.href);
+        const active = isPathActive(pathname, searchParams, item);
         return (
           <Link
             key={item.href}
@@ -292,13 +464,13 @@ function WorkspaceNavigationList({
             onClick={onNavigate}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-medium text-[#5f6065] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.99] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
+              'flex min-h-9 items-center gap-3 rounded-lg px-3 py-2 text-[13px] leading-5 font-medium text-[#5f6065] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.99] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
               active &&
                 'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
             )}
           >
             <Icon className="size-4 shrink-0" />
-            <span className="truncate">{item.title}</span>
+            <span>{item.title}</span>
           </Link>
         );
       })}

@@ -651,11 +651,11 @@ export function ChatInput({
                   </div>
                 ) : null}
               </PromptInputTools>
-            ) : (
+            ) : !home ? (
               <p className="text-muted-foreground hidden pl-1 text-xs sm:block">
                 {t('public_input_hint')}
               </p>
-            )}
+            ) : null}
             <div className="ml-auto flex items-center gap-2">
               {user ? (
                 <Tooltip>
