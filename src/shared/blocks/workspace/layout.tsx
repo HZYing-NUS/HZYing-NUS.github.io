@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import {
+  useEffect,
+  useState,
+  type FormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Coins, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -92,13 +98,23 @@ function WorkspaceSearch() {
     setOpen(true);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const submitSearch = () => {
     const keyword = query.trim();
     if (!keyword) return;
 
     setOpen(false);
     router.push(`/search?q=${encodeURIComponent(keyword)}`);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    submitSearch();
+  };
+
+  const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    submitSearch();
   };
 
   return (
@@ -149,6 +165,7 @@ function WorkspaceSearch() {
                 autoFocus
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={handleInputKeyDown}
                 placeholder={t('search_keyword')}
                 aria-label={t('search_keyword')}
                 className="h-11 rounded-xl border-black/[0.08] bg-black/[0.025] pr-3 pl-10 shadow-none dark:border-white/10 dark:bg-white/[0.05]"
