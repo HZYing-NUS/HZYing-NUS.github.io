@@ -21,7 +21,6 @@ import {
   MessageSquareText,
   Newspaper,
   PanelLeftClose,
-  PanelLeftOpen,
   PenLine,
   Plus,
   Rocket,
@@ -111,7 +110,7 @@ export function WorkspaceSidebar({
   const t = useTranslations('ai.chat.workspace_shell');
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { isMobile, state, setOpen, setOpenMobile } = useSidebar();
+  const { isMobile, setOpen, setOpenMobile } = useSidebar();
   const routeModule = resolveModule(pathname);
   const [selectedModule, setSelectedModule] =
     useState<WorkspaceModule>(routeModule);
@@ -158,6 +157,13 @@ export function WorkspaceSidebar({
     { title: t('skills'), href: '/chat/skills', icon: Blocks },
     { title: t('memory'), href: '/chat/memories', icon: Brain },
     { title: t('credit'), href: '/chat/credits', icon: Coins },
+  ];
+  const homeItems: NavigationItem[] = [
+    { title: t('assistant'), href: '/chat', icon: MessageSquareText },
+    { title: t('projects'), href: '/chat/projects', icon: FolderKanban },
+    { title: t('resources'), href: '/resources', icon: Boxes },
+    { title: t('collections'), href: '/collections', icon: ListChecks },
+    { title: t('articles'), href: '/blog', icon: Newspaper },
   ];
   const resourceItems: NavigationItem[] = [
     { title: t('site_search'), href: '/search', icon: Search },
@@ -254,21 +260,25 @@ export function WorkspaceSidebar({
   ];
 
   const panelItems =
-    selectedModule === 'assistant' || selectedModule === 'home'
-      ? assistantItems
-      : selectedModule === 'resources'
-        ? resourceItems
-        : selectedModule === 'collections'
-          ? collectionItems
-          : articleItems;
+    selectedModule === 'home'
+      ? homeItems
+      : selectedModule === 'assistant'
+        ? assistantItems
+        : selectedModule === 'resources'
+          ? resourceItems
+          : selectedModule === 'collections'
+            ? collectionItems
+            : articleItems;
   const panelTitle =
-    selectedModule === 'assistant' || selectedModule === 'home'
-      ? t('assistant')
-      : selectedModule === 'resources'
-        ? t('resources')
-        : selectedModule === 'collections'
-          ? t('collections')
-          : t('articles');
+    selectedModule === 'home'
+      ? t('home')
+      : selectedModule === 'assistant'
+        ? t('assistant')
+        : selectedModule === 'resources'
+          ? t('resources')
+          : selectedModule === 'collections'
+            ? t('collections')
+            : t('articles');
 
   const handleHomeNavigation = () => {
     setSelectedModule('home');
@@ -276,7 +286,7 @@ export function WorkspaceSidebar({
       setOpenMobile(false);
       return;
     }
-    setOpen(false);
+    setOpen(true);
   };
 
   const handleModuleNavigation = (module: Exclude<WorkspaceModule, 'home'>) => {
@@ -318,20 +328,6 @@ export function WorkspaceSidebar({
             />
             <span>{t('home')}</span>
           </Link>
-
-          {state === 'collapsed' && !isMobile ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => setOpen(true)}
-              aria-label={t('expand_sidebar')}
-              title={t('expand_sidebar')}
-              className="mb-2 size-9 rounded-xl border border-black/[0.06] text-[#6e6e73] shadow-sm hover:bg-white hover:text-[#1d1d1f] dark:border-white/10 dark:text-[#98989d] dark:hover:bg-white/[0.08] dark:hover:text-[#f5f5f7]"
-            >
-              <PanelLeftOpen className="size-4" />
-            </Button>
-          ) : null}
 
           <div className="flex w-full flex-col gap-1">
             {modules.map((item) => {
@@ -376,7 +372,7 @@ export function WorkspaceSidebar({
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-            {selectedModule === 'assistant' || selectedModule === 'home' ? (
+            {selectedModule === 'assistant' ? (
               <Link
                 href="/chat"
                 onClick={handleSecondaryNavigation}
@@ -394,11 +390,9 @@ export function WorkspaceSidebar({
               onNavigate={handleSecondaryNavigation}
             />
 
-            {selectedModule === 'assistant' || selectedModule === 'home' ? (
-              <ChatLibrary />
-            ) : null}
+            {selectedModule === 'assistant' ? <ChatLibrary /> : null}
 
-            {selectedModule !== 'assistant' && selectedModule !== 'home' ? (
+            {selectedModule !== 'assistant' ? (
               <Link
                 href="/submit"
                 onClick={handleSecondaryNavigation}

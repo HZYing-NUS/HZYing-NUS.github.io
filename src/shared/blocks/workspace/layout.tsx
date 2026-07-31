@@ -5,12 +5,17 @@ import { Coins, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/core/i18n/navigation';
-import { LocaleDetector, LocaleSelector } from '@/shared/blocks/common';
+import {
+  LocaleDetector,
+  LocaleSelector,
+  ThemeToggler,
+} from '@/shared/blocks/common';
 import { Button } from '@/shared/components/ui/button';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from '@/shared/components/ui/sidebar';
 import { useAppContext } from '@/shared/contexts/app';
 import { ChatContextProvider } from '@/shared/contexts/chat';
@@ -30,6 +35,20 @@ function WorkspaceSessionBootstrap({ user }: { user: WorkspaceUser | null }) {
   return null;
 }
 
+function WorkspaceNavigationTrigger() {
+  const t = useTranslations('ai.chat.workspace_shell');
+  const { isMobile, state } = useSidebar();
+
+  if (!isMobile && state === 'expanded') return null;
+
+  return (
+    <SidebarTrigger
+      aria-label={t('toggle_sidebar')}
+      className="size-8 rounded-lg text-[#6e6e73] hover:bg-black/[0.045] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07]"
+    />
+  );
+}
+
 function WorkspaceFrame({
   children,
   initialUser,
@@ -41,37 +60,34 @@ function WorkspaceFrame({
 }) {
   const t = useTranslations('ai.chat.workspace_shell');
   const pathname = usePathname();
-  const isAssistantContext =
-    pathname === '/' ||
-    pathname === '/chat' ||
-    /^\/chat\/(?!projects(?:\/|$)|history(?:\/|$)|skills(?:\/|$)|credits(?:\/|$)|memories(?:\/|$))/.test(
-      pathname
-    );
-  const pageTitle = pathname.startsWith('/chat/projects')
-    ? t('projects')
-    : pathname.startsWith('/chat/history')
-      ? t('chat_history')
-      : pathname.startsWith('/chat/credits')
-        ? t('credit')
-        : pathname.startsWith('/chat/memories')
-          ? t('memory')
-          : pathname.startsWith('/chat/skills')
-            ? t('skills')
-            : pathname.startsWith('/resources')
-              ? t('resources')
-              : pathname.startsWith('/collections')
-                ? t('collections')
-                : pathname.startsWith('/blog')
-                  ? t('articles')
-                  : pathname.startsWith('/search')
-                    ? t('search_title')
-                    : t('assistant');
+  const pageTitle =
+    pathname === '/'
+      ? t('home')
+      : pathname.startsWith('/chat/projects')
+        ? t('projects')
+        : pathname.startsWith('/chat/history')
+          ? t('chat_history')
+          : pathname.startsWith('/chat/credits')
+            ? t('credit')
+            : pathname.startsWith('/chat/memories')
+              ? t('memory')
+              : pathname.startsWith('/chat/skills')
+                ? t('skills')
+                : pathname.startsWith('/resources')
+                  ? t('resources')
+                  : pathname.startsWith('/collections')
+                    ? t('collections')
+                    : pathname.startsWith('/blog')
+                      ? t('articles')
+                      : pathname.startsWith('/search')
+                        ? t('search_title')
+                        : t('assistant');
 
   return (
     <>
       <WorkspaceSessionBootstrap user={initialUser} />
       <SidebarProvider
-        defaultOpen={isAssistantContext && pathname !== '/'}
+        defaultOpen
         className="[--sidebar-accent:#e7edf7] [--sidebar-border:#e1e4e9] [--sidebar-foreground:#1d1d1f] [--sidebar:#f5f5f7] dark:[--sidebar-accent:#282d38] dark:[--sidebar-border:#30333a] dark:[--sidebar-foreground:#f5f5f7] dark:[--sidebar:#17181b]"
         style={
           {
@@ -87,10 +103,7 @@ function WorkspaceFrame({
         <SidebarInset className="min-w-0 overflow-hidden">
           <div className="flex min-h-dvh min-w-0 flex-col bg-[#f7f7f8] text-[#1d1d1f] dark:bg-[#111216] dark:text-[#f5f5f7]">
             <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-black/[0.07] bg-white/88 px-3 backdrop-blur-xl md:px-5 dark:border-white/10 dark:bg-[#16171a]/88">
-              <SidebarTrigger
-                aria-label={t('toggle_sidebar')}
-                className="size-8 rounded-lg text-[#6e6e73] hover:bg-black/[0.045] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07]"
-              />
+              <WorkspaceNavigationTrigger />
               <span className="mr-2 hidden min-w-20 text-sm font-medium tracking-[-0.01em] text-[#3a3a3c] lg:block dark:text-[#e5e5e7]">
                 {pageTitle}
               </span>
@@ -138,6 +151,7 @@ function WorkspaceFrame({
                     <span>{t('credit')}</span>
                   </Link>
                 </Button>
+                <ThemeToggler type="menu" />
                 <LocaleSelector type="button" />
               </div>
             </header>

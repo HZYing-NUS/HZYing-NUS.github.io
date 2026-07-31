@@ -1,11 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Monitor, Moon, SunDim } from 'lucide-react';
+import { Check, Monitor, Moon, SunDim } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import { useTheme } from 'next-themes';
 
 import { AnimatedThemeToggler } from '@/shared/components/magicui/animated-theme-toggler';
 import { Button } from '@/shared/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu';
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -15,14 +22,16 @@ export function ThemeToggler({
   type = 'icon',
   className,
 }: {
-  type?: 'icon' | 'button' | 'toggle';
+  type?: 'icon' | 'button' | 'toggle' | 'menu';
   className?: string;
 }) {
   const { theme, setTheme } = useTheme();
+  const locale = useLocale();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const frame = window.requestAnimationFrame(() => setMounted(true));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
   const handleThemeChange = (value: string) => {
     setTheme(value);
@@ -69,6 +78,64 @@ export function ThemeToggler({
           <Monitor />
         </ToggleGroupItem>
       </ToggleGroup>
+    );
+  } else if (type === 'menu') {
+    const themeOptions = [
+      {
+        value: 'light',
+        label: locale === 'zh' ? '浅色' : 'Light',
+        icon: SunDim,
+      },
+      {
+        value: 'dark',
+        label: locale === 'zh' ? '深色' : 'Dark',
+        icon: Moon,
+      },
+      {
+        value: 'system',
+        label: locale === 'zh' ? '跟随系统' : 'System',
+        icon: Monitor,
+      },
+    ];
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 rounded-lg"
+            aria-label={locale === 'zh' ? '切换显示模式' : 'Change theme'}
+            title={locale === 'zh' ? '切换显示模式' : 'Change theme'}
+          >
+            {theme === 'dark' ? (
+              <Moon className="size-4" />
+            ) : theme === 'light' ? (
+              <SunDim className="size-4" />
+            ) : (
+              <Monitor className="size-4" />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-36">
+          {themeOptions.map((option) => {
+            const Icon = option.icon;
+            return (
+              <DropdownMenuItem
+                key={option.value}
+                onClick={() => setTheme(option.value)}
+                className="gap-2"
+              >
+                <Icon className="size-4" />
+                <span>{option.label}</span>
+                {theme === option.value ? (
+                  <Check className="text-primary ml-auto size-4" />
+                ) : null}
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
