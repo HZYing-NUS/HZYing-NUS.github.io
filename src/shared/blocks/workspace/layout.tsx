@@ -1,16 +1,25 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Coins, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Link, usePathname } from '@/core/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/core/i18n/navigation';
 import {
   LocaleDetector,
   LocaleSelector,
   ThemeToggler,
 } from '@/shared/blocks/common';
 import { Button } from '@/shared/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
+import { Input } from '@/shared/components/ui/input';
 import {
   SidebarInset,
   SidebarProvider,
@@ -48,6 +57,117 @@ function WorkspaceNavigationTrigger() {
       aria-label={t('toggle_sidebar')}
       className="size-8 rounded-lg text-[#6e6e73] hover:bg-black/[0.045] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07]"
     />
+  );
+}
+
+function WorkspaceSearch() {
+  const t = useTranslations('ai.chat.workspace_shell');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const isEditing =
+        target?.tagName === 'INPUT' ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.tagName === 'SELECT' ||
+        target?.isContentEditable;
+
+      if (event.key === '/' && !isEditing && !event.metaKey && !event.ctrlKey) {
+        event.preventDefault();
+        setQuery(searchParams.get('q') ?? '');
+        setOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
+  }, [searchParams]);
+
+  const handleOpen = () => {
+    setQuery(searchParams.get('q') ?? '');
+    setOpen(true);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const keyword = query.trim();
+    if (!keyword) return;
+
+    setOpen(false);
+    router.push(`/search?q=${encodeURIComponent(keyword)}`);
+  };
+
+  return (
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleOpen}
+        aria-label={t('search')}
+        title={t('search')}
+        className="hidden h-9 w-full max-w-md justify-start rounded-xl border-black/[0.08] bg-black/[0.025] px-3.5 text-[#6e6e73] shadow-none hover:border-black/[0.12] hover:bg-black/[0.045] sm:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-[#a1a1a6] dark:hover:border-white/15 dark:hover:bg-white/[0.07]"
+      >
+        <Search className="size-4" />
+        <span className="truncate">{t('search')}</span>
+        <span className="ml-auto hidden rounded-md border border-black/[0.08] bg-white/70 px-1.5 py-0.5 font-mono text-[10px] text-[#86868b] xl:inline dark:border-white/10 dark:bg-white/[0.05] dark:text-[#98989d]">
+          /
+        </span>
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={handleOpen}
+        aria-label={t('search')}
+        title={t('search')}
+        className="size-8 rounded-lg sm:hidden"
+      >
+        <Search className="size-4" />
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="top-[22%] gap-0 overflow-hidden rounded-2xl border-black/[0.08] bg-white/96 p-0 shadow-2xl backdrop-blur-xl sm:max-w-xl dark:border-white/10 dark:bg-[#1c1d21]/96">
+          <DialogHeader className="px-5 pt-5 pb-3 text-left">
+            <DialogTitle className="text-base tracking-[-0.01em]">
+              {t('quick_search_title')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('quick_search_description')}
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={handleSubmit}
+            className="flex items-center gap-2 border-t border-black/[0.06] p-3 dark:border-white/[0.08]"
+          >
+            <div className="relative min-w-0 flex-1">
+              <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-[#86868b]" />
+              <Input
+                autoFocus
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={t('search_keyword')}
+                aria-label={t('search_keyword')}
+                className="h-11 rounded-xl border-black/[0.08] bg-black/[0.025] pr-3 pl-10 shadow-none dark:border-white/10 dark:bg-white/[0.05]"
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={!query.trim()}
+              className="h-11 rounded-xl px-5"
+            >
+              {t('submit_search')}
+            </Button>
+          </form>
+          <p className="border-t border-black/[0.06] px-5 py-3 text-xs text-[#86868b] dark:border-white/[0.08] dark:text-[#98989d]">
+            {t('quick_search_hint')}
+          </p>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -109,38 +229,7 @@ function WorkspaceFrame({
               <span className="mr-2 hidden min-w-20 text-sm font-medium tracking-[-0.01em] text-[#3a3a3c] lg:block dark:text-[#e5e5e7]">
                 {pageTitle}
               </span>
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-                className="hidden h-9 w-full max-w-md justify-start rounded-xl border-black/[0.08] bg-black/[0.025] px-3.5 text-[#6e6e73] shadow-none hover:border-black/[0.12] hover:bg-black/[0.045] sm:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-[#a1a1a6] dark:hover:border-white/15 dark:hover:bg-white/[0.07]"
-              >
-                <Link
-                  href="/search"
-                  aria-label={t('search')}
-                  title={t('search')}
-                >
-                  <Search className="size-4" />
-                  <span className="truncate">{t('search')}</span>
-                  <span className="ml-auto hidden rounded-md border border-black/[0.08] bg-white/70 px-1.5 py-0.5 font-mono text-[10px] text-[#86868b] xl:inline dark:border-white/10 dark:bg-white/[0.05] dark:text-[#98989d]">
-                    /
-                  </span>
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                className="size-8 rounded-lg sm:hidden"
-              >
-                <Link
-                  href="/search"
-                  aria-label={t('search')}
-                  title={t('search')}
-                >
-                  <Search className="size-4" />
-                </Link>
-              </Button>
+              <WorkspaceSearch />
               <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
                 <Button
                   variant="ghost"
