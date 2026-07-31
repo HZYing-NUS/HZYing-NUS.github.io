@@ -44,7 +44,8 @@ export function SignUp({
   const isEmailAuthEnabled =
     configs.email_auth_enabled !== 'false' ||
     (!isGoogleAuthEnabled && !isGithubAuthEnabled); // no social providers enabled, auto enable email auth
-  const emailVerificationEnabled = configs.email_verification_enabled === 'true';
+  const emailVerificationEnabled =
+    configs.email_verification_enabled === 'true';
 
   if (callbackUrl) {
     if (
@@ -146,23 +147,29 @@ export function SignUp({
             if (emailVerificationEnabled && isExistingUser) {
               void (async () => {
                 try {
-                  const statusResponse = await fetch('/api/user/is-email-verified', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email }),
-                  });
+                  const statusResponse = await fetch(
+                    '/api/user/is-email-verified',
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email }),
+                    }
+                  );
                   const statusResult = await statusResponse.json();
                   const status = statusResult?.data;
 
                   if (!status?.emailVerified) {
-                    const normalizedCallbackUrl = stripLocalePrefix(callbackUrl);
+                    const normalizedCallbackUrl =
+                      stripLocalePrefix(callbackUrl);
                     const verifyPath = `/verify-email?sent=1&email=${encodeURIComponent(
                       email
                     )}&callbackUrl=${encodeURIComponent(normalizedCallbackUrl)}`;
-                    const resendResult = await authClient.sendVerificationEmail({
-                      email,
-                      callbackURL: `${base}${normalizedCallbackUrl || '/'}`,
-                    });
+                    const resendResult = await authClient.sendVerificationEmail(
+                      {
+                        email,
+                        callbackURL: `${base}${normalizedCallbackUrl || '/'}`,
+                      }
+                    );
                     if (resendResult?.error) {
                       throw new Error(resendResult.error.message);
                     }
@@ -171,7 +178,9 @@ export function SignUp({
                     return;
                   }
                 } catch (error: any) {
-                  toast.error(error?.message || 'send verification email failed');
+                  toast.error(
+                    error?.message || 'send verification email failed'
+                  );
                   setLoading(false);
                   return;
                 }
@@ -240,7 +249,7 @@ export function SignUp({
                   value={email}
                 />
                 {emailVerificationEnabled && (
-                  <p className="text-amber-600 text-xs">
+                  <p className="text-xs text-amber-600">
                     {t('email_verification_hint')}
                   </p>
                 )}
@@ -279,10 +288,10 @@ export function SignUp({
       {isEmailAuthEnabled && (
         <CardFooter>
           <div className="flex w-full justify-center border-t py-4">
-            <p className="text-center text-xs text-neutral-500">
+            <p className="text-muted-foreground text-center text-xs">
               {t('already_have_account')}
               <Link href="/sign-in" className="underline">
-                <span className="cursor-pointer dark:text-white/70">
+                <span className="text-primary cursor-pointer">
                   {t('sign_in_title')}
                 </span>
               </Link>

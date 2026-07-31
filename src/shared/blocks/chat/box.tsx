@@ -112,8 +112,8 @@ export function ChatBox({
           {showIntroduction ? (
             <div className="mb-8 max-w-2xl">
               {initialChat?.projectSummary ? (
-                <div className="mb-8 rounded-2xl border border-black/[0.07] bg-white/70 p-5 text-sm shadow-[0_8px_30px_-24px_rgba(31,45,70,0.35)] dark:border-white/10 dark:bg-white/[0.04]">
-                  <p className="text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
+                <div className="bg-card border-border mb-8 rounded-xl border p-5 text-sm shadow-none">
+                  <p className="text-primary text-[13px] font-medium tracking-[0.4px]">
                     {locale === 'zh' ? '免费项目摘要' : 'Free project summary'}
                   </p>
                   <h2 className="mt-2 text-xl font-medium">
@@ -157,7 +157,7 @@ export function ChatBox({
                     </div>
                   </dl>
                   {initialChat.projectSummary.recentMemories?.length ? (
-                    <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
+                    <div className="border-border mt-5 border-t pt-4">
                       <p className="font-medium">
                         {locale === 'zh'
                           ? '最近项目进展'
@@ -176,7 +176,7 @@ export function ChatBox({
                   ) : null}
                 </div>
               ) : null}
-              <p className="mb-2 text-xs font-semibold tracking-[0.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
+              <p className="text-primary mb-2 text-[13px] font-medium tracking-[0.4px]">
                 {locale === 'zh' ? 'AI 工作台' : 'AI workspace'}
               </p>
               <h1 className="text-3xl font-semibold tracking-normal sm:text-4xl">
@@ -188,7 +188,7 @@ export function ChatBox({
                   : 'Choose a model and Skill, then use Credit for each valuable conversation.'}
               </p>
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-xl border border-black/[0.07] bg-white/65 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="bg-card border-border rounded-xl border p-4">
                   <p className="text-sm font-medium">
                     {locale === 'zh' ? '多模型' : 'Multiple models'}
                   </p>
@@ -198,7 +198,7 @@ export function ChatBox({
                       : 'Choose the right reasoning capability for each problem.'}
                   </p>
                 </div>
-                <div className="rounded-xl border border-black/[0.07] bg-white/65 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="bg-card border-border rounded-xl border p-4">
                   <p className="text-sm font-medium">Skills</p>
                   <p className="text-muted-foreground mt-1 text-sm">
                     {locale === 'zh'
@@ -206,7 +206,7 @@ export function ChatBox({
                       : 'Bring a structured method into the conversation.'}
                   </p>
                 </div>
-                <div className="rounded-xl border border-black/[0.07] bg-white/65 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="bg-card border-border rounded-xl border p-4">
                   <p className="text-sm font-medium">
                     {locale === 'zh' ? '可追溯会话' : 'Traceable chats'}
                   </p>

@@ -165,12 +165,12 @@ export function ProjectDetailWorkspace() {
             field === 'name' || field === 'description' ? 'md:col-span-2' : ''
           }
         >
-          <Label className="mb-2 text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6]">
+          <Label className="text-muted-foreground mb-2 text-xs font-medium">
             {t(fieldTranslationKeys[field])}
           </Label>
           {field === 'name' || field === 'stage' ? (
             <Input
-              className="rounded-xl border-black/[0.08] bg-white/65 dark:border-white/10 dark:bg-white/[0.035]"
+              className="bg-card border-border rounded-lg"
               disabled={isDeleted}
               value={project[field] || ''}
               onChange={(event) =>
@@ -179,7 +179,7 @@ export function ProjectDetailWorkspace() {
             />
           ) : (
             <Textarea
-              className="min-h-28 rounded-xl border-black/[0.08] bg-white/65 leading-6 dark:border-white/10 dark:bg-white/[0.035]"
+              className="bg-card border-border min-h-28 rounded-lg leading-6"
               disabled={isDeleted}
               value={project[field] || ''}
               onChange={(event) =>
@@ -214,7 +214,7 @@ export function ProjectDetailWorkspace() {
         value={section}
         onValueChange={(value) => setSection(value as typeof section)}
       >
-        <TabsList className="mb-8 h-auto w-full justify-start gap-1 rounded-xl border-0 bg-black/[0.035] p-1 dark:bg-white/[0.045]">
+        <TabsList className="bg-secondary mb-8 h-auto w-full justify-start gap-1 rounded-xl border-0 p-1">
           <TabsTrigger
             value="overview"
             className="gap-2 rounded-lg px-4 py-2.5"
@@ -240,7 +240,7 @@ export function ProjectDetailWorkspace() {
       {section === 'progress' ? renderFields(progressFields) : null}
       {section === 'context' ? (
         <section className="grid gap-5 lg:grid-cols-3">
-          <div className="rounded-2xl border border-black/[0.07] bg-white/55 p-5 dark:border-white/10 dark:bg-white/[0.025]">
+          <div className="bg-card border-border rounded-xl border p-5">
             <h2 className="mb-4 flex items-center gap-2 font-medium">
               <MessageSquare className="size-4" />
               {t('chats')}
@@ -249,7 +249,7 @@ export function ProjectDetailWorkspace() {
               {payload.chats.map((chat: any) => (
                 <Link
                   key={chat.id}
-                  className="block border-b border-black/10 py-2 text-sm transition-colors hover:text-[#5474a8] dark:border-white/10 dark:hover:text-[#8faee0]"
+                  className="border-border hover:text-primary block border-b py-2 text-sm transition-colors"
                   href={`/chat/${chat.id}`}
                 >
                   {chat.title}
@@ -257,7 +257,7 @@ export function ProjectDetailWorkspace() {
               ))}
             </div>
           </div>
-          <div className="rounded-2xl border border-black/[0.07] bg-white/55 p-5 dark:border-white/10 dark:bg-white/[0.025]">
+          <div className="bg-card border-border rounded-xl border p-5">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-medium">{t('memories')}</h2>
               <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ export function ProjectDetailWorkspace() {
             {payload.memories.map((item: any) => (
               <div
                 key={item.id}
-                className="group flex gap-2 border-b border-black/10 py-3 text-sm"
+                className="group border-border flex gap-2 border-b py-3 text-sm"
               >
                 <div className="min-w-0 flex-1">
                   <Textarea
@@ -316,13 +316,13 @@ export function ProjectDetailWorkspace() {
               </div>
             ))}
           </div>
-          <div className="rounded-2xl border border-black/[0.07] bg-white/55 p-5 dark:border-white/10 dark:bg-white/[0.025]">
+          <div className="bg-card border-border rounded-xl border p-5">
             <h2 className="mb-4 flex items-center gap-2 font-medium">
               <FileText className="size-4" />
               {t('files')}
             </h2>
             <label
-              className={`mb-4 block rounded-xl border border-dashed border-black/20 p-4 text-center text-sm ${isDeleted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+              className={`mb-4 block rounded-xl border border-dashed border-[var(--linear-hairline-strong)] p-4 text-center text-sm ${isDeleted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             >
               <input
                 className="hidden"
@@ -337,14 +337,14 @@ export function ProjectDetailWorkspace() {
             {payload.files.map((file: any) => (
               <div
                 key={file.id}
-                className="flex items-center gap-2 border-b border-black/10 py-3 text-sm"
+                className="border-border flex items-center gap-2 border-b py-3 text-sm"
               >
                 <a
                   href={`/api/files/${file.id}`}
                   className="min-w-0 flex-1 truncate"
                 >
                   <span>{file.originalName}</span>
-                  <span className="ml-2 font-mono text-[10px] text-[#6e6e73] dark:text-[#a1a1a6]">
+                  <span className="text-muted-foreground ml-2 font-mono text-[10px]">
                     {file.parseStatus}
                     {file.parseError === 'PDF_PARSER_NOT_CONFIGURED'
                       ? ` · ${t('pdf_pending')}`

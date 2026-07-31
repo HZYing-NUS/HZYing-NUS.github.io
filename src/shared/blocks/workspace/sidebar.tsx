@@ -298,12 +298,12 @@ export function WorkspaceSidebar({
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-black/[0.07] bg-[#f5f5f7] dark:border-white/10 dark:bg-[#17181b]"
+      className="border-sidebar-border bg-sidebar border-r"
     >
       <SidebarContent className="flex-row gap-0 overflow-hidden">
         <nav
           aria-label={t('primary_navigation')}
-          className="relative flex w-[4.5rem] shrink-0 flex-col items-center border-r border-black/[0.06] px-2 py-3 dark:border-white/[0.08]"
+          className="border-sidebar-border relative flex w-[4.5rem] shrink-0 flex-col items-center border-r px-2 py-3"
         >
           <Link
             href="/"
@@ -311,9 +311,9 @@ export function WorkspaceSidebar({
             aria-current={routeModule === 'home' ? 'page' : undefined}
             aria-label={`${t('home')} · WebTools`}
             className={cn(
-              'mb-3 flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.98] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
+              'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground mb-3 flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium transition duration-200 active:translate-y-px',
               routeModule === 'home' &&
-                'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
+                'bg-sidebar-accent text-sidebar-foreground'
             )}
           >
             <Image
@@ -337,9 +337,8 @@ export function WorkspaceSidebar({
                   onClick={() => handleModuleNavigation(item.id)}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.98] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
-                    active &&
-                      'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
+                    'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground flex min-h-14 w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium transition duration-200 active:translate-y-px',
+                    active && 'bg-sidebar-accent text-sidebar-foreground'
                   )}
                 >
                   <Icon className="size-[1.15rem]" />
@@ -351,7 +350,7 @@ export function WorkspaceSidebar({
         </nav>
 
         <aside className="flex min-w-0 flex-1 flex-col group-data-[collapsible=icon]:hidden">
-          <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-black/[0.06] px-4 dark:border-white/[0.08]">
+          <div className="border-sidebar-border flex h-14 shrink-0 items-center justify-between gap-3 border-b px-4">
             <p className="truncate text-[15px] font-semibold tracking-[-0.02em]">
               {panelTitle}
             </p>
@@ -362,7 +361,7 @@ export function WorkspaceSidebar({
               onClick={() => (isMobile ? setOpenMobile(false) : setOpen(false))}
               aria-label={t('collapse_sidebar')}
               title={t('collapse_sidebar')}
-              className="size-8 shrink-0 rounded-lg text-[#86868b] hover:bg-black/[0.05] dark:text-[#98989d] dark:hover:bg-white/[0.08]"
+              className="text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground size-8 shrink-0 rounded-lg"
             >
               <PanelLeftClose className="size-4" />
             </Button>
@@ -373,7 +372,7 @@ export function WorkspaceSidebar({
               <Link
                 href="/chat"
                 onClick={handleSecondaryNavigation}
-                className="mb-3 flex h-10 items-center justify-center gap-2 rounded-xl bg-[#1d1d1f] px-3 text-sm font-medium text-white transition duration-200 hover:bg-[#343437] active:scale-[0.99] dark:bg-[#f5f5f7] dark:text-[#1d1d1f] dark:hover:bg-white"
+                className="bg-primary text-primary-foreground mb-3 flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-medium transition duration-200 hover:bg-[var(--linear-primary-hover)] active:translate-y-px"
               >
                 <Plus className="size-4" />
                 {t('new_chat')}
@@ -393,7 +392,7 @@ export function WorkspaceSidebar({
               <Link
                 href="/submit"
                 onClick={handleSecondaryNavigation}
-                className="mt-5 flex h-10 items-center gap-3 border-t border-black/[0.06] px-3 pt-4 text-[13px] font-medium text-[#6e6e73] transition hover:text-[#1d1d1f] dark:border-white/[0.08] dark:text-[#98989d] dark:hover:text-[#f5f5f7]"
+                className="text-muted-foreground border-sidebar-border hover:text-sidebar-foreground mt-5 flex h-10 items-center gap-3 border-t px-3 pt-4 text-[13px] font-medium transition"
               >
                 <Send className="size-4" />
                 {t('submit')}
@@ -403,7 +402,7 @@ export function WorkspaceSidebar({
         </aside>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-black/[0.06] dark:border-white/[0.08]">
+      <SidebarFooter className="border-sidebar-border border-t">
         <SidebarUser
           user={{
             nav: {
@@ -455,9 +454,8 @@ function WorkspaceNavigationList({
             onClick={onNavigate}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'flex min-h-9 items-center gap-3 rounded-lg px-3 py-2 text-[13px] leading-5 font-medium text-[#5f6065] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] active:scale-[0.99] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
-              active &&
-                'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
+              'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground flex min-h-9 items-center gap-3 rounded-lg px-3 py-2 text-[13px] leading-5 font-medium transition duration-200 active:translate-y-px',
+              active && 'bg-sidebar-accent text-sidebar-foreground'
             )}
           >
             <Icon className="size-4 shrink-0" />

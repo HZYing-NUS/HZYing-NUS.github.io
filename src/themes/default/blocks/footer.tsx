@@ -13,8 +13,7 @@ export function Footer({ footer }: { footer: FooterType }) {
   return (
     <footer
       id={footer.id}
-      className={`py-8 sm:py-8 ${footer.className || ''} overflow-x-hidden`}
-      // overflow-x-hidden防止-footer-撑出水平滚动条
+      className={`border-border border-t py-16 ${footer.className || ''} overflow-x-hidden`}
     >
       <div className="container space-y-8 overflow-x-hidden">
         <div className="grid min-w-0 gap-12 md:grid-cols-5">
@@ -42,7 +41,7 @@ export function Footer({ footer }: { footer: FooterType }) {
                       key={iidx}
                       href={subItem.url || ''}
                       target={subItem.target || ''}
-                      className="text-muted-foreground hover:text-primary block break-words duration-150"
+                      className="text-muted-foreground hover:text-foreground block break-words duration-150"
                     >
                       <span className="break-words">{subItem.title || ''}</span>
                     </Link>
@@ -84,7 +83,7 @@ export function Footer({ footer }: { footer: FooterType }) {
                   key={index}
                   href={item.url || ''}
                   target={item.target || ''}
-                  className="text-muted-foreground hover:text-primary block text-xs break-words underline duration-150"
+                  className="text-muted-foreground hover:text-foreground block text-xs break-words underline underline-offset-4 duration-150"
                 >
                   {item.title || ''}
                 </Link>
@@ -99,7 +98,7 @@ export function Footer({ footer }: { footer: FooterType }) {
                   key={index}
                   href={item.url || ''}
                   target={item.target || ''}
-                  className="text-muted-foreground hover:text-primary bg-background block cursor-pointer rounded-full p-2 duration-150"
+                  className="text-muted-foreground hover:text-foreground hover:bg-secondary block cursor-pointer rounded-lg p-2 duration-150"
                   aria-label={item.title || 'Social media link'}
                 >
                   {item.icon && (

@@ -198,18 +198,18 @@ export function SignInForm({
       </div>
       {isEmailAuthEnabled && (
         <div className="flex w-full justify-center border-t py-4">
-          <p className="text-center text-xs text-neutral-500">
+          <p className="text-muted-foreground text-center text-xs">
             {t('no_account')}
             {onSwitchToSignUp ? (
               <span
-                className="cursor-pointer underline dark:text-white/70"
+                className="text-primary cursor-pointer underline underline-offset-4"
                 onClick={onSwitchToSignUp}
               >
                 {t('sign_up_title')}
               </span>
             ) : (
               <Link href="/sign-up" className="underline">
-                <span className="cursor-pointer dark:text-white/70">
+                <span className="text-primary cursor-pointer">
                   {t('sign_up_title')}
                 </span>
               </Link>

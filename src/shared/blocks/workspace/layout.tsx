@@ -55,7 +55,7 @@ function WorkspaceNavigationTrigger() {
   return (
     <SidebarTrigger
       aria-label={t('toggle_sidebar')}
-      className="size-8 rounded-lg text-[#6e6e73] hover:bg-black/[0.045] dark:text-[#a1a1a6] dark:hover:bg-white/[0.07]"
+      className="text-muted-foreground hover:bg-secondary hover:text-foreground size-8 rounded-lg"
     />
   );
 }
@@ -110,7 +110,7 @@ function WorkspaceSearch() {
       role="search"
       className="group relative min-w-0 flex-1 sm:max-w-md"
     >
-      <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-[#86868b]" />
+      <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2" />
       <Input
         ref={inputRef}
         value={query}
@@ -118,9 +118,9 @@ function WorkspaceSearch() {
         onKeyDown={handleKeyDown}
         placeholder={t('search')}
         aria-label={t('search')}
-        className="h-9 rounded-xl border-black/[0.08] bg-black/[0.025] pr-10 pl-10 text-sm shadow-none hover:border-black/[0.12] hover:bg-black/[0.045] focus-visible:border-black/[0.15] focus-visible:ring-0 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/15 dark:hover:bg-white/[0.07] dark:focus-visible:border-white/20"
+        className="bg-secondary border-border hover:bg-accent focus-visible:border-ring focus-visible:ring-ring/30 h-9 rounded-lg pr-10 pl-10 text-sm shadow-none hover:border-[var(--linear-hairline-strong)] focus-visible:ring-2"
       />
-      <span className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded-md border border-black/[0.08] bg-white/70 px-1.5 py-0.5 font-mono text-[10px] text-[#86868b] transition-opacity group-focus-within:opacity-0 xl:inline dark:border-white/10 dark:bg-white/[0.05] dark:text-[#98989d]">
+      <span className="bg-card text-muted-foreground border-border pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded border px-1.5 py-0.5 font-mono text-[10px] transition-opacity group-focus-within:opacity-0 xl:inline">
         /
       </span>
     </form>
@@ -166,23 +166,21 @@ function WorkspaceFrame({
       <WorkspaceSessionBootstrap user={initialUser} />
       <SidebarProvider
         defaultOpen={pathname !== '/'}
-        className="[--sidebar-accent:#e7edf7] [--sidebar-border:#e1e4e9] [--sidebar-foreground:#1d1d1f] [--sidebar:#f5f5f7] dark:[--sidebar-accent:#282d38] dark:[--sidebar-border:#30333a] dark:[--sidebar-foreground:#f5f5f7] dark:[--sidebar:#17181b]"
+        className="[--sidebar-width-icon:4.5rem] [--sidebar-width:19.5rem]"
         style={
           {
             '--sidebar-width': '19.5rem',
             '--sidebar-width-icon': '4.5rem',
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif',
           } as React.CSSProperties
         }
       >
         <WorkspaceSidebar officialProfileUsername={officialProfileUsername} />
         <LocaleDetector />
         <SidebarInset className="min-w-0 overflow-hidden">
-          <div className="flex min-h-dvh min-w-0 flex-col bg-[#f7f7f8] text-[#1d1d1f] dark:bg-[#111216] dark:text-[#f5f5f7]">
-            <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-black/[0.07] bg-white/88 px-3 backdrop-blur-xl md:px-5 dark:border-white/10 dark:bg-[#16171a]/88">
+          <div className="bg-background text-foreground flex min-h-dvh min-w-0 flex-col">
+            <header className="bg-background/90 border-border sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b px-3 backdrop-blur-xl md:px-5">
               <WorkspaceNavigationTrigger />
-              <span className="mr-2 hidden min-w-20 text-sm font-medium tracking-[-0.01em] text-[#3a3a3c] lg:block dark:text-[#e5e5e7]">
+              <span className="text-foreground mr-2 hidden min-w-20 text-sm font-medium tracking-[-0.01em] lg:block">
                 {pageTitle}
               </span>
               <WorkspaceSearch />

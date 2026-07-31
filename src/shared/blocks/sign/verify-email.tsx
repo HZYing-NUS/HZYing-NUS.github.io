@@ -328,7 +328,7 @@ export function VerifyEmailPage({
         </div>
       </CardContent>
       <CardFooter>
-        <p className="w-full text-center text-xs text-neutral-500">
+        <p className="text-muted-foreground w-full text-center text-xs">
           {t('verify_email_tip')}
         </p>
       </CardFooter>

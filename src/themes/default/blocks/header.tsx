@@ -93,7 +93,7 @@ export function Header({ header }: { header: HeaderType }) {
         viewport={false}
         className="**:data-[slot=navigation-menu-content]:top-12 max-lg:hidden"
       >
-        <NavigationMenuList className="bg-background/80 gap-1 rounded-2xl border p-1 shadow-sm backdrop-blur">
+        <NavigationMenuList className="gap-1 border-0 bg-transparent p-0 shadow-none">
           {header.nav?.items?.map((item, idx) => {
             if (!item.children || item.children.length === 0) {
               return (
@@ -103,10 +103,10 @@ export function Header({ header }: { header: HeaderType }) {
                     target={item.target || '_self'}
                     aria-current={isNavActive(item.url) ? 'page' : undefined}
                     className={cn(
-                      'flex flex-row items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition duration-200',
+                      'flex h-9 flex-row items-center gap-2 rounded-lg px-3.5 text-sm font-medium transition duration-200',
                       isNavActive(item.url)
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        ? 'bg-secondary text-foreground'
+                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                     )}
                   >
                     {item.icon && <SmartIcon name={item.icon as string} />}
@@ -207,7 +207,7 @@ export function Header({ header }: { header: HeaderType }) {
                     className={cn(
                       'flex items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition',
                       isNavActive(item.url)
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-secondary text-foreground'
                         : 'hover:bg-muted'
                     )}
                   >
@@ -244,7 +244,7 @@ export function Header({ header }: { header: HeaderType }) {
             target={target || '_self'}
             className="grid grid-cols-[auto_1fr] gap-3.5"
           >
-            <div className="bg-background ring-foreground/10 relative flex size-9 items-center justify-center rounded border border-transparent shadow-sm ring-1">
+            <div className="bg-card border-border relative flex size-9 items-center justify-center rounded-lg border">
               {children}
             </div>
             <div className="space-y-0.5">
@@ -268,14 +268,14 @@ export function Header({ header }: { header: HeaderType }) {
       >
         <div
           className={cn(
-            'absolute inset-x-0 top-0 z-50 h-18 border-transparent ring-1 ring-transparent transition-all duration-200',
-            'in-data-scrolled:border-foreground/8 in-data-scrolled:bg-background/88 in-data-scrolled:border-b in-data-scrolled:shadow-sm in-data-scrolled:backdrop-blur-xl',
-            'has-data-[state=open]:ring-foreground/5 has-data-[state=open]:bg-card/75 has-data-[state=open]:h-[calc(var(--navigation-menu-viewport-height)+3.4rem)] has-data-[state=open]:border-b has-data-[state=open]:shadow-lg has-data-[state=open]:shadow-black/10 has-data-[state=open]:backdrop-blur',
-            'max-lg:in-data-[state=active]:bg-background/75 max-lg:h-14 max-lg:overflow-hidden max-lg:border-b max-lg:in-data-[state=active]:h-screen max-lg:in-data-[state=active]:backdrop-blur'
+            'absolute inset-x-0 top-0 z-50 h-14 border-transparent transition-all duration-200 lg:h-14',
+            'in-data-scrolled:border-border in-data-scrolled:bg-background/90 in-data-scrolled:border-b in-data-scrolled:backdrop-blur-xl',
+            'has-data-[state=open]:bg-card/95 has-data-[state=open]:h-[calc(var(--navigation-menu-viewport-height)+3.4rem)] has-data-[state=open]:border-b has-data-[state=open]:backdrop-blur-xl',
+            'max-lg:in-data-[state=active]:bg-background/95 max-lg:overflow-hidden max-lg:border-b max-lg:in-data-[state=active]:h-screen max-lg:in-data-[state=active]:backdrop-blur-xl'
           )}
         >
           <div className="container">
-            <div className="relative flex flex-wrap items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] lg:py-4">
+            <div className="relative flex h-14 flex-wrap items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr]">
               <div className="flex justify-between gap-8 max-lg:h-14 max-lg:w-full max-lg:border-b lg:justify-self-start">
                 {/* Brand Logo */}
                 {header.brand && <BrandLogo brand={header.brand} />}
@@ -310,11 +310,10 @@ export function Header({ header }: { header: HeaderType }) {
                         href={button.url || ''}
                         target={button.target || '_self'}
                         className={cn(
-                          'focus-visible:ring-ring inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
-                          'h-7 px-3 ring-0',
+                          'focus-visible:ring-ring inline-flex h-9 items-center justify-center gap-2 rounded-lg px-3.5 text-sm font-medium whitespace-nowrap transition duration-200 focus-visible:ring-2 focus-visible:outline-none active:translate-y-px disabled:pointer-events-none disabled:opacity-50',
                           button.variant === 'outline'
-                            ? 'bg-background border-primary ring-foreground/10 hover:bg-muted/50 dark:ring-foreground/15 dark:hover:bg-muted/50 border border-transparent shadow-sm ring-1 shadow-black/15 duration-200'
-                            : 'bg-primary text-primary-foreground hover:bg-primary/90 border-[0.5px] border-white/25 shadow-md ring-1 shadow-black/20 ring-(--ring-color) [--ring-color:color-mix(in_oklab,var(--color-foreground)15%,var(--color-primary))]'
+                            ? 'border-border bg-card text-foreground hover:bg-secondary border hover:border-[var(--linear-hairline-strong)]'
+                            : 'bg-primary text-primary-foreground hover:bg-[var(--linear-primary-hover)]'
                         )}
                       >
                         {button.icon && (

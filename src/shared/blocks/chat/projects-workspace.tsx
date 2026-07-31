@@ -82,15 +82,15 @@ export function ProjectsWorkspace() {
         </Button>
       }
     >
-      <div className="mb-8 flex max-w-3xl items-start gap-3 rounded-2xl bg-black/[0.025] px-4 py-3.5 text-sm leading-6 text-[#6e6e73] dark:bg-white/[0.035] dark:text-[#a1a1a6]">
-        <Info className="mt-1 size-4 shrink-0 text-[#5474a8] dark:text-[#8faee0]" />
+      <div className="bg-secondary text-muted-foreground mb-8 flex max-w-3xl items-start gap-3 rounded-xl px-4 py-3.5 text-sm leading-6">
+        <Info className="text-primary mt-1 size-4 shrink-0" />
         <p>{t('project_optional_hint')}</p>
       </div>
-      <div className="mb-5 flex gap-6 border-b border-black/[0.07] text-sm dark:border-white/10">
+      <div className="border-border mb-5 flex gap-6 border-b text-sm">
         {(['active', 'deleted'] as const).map((item) => (
           <button
             key={item}
-            className={`border-b-2 px-1 pb-3 transition-colors ${status === item ? 'border-[#6f8fbe] text-[#45658f] dark:text-[#9bb7e2]' : 'border-transparent text-[#6e6e73] dark:text-[#a1a1a6]'}`}
+            className={`border-b-2 px-1 pb-3 transition-colors ${status === item ? 'border-primary text-primary' : 'text-muted-foreground border-transparent'}`}
             onClick={() => setStatus(item)}
           >
             {item === 'active' ? t('active') : t('trash')}
@@ -98,7 +98,7 @@ export function ProjectsWorkspace() {
         ))}
       </div>
       {creating ? (
-        <div className="mb-8 grid gap-3 rounded-2xl border border-black/[0.07] bg-white/70 p-5 shadow-[0_12px_36px_-28px_rgba(31,45,70,0.4)] dark:border-white/10 dark:bg-white/[0.04]">
+        <div className="bg-card border-border mb-8 grid gap-3 rounded-xl border p-5 shadow-none">
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -133,29 +133,27 @@ export function ProjectsWorkspace() {
         </WorkspaceEmpty>
       ) : projects.length === 0 ? (
         <WorkspaceEmpty>
-          <FolderKanban className="mx-auto mb-4 size-6 text-[#5474a8] dark:text-[#8faee0]" />
-          <p className="font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
-            {t('empty_projects')}
-          </p>
+          <FolderKanban className="text-primary mx-auto mb-4 size-6" />
+          <p className="text-foreground font-medium">{t('empty_projects')}</p>
           <p className="mx-auto mt-2 max-w-md leading-6">
             {t('projects_description')}
           </p>
         </WorkspaceEmpty>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-black/[0.07] bg-white/60 dark:border-white/10 dark:bg-white/[0.025]">
+        <div className="bg-card border-border overflow-hidden rounded-xl border">
           {projects.map((project, index) => (
             <article
               key={project.id}
-              className="group grid gap-4 border-b border-black/[0.07] px-5 py-5 transition-colors last:border-b-0 hover:bg-black/[0.018] md:grid-cols-[2.5rem_1fr_auto] md:items-center dark:border-white/10 dark:hover:bg-white/[0.025]"
+              className="group border-border hover:bg-secondary grid gap-4 border-b px-5 py-5 transition-colors last:border-b-0 md:grid-cols-[2.5rem_1fr_auto] md:items-center"
             >
-              <span className="font-mono text-xs text-[#999287]">
+              <span className="text-muted-foreground font-mono text-xs tabular-nums">
                 {String(index + 1).padStart(2, '0')}
               </span>
               <div>
                 <h2 className="text-xl font-medium tracking-tight">
                   {project.name}
                 </h2>
-                <p className="mt-1 text-sm text-[#6e6e73] dark:text-[#a1a1a6]">
+                <p className="text-muted-foreground mt-1 text-sm">
                   {project.description || t('project_no_description')}
                   {project.stage ? ` · ${project.stage}` : ''}
                 </p>

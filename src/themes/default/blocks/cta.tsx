@@ -20,15 +20,15 @@ export function Cta({
       className={cn('py-16 md:py-24', section.className, className)}
     >
       <div className="container">
-        <div className="text-center">
+        <div className="bg-card border-border rounded-xl border px-6 py-12 text-center md:px-12 md:py-16">
           <ScrollAnimation>
-            <h2 className="text-4xl font-semibold text-balance lg:text-5xl">
+            <h2 className="text-[2.5rem] leading-[1.15] font-semibold tracking-[-0.025em] text-balance lg:text-[3.5rem]">
               {section.title}
             </h2>
           </ScrollAnimation>
           <ScrollAnimation delay={0.15}>
             <p
-              className="mt-4"
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl leading-7"
               dangerouslySetInnerHTML={{ __html: section.description ?? '' }}
             />
           </ScrollAnimation>

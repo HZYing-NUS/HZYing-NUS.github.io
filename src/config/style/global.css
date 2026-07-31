@@ -6,11 +6,38 @@
 @plugin 'tailwindcss-animate';
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+  :root.dark {
+    color-scheme: dark;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground font-sans;
+    font-feature-settings:
+      'kern' 1,
+      'ss01' 1,
+      'cv01' 1;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'SF Pro Display', var(--font-sans);
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 28%, transparent);
   }
 }
 
@@ -19,31 +46,6 @@
 }
 
 .webtools-public {
-  --background: #f7f7f8;
-  --foreground: #1d1d1f;
-  --card: #ffffff;
-  --card-foreground: #1d1d1f;
-  --popover: #ffffff;
-  --popover-foreground: #1d1d1f;
-  --primary: #5474a8;
-  --primary-foreground: #ffffff;
-  --secondary: #eceef1;
-  --secondary-foreground: #1d1d1f;
-  --muted: #eeeef0;
-  --muted-foreground: #6e6e73;
-  --accent: #e8eef8;
-  --accent-foreground: #1d1d1f;
-  --border: rgb(0 0 0 / 7%);
-  --input: rgb(0 0 0 / 9%);
-  --ring: #6f8fbe;
-  --radius: 0.75rem;
-  --shadow-sm: 0 6px 18px -12px rgb(84 116 168 / 22%);
-  --shadow-md: 0 12px 28px -18px rgb(84 116 168 / 28%);
-  --shadow-lg: 0 20px 44px -26px rgb(84 116 168 / 32%);
-  --font-sans:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC',
-    'Helvetica Neue', sans-serif;
-  --font-serif: 'New York', 'Songti SC', 'STSong', Georgia, serif;
   min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
@@ -53,33 +55,31 @@
   padding-inline: 1.25rem;
 }
 
+.webtools-public .rounded-3xl {
+  border-radius: 1rem;
+}
+
+.webtools-public .rounded-2xl {
+  border-radius: 0.75rem;
+}
+
+.webtools-public .shadow-sm,
+.webtools-public .shadow-md,
+.webtools-public .shadow-lg,
+.webtools-public [class*='hover:shadow']:hover {
+  box-shadow: none;
+}
+
+.webtools-public article[class*='bg-background'],
+.webtools-public aside[class*='bg-background'],
+.webtools-public section[class*='bg-background'] {
+  background-color: var(--card);
+}
+
 @media (min-width: 768px) {
   .webtools-public .container {
     padding-inline: 2.5rem;
   }
-}
-
-.dark .webtools-public {
-  --background: #15171a;
-  --foreground: #f5f5f7;
-  --card: #1d2025;
-  --card-foreground: #f5f5f7;
-  --popover: #1d2025;
-  --popover-foreground: #f5f5f7;
-  --primary: #8faee0;
-  --primary-foreground: #15171a;
-  --secondary: #272a30;
-  --secondary-foreground: #f5f5f7;
-  --muted: #24272c;
-  --muted-foreground: #a1a1a6;
-  --accent: #29364a;
-  --accent-foreground: #f5f5f7;
-  --border: rgb(255 255 255 / 10%);
-  --input: rgb(255 255 255 / 12%);
-  --ring: #8faee0;
-  --shadow-sm: 0 6px 18px -12px rgb(0 0 0 / 48%);
-  --shadow-md: 0 12px 28px -18px rgb(0 0 0 / 58%);
-  --shadow-lg: 0 20px 44px -26px rgb(0 0 0 / 68%);
 }
 
 .webtools-flow-field {
@@ -90,17 +90,7 @@
   height: calc(100% + 21rem);
   z-index: 0;
   overflow: hidden;
-  background:
-    radial-gradient(
-      circle at 50% 42%,
-      transparent 0 16rem,
-      var(--background) 46rem
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--background) 82%, transparent),
-      var(--background)
-    );
+  background: var(--background);
   pointer-events: none;
 }
 
@@ -118,16 +108,13 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border: 1px solid color-mix(in oklab, var(--primary) 15%, var(--border));
-  border-radius: 1rem;
-  background: color-mix(in oklab, var(--background) 72%, transparent);
-  box-shadow: 0 8px 24px -20px
-    color-mix(in oklab, var(--primary) 38%, transparent);
-  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--card) 90%, transparent);
+  backdrop-filter: blur(16px);
   transition:
     background-color 200ms ease,
     border-color 200ms ease,
-    box-shadow 200ms ease,
     transform 200ms ease;
 }
 
@@ -137,7 +124,7 @@
   z-index: -1;
   background: radial-gradient(
     circle 7rem at var(--spot-x) var(--spot-y),
-    color-mix(in oklab, var(--primary) 22%, transparent),
+    color-mix(in oklab, var(--primary) 13%, transparent),
     transparent 72%
   );
   opacity: 0;
@@ -146,11 +133,9 @@
 }
 
 .webtools-flow-step-card:hover {
-  border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
-  background: color-mix(in oklab, var(--background) 86%, transparent);
-  box-shadow: 0 14px 32px -24px
-    color-mix(in oklab, var(--primary) 48%, transparent);
-  transform: translateY(-2px);
+  border-color: var(--linear-hairline-strong);
+  background: var(--linear-surface-2);
+  transform: translateY(-1px);
 }
 
 .webtools-flow-step-card:hover::before {
@@ -170,18 +155,18 @@
 .webtools-flow-field__canvas {
   width: 100%;
   height: 100%;
-  opacity: 0.92;
+  opacity: 0.72;
 }
 
 .webtools-flow-field__grid {
   background-image:
     linear-gradient(
-      color-mix(in oklab, var(--primary) 9%, transparent) 1px,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      color-mix(in oklab, var(--primary) 9%, transparent) 1px,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 1px,
       transparent 1px
     );
   background-size: 48px 48px;
@@ -190,7 +175,7 @@
     black 0%,
     transparent 78%
   );
-  opacity: 0.38;
+  opacity: 0.3;
 }
 
 .webtools-flow-field__fade {

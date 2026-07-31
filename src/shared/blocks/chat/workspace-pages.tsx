@@ -85,7 +85,7 @@ export function GlobalMemoriesWorkspace() {
         </WorkspaceEmpty>
       ) : (
         <>
-          <div className="mb-6 flex items-center justify-between border-y border-black/10 py-4 dark:border-white/10">
+          <div className="border-border mb-6 flex items-center justify-between border-y py-4">
             <div>
               <Label htmlFor="global-memory-enabled">
                 {locale === 'zh'
@@ -115,7 +115,7 @@ export function GlobalMemoriesWorkspace() {
               {t('new_memory')}
             </Button>
           </div>
-          <div className="dark:divide-border dark:border-border divide-y divide-black/10 border-y border-black/10">
+          <div className="divide-border border-border divide-y border-y">
             {items.map((item) => (
               <div key={item.id} className="flex items-start gap-4 py-5">
                 <div className="flex-1">
@@ -124,7 +124,7 @@ export function GlobalMemoriesWorkspace() {
                     defaultValue={item.content}
                     onBlur={(e) => update(item.id, { content: e.target.value })}
                   />
-                  <p className="font-mono text-[10px] tracking-wider text-[#8c867c] uppercase">
+                  <p className="text-muted-foreground font-mono text-[10px] tracking-wider uppercase">
                     {item.status === 'confirmed' ? 'Confirmed' : t('pending')}
                   </p>
                 </div>
@@ -171,14 +171,14 @@ export function SkillsWorkspace() {
         skills.map((skill, index) => (
           <article
             key={skill.id}
-            className="dark:border-border grid gap-8 border-y border-black/15 py-8 md:grid-cols-[1fr_18rem]"
+            className="border-border grid gap-8 border-y py-8 md:grid-cols-[1fr_18rem]"
           >
             <div>
-              <p className="mb-3 text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
+              <p className="text-primary mb-3 text-[13px] font-medium tracking-[0.4px]">
                 Skill {String(index + 1).padStart(2, '0')}
               </p>
               <h2 className="text-2xl font-medium">{skill.name}</h2>
-              <p className="dark:text-muted-foreground mt-3 max-w-2xl text-sm leading-7 text-[#68635b]">
+              <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-7">
                 {skill.description}
               </p>
               <dl className="mt-7 grid gap-5 text-sm sm:grid-cols-2">
@@ -186,7 +186,7 @@ export function SkillsWorkspace() {
                   <dt className="font-medium">
                     {locale === 'zh' ? '适合' : 'Suitable for'}
                   </dt>
-                  <dd className="mt-2 text-[#6e6e73] dark:text-[#a1a1a6]">
+                  <dd className="text-muted-foreground mt-2">
                     {skill.suitableFor ||
                       (locale === 'zh'
                         ? '早期产品想法、MVP 和付费验证。'
@@ -197,7 +197,7 @@ export function SkillsWorkspace() {
                   <dt className="font-medium">
                     {locale === 'zh' ? '不适合' : 'Not suitable for'}
                   </dt>
-                  <dd className="mt-2 text-[#6e6e73] dark:text-[#a1a1a6]">
+                  <dd className="text-muted-foreground mt-2">
                     {skill.unsuitableFor ||
                       (locale === 'zh'
                         ? '替代法律、财务或医疗专业判断。'
@@ -206,8 +206,8 @@ export function SkillsWorkspace() {
                 </div>
               </dl>
             </div>
-            <div className="dark:border-border border-l border-black/10 pl-7">
-              <p className="mb-5 text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
+            <div className="border-border border-l pl-7">
+              <p className="text-muted-foreground mb-5 text-sm leading-6">
                 {locale === 'zh'
                   ? '启用后创建新对话。一条对话最多启用一个 Skill。'
                   : 'Enabling this starts a new chat. Each chat can use at most one Skill.'}
@@ -333,19 +333,19 @@ export function CreditsWorkspace() {
   return (
     <WorkspaceShell title={t('credits')} description={t('credits_description')}>
       {loadFailed ? (
-        <p className="mb-8 border-l-2 border-[#6f8fbe] pl-4 text-sm text-[#6e6e73] dark:text-[#a1a1a6]">
+        <p className="text-muted-foreground border-primary mb-8 border-l-2 pl-4 text-sm">
           {t('credits_load_failed')}
         </p>
       ) : null}
       <div className="grid gap-12 lg:grid-cols-[16rem_minmax(0,1fr)]">
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <p className="font-mono text-[10px] tracking-[.18em] text-[#777268] uppercase">
+          <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
             {t('balance')}
           </p>
           <p className="mt-3 text-5xl font-semibold tracking-tight">
             {loading ? '…' : (activity?.balance ?? '—')}
           </p>
-          <p className="mt-3 text-xs leading-5 text-[#777268] dark:text-[#aaa399]">
+          <p className="text-muted-foreground mt-3 text-xs leading-5">
             {t('balance_description')}
           </p>
         </aside>
@@ -353,29 +353,29 @@ export function CreditsWorkspace() {
           <section>
             <div className="mb-5 flex items-end justify-between gap-5">
               <div>
-                <p className="text-xs font-semibold tracking-[.1em] text-[#5474a8] uppercase dark:text-[#8faee0]">
+                <p className="text-primary text-[13px] font-medium tracking-[0.4px]">
                   {t('one_time_purchase')}
                 </p>
                 <h2 className="mt-2 text-xl font-medium">
                   {t('credit_packages')}
                 </h2>
               </div>
-              <p className="hidden max-w-xs text-right text-xs leading-5 text-[#777268] sm:block dark:text-[#aaa399]">
+              <p className="text-muted-foreground hidden max-w-xs text-right text-xs leading-5 sm:block">
                 {t('package_note')}
               </p>
             </div>
             {loading ? (
-              <div className="dark:border-border flex min-h-48 items-center justify-center border-y border-black/10">
-                <LoaderCircle className="size-5 animate-spin text-[#777268]" />
+              <div className="border-border flex min-h-48 items-center justify-center border-y">
+                <LoaderCircle className="text-muted-foreground size-5 animate-spin" />
               </div>
             ) : packages.length ? (
-              <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3 dark:border-white/15 dark:bg-white/15">
+              <div className="border-border bg-border grid gap-px overflow-hidden rounded-xl border md:grid-cols-3">
                 {packages.map((creditPackage) => (
                   <article
                     key={creditPackage.code}
-                    className={`relative flex min-h-64 flex-col bg-[#f7f7f8] p-6 dark:bg-[#17181b] ${
+                    className={`bg-card relative flex min-h-64 flex-col p-6 ${
                       creditPackage.recommended
-                        ? 'shadow-[inset_0_3px_0_#6f8fbe]'
+                        ? 'shadow-[inset_0_3px_0_var(--primary)]'
                         : ''
                     }`}
                   >
@@ -384,7 +384,7 @@ export function CreditsWorkspace() {
                         {creditPackage.name}
                       </h3>
                       {creditPackage.recommended ? (
-                        <span className="bg-[#6f8fbe] px-2 py-1 font-mono text-[9px] tracking-[.12em] text-white uppercase">
+                        <span className="bg-primary px-2 py-1 font-mono text-[9px] tracking-[0.12em] text-white uppercase">
                           {t('recommended')}
                         </span>
                       ) : null}
@@ -392,7 +392,7 @@ export function CreditsWorkspace() {
                     <p className="mt-8 text-4xl font-semibold tracking-[-0.04em]">
                       {creditPackage.credits.toLocaleString(locale)}
                     </p>
-                    <p className="mt-1 font-mono text-[10px] tracking-[.15em] text-[#777268] uppercase">
+                    <p className="text-muted-foreground mt-1 font-mono text-[10px] tracking-[0.15em] uppercase">
                       Credit
                     </p>
                     <div className="mt-auto flex items-end justify-between gap-3 pt-8">
@@ -419,24 +419,24 @@ export function CreditsWorkspace() {
             ) : (
               <WorkspaceEmpty>{t('packages_unavailable')}</WorkspaceEmpty>
             )}
-            <p className="mt-4 text-xs leading-5 text-[#777268] sm:hidden dark:text-[#aaa399]">
+            <p className="text-muted-foreground mt-4 text-xs leading-5 sm:hidden">
               {t('package_note')}
             </p>
           </section>
 
-          <section className="dark:border-border border-y border-black/15 py-8">
+          <section className="border-border border-y py-8">
             <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
               <div className="min-w-0">
                 <div className="flex items-center gap-3">
-                  <Gift className="size-5 text-[#5474a8] dark:text-[#8faee0]" />
+                  <Gift className="text-primary size-5" />
                   <h2 className="text-xl font-medium">{t('invite_rewards')}</h2>
                 </div>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6e6e73] dark:text-[#a1a1a6]">
+                <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-6">
                   {t('invite_description')}
                 </p>
                 <div className="mt-6 flex min-w-0 gap-2">
-                  <div className="dark:border-border min-w-0 flex-1 border border-black/15 bg-white/30 px-4 py-3 dark:bg-white/5">
-                    <p className="font-mono text-[9px] tracking-[.15em] text-[#777268] uppercase">
+                  <div className="bg-card border-border min-w-0 flex-1 border px-4 py-3">
+                    <p className="text-muted-foreground font-mono text-[9px] tracking-[0.15em] uppercase">
                       {t('invite_link')}
                     </p>
                     <p className="mt-1 truncate text-sm">
@@ -453,11 +453,11 @@ export function CreditsWorkspace() {
                     {t('copy_invite_link')}
                   </Button>
                 </div>
-                <p className="mt-3 text-xs leading-5 text-[#777268] dark:text-[#aaa399]">
+                <p className="text-muted-foreground mt-3 text-xs leading-5">
                   {t('invite_rules')}
                 </p>
               </div>
-              <dl className="grid grid-cols-2 gap-px bg-black/10 dark:bg-white/10">
+              <dl className="bg-border grid grid-cols-2 gap-px">
                 <ReferralStat
                   label={t('invite_code')}
                   value={referral?.inviteCode || '—'}
@@ -537,10 +537,8 @@ function ReferralStat({
   value: string | number;
 }) {
   return (
-    <div className="bg-[#f7f7f8] p-4 dark:bg-[#17181b]">
-      <dt className="text-[11px] leading-4 text-[#777268] dark:text-[#aaa399]">
-        {label}
-      </dt>
+    <div className="bg-card p-4">
+      <dt className="text-muted-foreground text-[11px] leading-4">{label}</dt>
       <dd className="mt-2 font-mono text-sm font-medium break-all">{value}</dd>
     </div>
   );
@@ -558,7 +556,7 @@ function Ledger({
   return (
     <div>
       <h2 className="mb-3 text-sm font-medium">{title}</h2>
-      <div className="dark:divide-border dark:border-border divide-y divide-black/10 border-y border-black/10 text-sm">
+      <div className="divide-border border-border divide-y border-y text-sm">
         {rows.length ? (
           rows.slice(0, 20).map((row) => (
             <div
@@ -569,13 +567,13 @@ function Ledger({
               <span className="font-mono text-xs">
                 {row[valueKey] ?? 0} Credit
               </span>
-              <time className="text-[#777268]">
+              <time className="text-muted-foreground">
                 {new Date(row.createdAt).toLocaleDateString()}
               </time>
             </div>
           ))
         ) : (
-          <p className="py-8 text-center text-[#777268]">—</p>
+          <p className="text-muted-foreground py-8 text-center">—</p>
         )}
       </div>
     </div>

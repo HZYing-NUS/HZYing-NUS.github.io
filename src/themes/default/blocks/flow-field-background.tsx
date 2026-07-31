@@ -19,10 +19,10 @@ type 烟雾粒子 = 坐标 & {
 };
 
 const 光团配置 = [
-  { x: 0.2, y: 0.32, size: 0.42, color: [91, 118, 153] },
-  { x: 0.76, y: 0.24, size: 0.38, color: [126, 145, 170] },
-  { x: 0.6, y: 0.78, size: 0.34, color: [104, 128, 158] },
-  { x: 0.36, y: 0.68, size: 0.25, color: [143, 156, 174] },
+  { x: 0.2, y: 0.32, size: 0.42, color: [94, 106, 210] },
+  { x: 0.76, y: 0.24, size: 0.38, color: [122, 127, 173] },
+  { x: 0.6, y: 0.78, size: 0.34, color: [98, 102, 109] },
+  { x: 0.36, y: 0.68, size: 0.25, color: [138, 143, 152] },
 ] as const;
 
 export function FlowFieldBackground() {
@@ -98,8 +98,8 @@ export function FlowFieldBackground() {
             radius: 0.035 + Math.random() * 0.045,
             life: 1500 + Math.random() * 1700,
             age: 0,
-            alpha: 0.08 + Math.random() * 0.11,
-            color: 索引 % 3 === 0 ? [126, 145, 170] : [91, 118, 153],
+            alpha: 0.05 + Math.random() * 0.08,
+            color: 索引 % 3 === 0 ? [122, 127, 173] : [94, 106, 210],
             phase: Math.random() * Math.PI * 2,
           });
         }
@@ -176,7 +176,7 @@ export function FlowFieldBackground() {
         const y = (光团.y + 自动偏移Y + 流体位移.y * 惯性倍率) * 高度;
         const 半径 = Math.max(宽度, 高度) * 光团.size;
 
-        绘制光团(x, y, 半径, 光团.color, 索引 === 3 ? 0.08 : 0.18);
+        绘制光团(x, y, 半径, 光团.color, 索引 === 3 ? 0.04 : 0.11);
       });
 
       上下文.globalCompositeOperation = 'screen';
@@ -215,8 +215,8 @@ export function FlowFieldBackground() {
           x,
           y,
           Math.max(宽度, 高度) * (0.1 + 指针强度 * 0.045),
-          [91, 118, 153],
-          0.06 + 指针强度 * 0.08
+          [94, 106, 210],
+          0.035 + 指针强度 * 0.055
         );
       }
 

@@ -20,7 +20,7 @@ export function Features({
       <div className={`container space-y-8 md:space-y-16`}>
         <ScrollAnimation>
           <div className="mx-auto max-w-4xl text-center text-balance">
-            <h2 className="text-foreground mb-4 text-3xl font-semibold tracking-tight md:text-4xl">
+            <h2 className="text-foreground mb-4 text-3xl font-semibold tracking-[-0.025em] md:text-[3.5rem] md:leading-[1.1]">
               {section.title}
             </h2>
             <p className="text-muted-foreground mb-6 md:mb-12 lg:mb-16">
@@ -30,14 +30,16 @@ export function Features({
         </ScrollAnimation>
 
         <ScrollAnimation delay={0.2}>
-          <div className="relative mx-auto grid divide-x divide-y border *:p-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="border-border bg-border relative mx-auto grid gap-px overflow-hidden rounded-xl border sm:grid-cols-2 lg:grid-cols-3">
             {section.items?.map((item, idx) => (
-              <div className="space-y-3" key={idx}>
+              <div className="bg-card space-y-3 p-6" key={idx}>
                 <div className="flex items-center gap-2">
                   <SmartIcon name={item.icon as string} size={24} />
                   <h3 className="text-sm font-medium">{item.title}</h3>
                 </div>
-                <p className="text-sm">{item.description}</p>
+                <p className="text-muted-foreground text-sm leading-6">
+                  {item.description}
+                </p>
               </div>
             ))}
           </div>

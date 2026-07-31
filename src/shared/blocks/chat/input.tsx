@@ -462,9 +462,8 @@ export function ChatInput({
             }
           }}
           className={cn(
-            'overflow-hidden rounded-[1.4rem] border border-black/[0.08] bg-white/92 shadow-[0_20px_60px_-32px_rgba(31,45,70,0.48),0_1px_3px_rgba(31,45,70,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1c1d21]/94',
-            home &&
-              'rounded-[1.75rem] border-black/[0.07] shadow-[0_18px_55px_-32px_rgba(31,31,35,0.32),0_1px_2px_rgba(31,31,35,0.04)] dark:border-white/[0.09]'
+            'bg-card border-border focus-within:ring-ring/30 overflow-hidden rounded-xl border shadow-none transition-colors duration-200 focus-within:border-[var(--linear-hairline-strong)] focus-within:ring-2',
+            home && 'rounded-2xl'
           )}
           globalDrop={Boolean(user)}
           multiple
@@ -489,7 +488,7 @@ export function ChatInput({
           </PromptInputBody>
           <PromptInputFooter
             className={cn(
-              'border-t border-black/[0.07] px-3 py-2.5 dark:border-white/10',
+              'border-border border-t px-3 py-2.5',
               home && 'border-t-0 px-4 pb-3.5'
             )}
           >
@@ -510,7 +509,7 @@ export function ChatInput({
                 >
                   <PromptInputSelectTrigger
                     aria-label={t('model_label')}
-                    className="max-w-64 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
+                    className="border-border bg-secondary hover:bg-accent max-w-64 rounded-lg border px-2.5 hover:border-[var(--linear-hairline-strong)]"
                   >
                     <PromptInputSelectValue>
                       <span className="flex min-w-0 items-center gap-2">
@@ -557,7 +556,7 @@ export function ChatInput({
                 >
                   <PromptInputSelectTrigger
                     aria-label={t('skill_label')}
-                    className="max-w-48 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
+                    className="border-border bg-secondary hover:bg-accent max-w-48 rounded-lg border px-2.5 hover:border-[var(--linear-hairline-strong)]"
                   >
                     <PromptInputSelectValue>
                       <span className="flex min-w-0 items-center gap-2">
@@ -584,7 +583,7 @@ export function ChatInput({
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 py-1.5 dark:border-white/10 dark:bg-white/[0.04]">
+                    <div className="border-border bg-secondary flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
                       <BrainCircuitIcon className="text-muted-foreground size-3.5" />
                       <Label
                         htmlFor="prompt-reasoning-switch"
@@ -608,7 +607,7 @@ export function ChatInput({
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2 rounded-lg border border-black/[0.07] bg-black/[0.025] px-2.5 py-1.5 dark:border-white/10 dark:bg-white/[0.04]">
+                    <div className="border-border bg-secondary flex items-center gap-2 rounded-lg border px-2.5 py-1.5">
                       <Globe2Icon className="text-muted-foreground size-3.5" />
                       <Label
                         htmlFor="prompt-web-search-switch"
@@ -662,7 +661,7 @@ export function ChatInput({
                   <TooltipTrigger asChild>
                     <Badge
                       variant="outline"
-                      className="inline-flex gap-1 font-normal"
+                      className="bg-secondary text-muted-foreground border-border inline-flex gap-1 rounded-md font-normal tabular-nums"
                     >
                       <CircleDollarSignIcon className="size-3" />
                       {estimating

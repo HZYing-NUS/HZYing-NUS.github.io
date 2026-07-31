@@ -42,9 +42,8 @@ export function Logos({
         <ScrollAnimation>
           <p
             className={cn(
-              'text-md text-center font-medium',
-              是流体步骤 &&
-                'text-foreground drop-shadow-[0_1px_8px_color-mix(in_oklab,var(--background)_80%,transparent)]'
+              'text-center text-[13px] font-medium tracking-[0.4px]',
+              是流体步骤 && 'text-muted-foreground'
             )}
           >
             {section.title}
@@ -72,7 +71,7 @@ export function Logos({
                   <span
                     className={cn(
                       是流体步骤 &&
-                        'webtools-flow-step-card__icon bg-primary/10 text-primary flex size-11 items-center justify-center rounded-xl'
+                        'webtools-flow-step-card__icon bg-secondary text-primary flex size-11 items-center justify-center rounded-lg'
                     )}
                   >
                     <SmartIcon name={item.icon as string} size={32} />

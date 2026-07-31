@@ -215,10 +215,10 @@ export function SignIn({
       {isEmailAuthEnabled && (
         <CardFooter>
           <div className="flex w-full justify-center border-t py-4">
-            <p className="text-center text-xs text-neutral-500">
+            <p className="text-muted-foreground text-center text-xs">
               {t('no_account')}
               <Link href="/sign-up" className="underline">
-                <span className="cursor-pointer dark:text-white/70">
+                <span className="text-primary cursor-pointer">
                   {t('sign_up_title')}
                 </span>
               </Link>

@@ -195,7 +195,7 @@ export function ChatMessages({
             <div key={message.id}>
               {message.role === 'assistant' &&
               message.parts.some((part) => part.type === 'data-file-source') ? (
-                <div className="mb-3 border-l-2 border-[#6f8fbe] pl-4 text-xs">
+                <div className="border-primary mb-3 border-l-2 pl-4 text-xs">
                   <p className="font-medium">
                     {locale === 'zh' ? '项目文件' : 'Project files'}
                   </p>
@@ -216,8 +216,8 @@ export function ChatMessages({
               ) : null}
               {message.role === 'assistant' &&
               metadata?.sourceDetails?.length ? (
-                <details className="mb-5 rounded-xl border border-black/[0.07] bg-black/[0.018] px-4 py-3 text-xs dark:border-white/10 dark:bg-white/[0.025]">
-                  <summary className="cursor-pointer font-medium text-[#5474a8] marker:text-[#8faee0] dark:text-[#8faee0]">
+                <details className="bg-card border-border mb-5 rounded-xl border px-4 py-3 text-xs">
+                  <summary className="text-primary marker:text-primary cursor-pointer font-medium">
                     {locale === 'zh'
                       ? `参考来源 · ${metadata.sourceDetails.length}`
                       : `References · ${metadata.sourceDetails.length}`}
@@ -354,7 +354,7 @@ export function ChatMessages({
                     };
                     return (
                       <div
-                        className="mt-3 border-l-2 border-[#6f8fbe] bg-black/[0.025] p-4 text-sm dark:bg-white/[0.025]"
+                        className="bg-secondary border-primary mt-3 border-l-2 p-4 text-sm"
                         key={`${message.id}-${i}`}
                       >
                         <p className="font-medium">
@@ -405,7 +405,7 @@ export function ChatMessages({
                     };
                     return (
                       <div
-                        className="mt-4 flex flex-wrap gap-3 border-t border-black/[0.07] pt-3 font-mono text-[10px] text-[#86868b] dark:border-white/10 dark:text-[#8e8e93]"
+                        className="text-muted-foreground border-border mt-4 flex flex-wrap gap-3 border-t pt-3 font-mono text-[10px]"
                         key={`${message.id}-${i}`}
                       >
                         <span>{settlement.inputTokens} input tokens</span>
@@ -428,7 +428,7 @@ export function ChatMessages({
               {skillCandidates.some(
                 (candidate) => candidate.id === message.id
               ) ? (
-                <div className="mt-2 border-l-2 border-[#6f8fbe] pl-4 text-sm">
+                <div className="border-primary mt-2 border-l-2 pl-4 text-sm">
                   <p>
                     {locale === 'zh'
                       ? '这个问题适合使用「产品想法诊断」。'
@@ -459,7 +459,7 @@ export function ChatMessages({
                 metadata?.outputTokens ||
                 metadata?.settledCredits ||
                 metadata?.errorReason) ? (
-                <div className="mt-4 flex flex-wrap gap-3 border-t border-black/[0.07] pt-3 font-mono text-[10px] text-[#86868b] dark:border-white/10 dark:text-[#8e8e93]">
+                <div className="text-muted-foreground border-border mt-4 flex flex-wrap gap-3 border-t pt-3 font-mono text-[10px]">
                   <span>{metadata.inputTokens || 0} input tokens</span>
                   <span>{metadata.outputTokens || 0} output tokens</span>
                   <span>{metadata.settledCredits || 0} Credit</span>

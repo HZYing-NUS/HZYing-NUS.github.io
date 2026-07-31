@@ -53,8 +53,8 @@ export function ChatLibrary({}) {
   }, [fetchChats, user]);
 
   return (
-    <section className="mt-5 border-t border-black/[0.06] pt-4 dark:border-white/[0.08]">
-      <p className="mb-2 px-3 text-[11px] font-semibold tracking-[0.08em] text-[#86868b] uppercase dark:text-[#77777c]">
+    <section className="border-sidebar-border mt-5 border-t pt-4">
+      <p className="text-muted-foreground mb-2 px-3 text-[11px] font-medium tracking-[0.4px]">
         {t('title')}
       </p>
       <div className="space-y-1">
@@ -64,9 +64,9 @@ export function ChatLibrary({}) {
             href={`/chat/${chat.id}`}
             title={chat.title}
             className={cn(
-              'flex h-8 items-center gap-2.5 rounded-lg px-3 text-[13px] text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]',
+              'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground flex h-8 items-center gap-2.5 rounded-lg px-3 text-[13px] transition duration-200',
               params.id === chat.id &&
-                'bg-black/[0.065] text-[#1d1d1f] dark:bg-white/[0.1] dark:text-[#f5f5f7]'
+                'bg-sidebar-accent text-sidebar-foreground'
             )}
           >
             <IconMessageCircle className="size-4 shrink-0" />
@@ -77,7 +77,7 @@ export function ChatLibrary({}) {
         {hasMore ? (
           <Link
             href="/chat/history"
-            className="flex h-8 items-center gap-2.5 rounded-lg px-3 text-[13px] text-[#6e6e73] transition duration-200 hover:bg-black/[0.045] hover:text-[#1d1d1f] dark:text-[#98989d] dark:hover:bg-white/[0.07] dark:hover:text-[#f5f5f7]"
+            className="text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground flex h-8 items-center gap-2.5 rounded-lg px-3 text-[13px] transition duration-200"
           >
             <IconDots className="size-4 shrink-0" />
             <span>{t('more')}</span>

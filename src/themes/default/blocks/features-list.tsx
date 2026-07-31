@@ -38,12 +38,17 @@ export function FeaturesList({
           )}
           <div className="w-full min-w-0 flex-1">
             <ScrollAnimation delay={0.1}>
-              <h2 className="text-foreground text-4xl font-semibold text-balance break-words">
+              {section.label ? (
+                <p className="text-primary mb-3 text-[13px] font-medium tracking-[0.4px]">
+                  {section.label}
+                </p>
+              ) : null}
+              <h2 className="text-foreground text-[2.5rem] leading-[1.15] font-semibold tracking-[-0.025em] text-balance break-words md:text-[3.5rem]">
                 {section.title}
               </h2>
             </ScrollAnimation>
             <ScrollAnimation delay={0.2}>
-              <p className="text-md text-muted-foreground my-6 text-balance break-words">
+              <p className="text-muted-foreground my-6 max-w-[42rem] text-base leading-7 text-balance break-words md:text-lg">
                 {section.description}
               </p>
             </ScrollAnimation>
@@ -82,18 +87,18 @@ export function FeaturesList({
 
         <ScrollAnimation delay={0.1}>
           {/* Prevent horizontal scrolling, min-w-0 and break-words */}
-          <div className="relative grid min-w-0 grid-cols-1 gap-x-3 gap-y-6 border-t pt-12 break-words sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="border-border relative grid min-w-0 grid-cols-1 gap-x-8 gap-y-8 border-t pt-12 break-words sm:grid-cols-2 lg:grid-cols-4">
             {section.items?.map((item, idx) => (
               <div className="min-w-0 space-y-3 break-words" key={idx}>
                 <div className="flex min-w-0 items-center gap-2">
                   {item.icon && (
                     <SmartIcon name={item.icon as string} size={16} />
                   )}
-                  <h3 className="min-w-0 text-sm font-medium break-words">
+                  <h3 className="min-w-0 text-base font-medium tracking-[-0.01em] break-words">
                     {item.title}
                   </h3>
                 </div>
-                <p className="text-muted-foreground min-w-0 text-sm break-words">
+                <p className="text-muted-foreground min-w-0 text-sm leading-6 break-words">
                   {item.description ?? ''}
                 </p>
               </div>

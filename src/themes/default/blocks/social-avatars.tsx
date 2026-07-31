@@ -25,10 +25,7 @@ export function SocialAvatars({ tip }: { tip: string }) {
       <div className="flex flex-col items-center gap-1 md:items-start">
         <div className="flex items-center gap-1">
           {Array.from({ length: 5 }).map((_, index) => (
-            <Star
-              key={index}
-              className="size-4 fill-yellow-400 text-yellow-400"
-            />
+            <Star key={index} className="text-primary fill-primary size-4" />
           ))}
         </div>
         <p className="text-muted-foreground text-left text-sm font-normal">
