@@ -116,8 +116,12 @@ export function WorkspaceSidebar({
     useState<WorkspaceModule>(routeModule);
 
   useEffect(() => {
-    setSelectedModule(routeModule);
-  }, [routeModule]);
+    const frame = window.requestAnimationFrame(() => {
+      setSelectedModule(routeModule);
+      if (!isMobile) setOpen(routeModule !== 'home');
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [isMobile, routeModule, setOpen]);
 
   const modules: Array<{
     id: Exclude<WorkspaceModule, 'home'>;
@@ -157,13 +161,6 @@ export function WorkspaceSidebar({
     { title: t('skills'), href: '/chat/skills', icon: Blocks },
     { title: t('memory'), href: '/chat/memories', icon: Brain },
     { title: t('credit'), href: '/chat/credits', icon: Coins },
-  ];
-  const homeItems: NavigationItem[] = [
-    { title: t('assistant'), href: '/chat', icon: MessageSquareText },
-    { title: t('projects'), href: '/chat/projects', icon: FolderKanban },
-    { title: t('resources'), href: '/resources', icon: Boxes },
-    { title: t('collections'), href: '/collections', icon: ListChecks },
-    { title: t('articles'), href: '/blog', icon: Newspaper },
   ];
   const resourceItems: NavigationItem[] = [
     { title: t('site_search'), href: '/search', icon: Search },
@@ -261,7 +258,7 @@ export function WorkspaceSidebar({
 
   const panelItems =
     selectedModule === 'home'
-      ? homeItems
+      ? []
       : selectedModule === 'assistant'
         ? assistantItems
         : selectedModule === 'resources'
@@ -286,7 +283,7 @@ export function WorkspaceSidebar({
       setOpenMobile(false);
       return;
     }
-    setOpen(true);
+    setOpen(false);
   };
 
   const handleModuleNavigation = (module: Exclude<WorkspaceModule, 'home'>) => {

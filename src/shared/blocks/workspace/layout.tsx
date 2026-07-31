@@ -37,8 +37,10 @@ function WorkspaceSessionBootstrap({ user }: { user: WorkspaceUser | null }) {
 
 function WorkspaceNavigationTrigger() {
   const t = useTranslations('ai.chat.workspace_shell');
+  const pathname = usePathname();
   const { isMobile, state } = useSidebar();
 
+  if (!isMobile && pathname === '/') return null;
   if (!isMobile && state === 'expanded') return null;
 
   return (
@@ -87,7 +89,7 @@ function WorkspaceFrame({
     <>
       <WorkspaceSessionBootstrap user={initialUser} />
       <SidebarProvider
-        defaultOpen
+        defaultOpen={pathname !== '/'}
         className="[--sidebar-accent:#e7edf7] [--sidebar-border:#e1e4e9] [--sidebar-foreground:#1d1d1f] [--sidebar:#f5f5f7] dark:[--sidebar-accent:#282d38] dark:[--sidebar-border:#30333a] dark:[--sidebar-foreground:#f5f5f7] dark:[--sidebar:#17181b]"
         style={
           {
