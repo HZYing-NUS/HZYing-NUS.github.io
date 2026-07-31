@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type FormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -97,6 +98,12 @@ function WorkspaceSearch() {
     submitSearch();
   };
 
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    submitSearch();
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -108,6 +115,7 @@ function WorkspaceSearch() {
         ref={inputRef}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder={t('search')}
         aria-label={t('search')}
         className="h-9 rounded-xl border-black/[0.08] bg-black/[0.025] pr-10 pl-10 text-sm shadow-none hover:border-black/[0.12] hover:bg-black/[0.045] focus-visible:border-black/[0.15] focus-visible:ring-0 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/15 dark:hover:bg-white/[0.07] dark:focus-visible:border-white/20"
