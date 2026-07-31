@@ -2,9 +2,9 @@
 
 import {
   useEffect,
+  useRef,
   useState,
   type FormEvent,
-  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -18,13 +18,6 @@ import {
   ThemeToggler,
 } from '@/shared/blocks/common';
 import { Button } from '@/shared/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import {
   SidebarInset,
@@ -70,8 +63,8 @@ function WorkspaceSearch() {
   const t = useTranslations('ai.chat.workspace_shell');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [query, setQuery] = useState(() => searchParams.get('q') ?? '');
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -84,25 +77,18 @@ function WorkspaceSearch() {
 
       if (event.key === '/' && !isEditing && !event.metaKey && !event.ctrlKey) {
         event.preventDefault();
-        setQuery(searchParams.get('q') ?? '');
-        setOpen(true);
+        inputRef.current?.focus();
       }
     };
 
     window.addEventListener('keydown', handleShortcut);
     return () => window.removeEventListener('keydown', handleShortcut);
-  }, [searchParams]);
-
-  const handleOpen = () => {
-    setQuery(searchParams.get('q') ?? '');
-    setOpen(true);
-  };
+  }, []);
 
   const submitSearch = () => {
     const keyword = query.trim();
     if (!keyword) return;
 
-    setOpen(false);
     router.push(`/search?q=${encodeURIComponent(keyword)}`);
   };
 
@@ -111,80 +97,25 @@ function WorkspaceSearch() {
     submitSearch();
   };
 
-  const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== 'Enter') return;
-    event.preventDefault();
-    submitSearch();
-  };
-
   return (
-    <>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={handleOpen}
+    <form
+      onSubmit={handleSubmit}
+      role="search"
+      className="group relative min-w-0 flex-1 sm:max-w-md"
+    >
+      <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-[#86868b]" />
+      <Input
+        ref={inputRef}
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder={t('search')}
         aria-label={t('search')}
-        title={t('search')}
-        className="hidden h-9 w-full max-w-md justify-start rounded-xl border-black/[0.08] bg-black/[0.025] px-3.5 text-[#6e6e73] shadow-none hover:border-black/[0.12] hover:bg-black/[0.045] sm:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-[#a1a1a6] dark:hover:border-white/15 dark:hover:bg-white/[0.07]"
-      >
-        <Search className="size-4" />
-        <span className="truncate">{t('search')}</span>
-        <span className="ml-auto hidden rounded-md border border-black/[0.08] bg-white/70 px-1.5 py-0.5 font-mono text-[10px] text-[#86868b] xl:inline dark:border-white/10 dark:bg-white/[0.05] dark:text-[#98989d]">
-          /
-        </span>
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={handleOpen}
-        aria-label={t('search')}
-        title={t('search')}
-        className="size-8 rounded-lg sm:hidden"
-      >
-        <Search className="size-4" />
-      </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="top-[22%] gap-0 overflow-hidden rounded-2xl border-black/[0.08] bg-white/96 p-0 shadow-2xl backdrop-blur-xl sm:max-w-xl dark:border-white/10 dark:bg-[#1c1d21]/96">
-          <DialogHeader className="px-5 pt-5 pb-3 text-left">
-            <DialogTitle className="text-base tracking-[-0.01em]">
-              {t('quick_search_title')}
-            </DialogTitle>
-            <DialogDescription>
-              {t('quick_search_description')}
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            onSubmit={handleSubmit}
-            className="flex items-center gap-2 border-t border-black/[0.06] p-3 dark:border-white/[0.08]"
-          >
-            <div className="relative min-w-0 flex-1">
-              <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-[#86868b]" />
-              <Input
-                autoFocus
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                onKeyDown={handleInputKeyDown}
-                placeholder={t('search_keyword')}
-                aria-label={t('search_keyword')}
-                className="h-11 rounded-xl border-black/[0.08] bg-black/[0.025] pr-3 pl-10 shadow-none dark:border-white/10 dark:bg-white/[0.05]"
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={!query.trim()}
-              className="h-11 rounded-xl px-5"
-            >
-              {t('submit_search')}
-            </Button>
-          </form>
-          <p className="border-t border-black/[0.06] px-5 py-3 text-xs text-[#86868b] dark:border-white/[0.08] dark:text-[#98989d]">
-            {t('quick_search_hint')}
-          </p>
-        </DialogContent>
-      </Dialog>
-    </>
+        className="h-9 rounded-xl border-black/[0.08] bg-black/[0.025] pr-10 pl-10 text-sm shadow-none hover:border-black/[0.12] hover:bg-black/[0.045] focus-visible:border-black/[0.15] focus-visible:ring-0 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/15 dark:hover:bg-white/[0.07] dark:focus-visible:border-white/20"
+      />
+      <span className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded-md border border-black/[0.08] bg-white/70 px-1.5 py-0.5 font-mono text-[10px] text-[#86868b] transition-opacity group-focus-within:opacity-0 xl:inline dark:border-white/10 dark:bg-white/[0.05] dark:text-[#98989d]">
+        /
+      </span>
+    </form>
   );
 }
 
