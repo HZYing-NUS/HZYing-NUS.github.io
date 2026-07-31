@@ -420,6 +420,7 @@ export function WorkspaceSidebar({
               ],
             },
             official_username: officialProfileUsername || undefined,
+            show_admin: true,
             show_email: false,
             show_signout: true,
             signout_callback: '/',

@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useSyncExternalStore } from 'react';
 import {
   ChevronsUpDown,
   ExternalLink,
+  LayoutDashboard,
   Loader2,
   LogOut,
   User,
@@ -212,6 +213,20 @@ export function SidebarUser({ user }: { user: SidebarUserType }) {
                       >
                         <ExternalLink />
                         {t('public_profile_title')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : null}
+                {user.show_admin && authUser.isAdmin ? (
+                  <>
+                    <DropdownMenuItem className="cursor-pointer" asChild>
+                      <Link
+                        href="/admin"
+                        className="flex w-full items-center gap-2"
+                      >
+                        <LayoutDashboard />
+                        {t('admin_title')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

@@ -21,6 +21,7 @@ export interface SidebarFooter {
 export interface SidebarUser {
   nav?: Nav;
   official_username?: string;
+  show_admin?: boolean;
   show_email?: boolean;
   show_signout?: boolean;
   signout_callback?: string;
